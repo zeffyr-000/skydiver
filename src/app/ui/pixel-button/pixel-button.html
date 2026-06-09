@@ -1,0 +1,8 @@
+<button
+  [type]="type()"
+  [class]="'pixel-btn pixel-btn--' + variant()"
+  [disabled]="disabled()"
+  (click)="onClick()"
+>
+  <ng-content />
+</button>

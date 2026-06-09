@@ -1,0 +1,23 @@
+// Reusable pixel-art surface mixins.
+// Borders are built from multi-layer box-shadows with ZERO blur radius so edges stay crisp
+// at any resolution and need no image assets.
+
+// Outset bevel: light top-left, dark bottom-right + a hard outer pixel outline.
+@mixin pixel-bevel($w: var(--border-w), $hi: var(--highlight), $lo: var(--shadow)) {
+  border: 0;
+  border-radius: 0;
+  box-shadow:
+    inset #{$w} #{$w} 0 0 #{$hi},
+    inset calc(-1 * #{$w}) calc(-1 * #{$w}) 0 0 #{$lo},
+    0 0 0 #{$w} var(--shadow);
+}
+
+// Inset (pressed/sunken): flips the light source.
+@mixin pixel-inset($w: var(--border-w), $hi: var(--highlight), $lo: var(--shadow)) {
+  border: 0;
+  border-radius: 0;
+  box-shadow:
+    inset calc(-1 * #{$w}) calc(-1 * #{$w}) 0 0 #{$hi},
+    inset #{$w} #{$w} 0 0 #{$lo},
+    0 0 0 #{$w} var(--shadow);
+}

@@ -1,0 +1,144 @@
+.game {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  padding: var(--sp-6);
+}
+
+.game__hud {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+}
+
+.game__back {
+  font-family: var(--font-head);
+  font-size: 14px;
+  color: var(--ink-light);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--brass);
+  }
+}
+
+.game__stats {
+  display: flex;
+  gap: var(--sp-6);
+  font-family: var(--font-head);
+  font-size: 16px;
+  color: var(--brass);
+}
+
+.game__stage {
+  flex: 1;
+}
+
+.game__viewport {
+  position: relative;
+  width: 100%;
+  max-width: 560px;
+  margin: 0 auto;
+  aspect-ratio: 1 / 1;
+}
+
+.game__canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  background: var(--sky-bg);
+  box-shadow: inset 0 0 0 var(--border-w) var(--shadow);
+}
+
+.game__overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  color: var(--ink-light);
+  font-family: var(--font-body);
+}
+
+.game__gauge {
+  position: absolute;
+  top: var(--sp-3);
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+  text-shadow: 2px 2px 0 var(--shadow);
+}
+
+.game__gauge--left {
+  left: var(--sp-3);
+}
+
+.game__gauge--center {
+  left: 50%;
+  transform: translateX(-50%);
+  align-items: center;
+}
+
+.game__gauge--right {
+  right: var(--sp-3);
+  align-items: flex-end;
+}
+
+.game__gauge-label {
+  font-family: var(--font-head);
+  font-size: 10px;
+  color: var(--brass);
+}
+
+.game__gauge-value {
+  font-size: 24px;
+}
+
+.game__phase {
+  position: absolute;
+  bottom: var(--sp-6);
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-head);
+  font-size: 12px;
+  color: var(--brass);
+  text-shadow: 2px 2px 0 var(--shadow);
+}
+
+.game__hint {
+  position: absolute;
+  bottom: var(--sp-2);
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 16px;
+  white-space: nowrap;
+  text-shadow: 2px 2px 0 var(--shadow);
+}
+
+.game__pause-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+}
+
+.game__result {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  min-width: 220px;
+}
+
+.game__result-line {
+  margin: 0;
+  text-align: center;
+  font-size: 20px;
+  color: var(--ink);
+}
+
+.game__result-line--good,
+.game__result-line--bad {
+  font-family: var(--font-head);
+  font-size: 14px;
+  color: var(--biplane-red);
+}

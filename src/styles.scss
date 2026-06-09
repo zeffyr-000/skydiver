@@ -1,0 +1,32 @@
+// Global styles for Skydiver — retro 8/16-bit aerobatics theme.
+// (_pixel-ui.scss holds mixins only; components @use it directly where needed.)
+@use 'styles/tokens';
+@use 'styles/typography';
+@use 'styles/reset';
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--sky-bg);
+  color: var(--ink-light);
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  line-height: 1.4;
+  color-scheme: dark;
+
+  // Kill anti-aliasing so glyph edges read as hard pixels.
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: grayscale;
+  image-rendering: pixelated;
+}
+
+// VT323 has a small x-height; nudge interactive text up so it stays readable.
+button,
+input,
+select {
+  font-family: var(--font-body);
+}

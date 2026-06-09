@@ -1,0 +1,67 @@
+{
+  "app": {
+    "title": "Skydiver"
+  },
+  "menu": {
+    "subtitle": "Aerobatics of the Roaring Twenties",
+    "play": "Play",
+    "records": "Records",
+    "settings": "Settings",
+    "prompt": "Press Enter"
+  },
+  "common": {
+    "back": "Back"
+  },
+  "game": {
+    "title": "Flight Deck",
+    "area": "Drop Zone",
+    "placeholder": "The flight begins here",
+    "score": "Score",
+    "lives": "Lives",
+    "pause": "Pause",
+    "paused": "Paused",
+    "resume": "Resume",
+    "quit": "Quit to Menu",
+    "altitude": "Altitude",
+    "wind": "Wind",
+    "distance": "Distance",
+    "deploy": "Deploy",
+    "flare": "Flare",
+    "jumpComplete": "Jump Complete",
+    "crashed": "Crashed",
+    "crashedMsg": "You hit the ground too hard!",
+    "bullseye": "Bullseye!",
+    "jumpScore": "Jump Score",
+    "nextJump": "Next Jump",
+    "gameOver": "Game Over",
+    "finalScore": "Final Score",
+    "playAgain": "Play Again",
+    "hintFreefall": "Arrows / WASD steer · SPACE opens chute",
+    "hintCanopy": "Steer to target · SHIFT to flare",
+    "phase": {
+      "freefall": "Free Fall",
+      "canopy": "Canopy",
+      "landed": "Landed",
+      "crashed": "Crashed"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "volume": "Volume",
+    "difficulty": "Difficulty",
+    "language": "Language",
+    "difficultyRookie": "Rookie",
+    "difficultyAce": "Ace",
+    "difficultyBarnstormer": "Barnstormer"
+  },
+  "records": {
+    "title": "Hall of Aces",
+    "rank": "Rank",
+    "pilot": "Pilot",
+    "score": "Score",
+    "date": "Date",
+    "empty": "No flights logged yet.",
+    "clear": "Clear Records",
+    "defaultPilot": "Ace"
+  }
+}

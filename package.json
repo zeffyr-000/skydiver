@@ -1,0 +1,56 @@
+{
+  "name": "skydiver",
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test",
+    "test:run": "ng test --watch=false",
+    "test:coverage": "ng test --coverage",
+    "lint": "ng lint",
+    "format": "prettier --write \"src/**/*.{ts,html,scss}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,html,scss}\"",
+    "e2e": "npx playwright test",
+    "e2e:ui": "npx playwright test --ui",
+    "e2e:headed": "npx playwright test --headed",
+    "e2e:report": "npx playwright show-report"
+  },
+  "private": true,
+  "packageManager": "npm@10.9.8",
+  "engines": {
+    "node": ">=22.0.0",
+    "npm": ">=10.0.0"
+  },
+  "dependencies": {
+    "@angular/animations": "^21.2.16",
+    "@angular/aria": "^21.2.14",
+    "@angular/cdk": "^21.2.14",
+    "@angular/common": "^21.2.0",
+    "@angular/compiler": "^21.2.0",
+    "@angular/core": "^21.2.0",
+    "@angular/forms": "^21.2.0",
+    "@angular/platform-browser": "^21.2.0",
+    "@angular/router": "^21.2.0",
+    "@jsverse/transloco": "^8.3.0",
+    "@jsverse/transloco-messageformat": "^8.3.0",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0"
+  },
+  "devDependencies": {
+    "@angular/build": "^21.2.9",
+    "@angular/cli": "^21.2.9",
+    "@angular/compiler-cli": "^21.2.0",
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.60.0",
+    "@vitest/coverage-v8": "^4.1.8",
+    "angular-eslint": "21.4.0",
+    "eslint": "^10.3.0",
+    "jsdom": "^28.1.0",
+    "prettier": "^3.8.1",
+    "typescript": "~5.9.2",
+    "typescript-eslint": "8.59.2",
+    "vitest": "^4.1.8"
+  }
+}

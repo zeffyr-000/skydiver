@@ -1,0 +1,42 @@
+@use 'pixel-ui' as px;
+
+:host {
+  display: block;
+}
+
+.pixel-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 16px;
+  margin: var(--border-w) 0;
+  background: var(--parchment-dark);
+  cursor: pointer;
+  @include px.pixel-inset();
+
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 28px;
+    background: var(--brass);
+    border: 0;
+    border-radius: 0;
+    box-shadow:
+      inset 3px 3px 0 0 var(--highlight),
+      inset -3px -3px 0 0 var(--brass-dark),
+      0 0 0 3px var(--shadow);
+  }
+
+  &::-moz-range-thumb {
+    width: 20px;
+    height: 28px;
+    background: var(--brass);
+    border: 0;
+    border-radius: 0;
+    box-shadow:
+      inset 3px 3px 0 0 var(--highlight),
+      inset -3px -3px 0 0 var(--brass-dark),
+      0 0 0 3px var(--shadow);
+  }
+}
