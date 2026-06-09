@@ -1,0 +1,43 @@
+.pixel-menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+.pixel-menu__item {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  font-family: var(--font-head);
+  font-size: 20px;
+  color: var(--ink-light);
+  padding: var(--sp-2) var(--sp-4);
+  cursor: pointer;
+  user-select: none;
+
+  // The active (roving-focused) item and hover both reveal the caret + accent.
+  // Keep the global :focus-visible ring (see _reset.scss) for keyboard users.
+  &:hover,
+  &:focus-visible {
+    color: var(--brass);
+
+    .pixel-menu__caret {
+      visibility: visible;
+    }
+  }
+}
+
+.pixel-menu__caret {
+  visibility: hidden;
+  color: var(--biplane-red);
+  animation: pixel-blink 1s steps(2, start) infinite;
+}
+
+@keyframes pixel-blink {
+  to {
+    opacity: 0;
+  }
+}

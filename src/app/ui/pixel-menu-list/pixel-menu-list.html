@@ -1,0 +1,18 @@
+<ul
+  ngListbox
+  class="pixel-menu"
+  orientation="vertical"
+  focusMode="roving"
+  selectionMode="explicit"
+  [wrap]="true"
+  [values]="selected()"
+  (valuesChange)="onSelect($event)"
+  [attr.aria-label]="ariaLabel() || null"
+>
+  @for (item of items(); track item.value) {
+    <li ngOption [value]="item.value" [label]="item.label" class="pixel-menu__item">
+      <span class="pixel-menu__caret" aria-hidden="true">&#9656;</span>
+      <span class="pixel-menu__label">{{ item.label }}</span>
+    </li>
+  }
+</ul>

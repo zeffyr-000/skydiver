@@ -1,0 +1,35 @@
+<section class="settings">
+  <header class="settings__head">
+    <a class="settings__back" routerLink="/">&#9664; {{ 'common.back' | transloco }}</a>
+    <h2>{{ 'settings.title' | transloco }}</h2>
+  </header>
+
+  <app-pixel-panel class="settings__panel">
+    <div class="settings__row">
+      <span class="settings__label">{{ 'settings.volume' | transloco }}</span>
+      <div class="settings__control">
+        <app-pixel-slider [(value)]="settings.volume" [ariaLabel]="'settings.volume' | transloco" />
+        <span class="settings__value">{{ settings.volume() }}</span>
+      </div>
+    </div>
+
+    <div class="settings__row">
+      <span class="settings__label">{{ 'settings.difficulty' | transloco }}</span>
+      <div class="settings__control settings__difficulties">
+        @for (option of difficulties; track option.value) {
+          <app-pixel-button
+            [variant]="settings.difficulty() === option.value ? 'brass' : 'default'"
+            (pressed)="settings.difficulty.set(option.value)"
+          >
+            {{ option.labelKey | transloco }}
+          </app-pixel-button>
+        }
+      </div>
+    </div>
+
+    <div class="settings__row">
+      <span class="settings__label">{{ 'settings.language' | transloco }}</span>
+      <span class="settings__value settings__lang">{{ settings.language() | uppercase }}</span>
+    </div>
+  </app-pixel-panel>
+</section>

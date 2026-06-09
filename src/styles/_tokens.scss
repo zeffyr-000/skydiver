@@ -1,0 +1,45 @@
+// Design tokens for the Skydiver retro 8/16-bit UI.
+// Exposed as CSS custom properties so every component consumes them without @use.
+// Theme: early-1900s aerobatics (sepia maps, biplane red, brass instruments, dusk sky).
+
+:root {
+  // --- Palette (limited ~12-color retro set) ---
+  --sky-bg: #1a2b45; // deep dusk sky — app background
+  --sky-day: #5b9bd5; // daytime sky blue — title/panels accents
+  --parchment: #e8d8b0; // panel fill / sepia map paper
+  --parchment-dark: #c9b285; // panel shading
+  --canvas-cream: #f3e9cf; // lightest fills
+  --ink: #2b1f12; // dark sepia text on parchment
+  --ink-light: #e8d8b0; // light text on dark/red
+  --biplane-red: #c1352b; // primary actions / accents (Sopwith red)
+  --biplane-red-dark: #8f231c; // red pressed/shadow
+  --brass: #d9a441; // gold/brass highlight, focus
+  --brass-dark: #a9781f; // brass shadow
+  --shadow: #11161f; // pixel border darks / pressed shadow
+  --highlight: #fff7e0; // top-left bevel highlight
+
+  // --- Pixel spacing grid (4px base) ---
+  --px: 4px;
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+
+  // --- Borders ---
+  --border-w: 4px; // chunky pixel border width
+  --radius: 0; // never round in pixel art
+
+  // --- Type scale ---
+  --fs-body: 18px;
+  --fs-h3: 24px;
+  --fs-h2: 32px;
+  --fs-h1: 48px;
+  --font-head: 'Press Start 2P', monospace;
+  --font-body: 'VT323', monospace;
+
+  // --- z-index ---
+  --z-overlay: 1000;
+  --z-modal: 1100;
+}

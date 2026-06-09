@@ -1,0 +1,90 @@
+<section class="game">
+  <header class="game__hud">
+    <a class="game__back" routerLink="/">&#9664; {{ 'common.back' | transloco }}</a>
+    <div class="game__stats">
+      <span>{{ 'game.score' | transloco }}: {{ score() }}</span>
+      <span>{{ 'game.lives' | transloco }}: {{ lives() }}</span>
+    </div>
+    <app-pixel-button variant="primary" (pressed)="togglePause()">
+      {{ 'game.pause' | transloco }}
+    </app-pixel-button>
+  </header>
+
+  <app-pixel-panel class="game__stage" [heading]="'game.area' | transloco">
+    <div class="game__viewport">
+      <canvas #gameCanvas class="game__canvas" width="256" height="256"></canvas>
+
+      <div class="game__overlay" aria-hidden="true">
+        <div class="game__gauge game__gauge--left">
+          <span class="game__gauge-label">{{ 'game.altitude' | transloco }}</span>
+          <span class="game__gauge-value">{{ altitude() }}m</span>
+        </div>
+        <div class="game__gauge game__gauge--center">
+          <span class="game__gauge-label">{{ 'game.wind' | transloco }}</span>
+          <span class="game__gauge-value">{{ windLabel() }}</span>
+        </div>
+        <div class="game__gauge game__gauge--right">
+          <span class="game__gauge-label">{{ 'game.distance' | transloco }}</span>
+          <span class="game__gauge-value">{{ bearing() }} {{ distance() }}m</span>
+        </div>
+
+        <div class="game__phase">{{ 'game.phase.' + phaseKey() | transloco }}</div>
+
+        <div class="game__hint">
+          @switch (phaseKey()) {
+            @case ('freefall') {
+              {{ 'game.hintFreefall' | transloco }}
+            }
+            @case ('canopy') {
+              {{ 'game.hintCanopy' | transloco }}
+            }
+          }
+        </div>
+      </div>
+    </div>
+  </app-pixel-panel>
+</section>
+
+<app-pixel-dialog [(open)]="paused" [heading]="'game.paused' | transloco">
+  <div class="game__pause-actions">
+    <app-pixel-button variant="brass" (pressed)="togglePause()">
+      {{ 'game.resume' | transloco }}
+    </app-pixel-button>
+    <app-pixel-button (pressed)="quit()">
+      {{ 'game.quit' | transloco }}
+    </app-pixel-button>
+  </div>
+</app-pixel-dialog>
+
+<app-pixel-dialog [(open)]="resultOpen" [heading]="resultHeading() | transloco">
+  <div class="game__result">
+    @if (lastResult(); as r) {
+      @if (r.crashed) {
+        <p class="game__result-line game__result-line--bad">{{ 'game.crashedMsg' | transloco }}</p>
+      } @else {
+        @if (r.bullseye) {
+          <p class="game__result-line game__result-line--good">{{ 'game.bullseye' | transloco }}</p>
+        }
+        <p class="game__result-line">
+          {{ 'game.distance' | transloco }}: {{ round(r.landedDistance) }}m
+        </p>
+        <p class="game__result-line">{{ 'game.jumpScore' | transloco }}: {{ r.score }}</p>
+      }
+    }
+    <app-pixel-button variant="brass" (pressed)="continueJump()">
+      {{ 'game.nextJump' | transloco }}
+    </app-pixel-button>
+  </div>
+</app-pixel-dialog>
+
+<app-pixel-dialog [(open)]="gameOver" [heading]="'game.gameOver' | transloco">
+  <div class="game__result">
+    <p class="game__result-line">{{ 'game.finalScore' | transloco }}: {{ score() }}</p>
+    <app-pixel-button variant="brass" (pressed)="playAgain()">
+      {{ 'game.playAgain' | transloco }}
+    </app-pixel-button>
+    <app-pixel-button (pressed)="quit()">
+      {{ 'game.quit' | transloco }}
+    </app-pixel-button>
+  </div>
+</app-pixel-dialog>

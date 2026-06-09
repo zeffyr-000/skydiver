@@ -1,0 +1,17 @@
+<section class="title">
+  <div class="title__clouds" aria-hidden="true"></div>
+
+  <header class="title__head">
+    <h1 class="title__logo">{{ 'app.title' | transloco }}</h1>
+    <p class="title__subtitle">{{ 'menu.subtitle' | transloco }}</p>
+  </header>
+
+  <app-pixel-menu-list
+    class="title__menu"
+    [items]="menuItems()"
+    [ariaLabel]="'app.title' | transloco"
+    (activate)="onSelect($event)"
+  />
+
+  <p class="title__prompt">{{ 'menu.prompt' | transloco }}</p>
+</section>

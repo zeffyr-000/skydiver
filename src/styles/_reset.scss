@@ -1,0 +1,22 @@
+// Global reset tuned for crisp pixel rendering.
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+img,
+canvas {
+  image-rendering: pixelated;
+}
+
+// Keyboard focus is on-theme (arcade) and required for a11y — make it loud.
+:focus-visible {
+  outline: 2px dashed var(--brass);
+  outline-offset: 4px;
+}
+
+// Remove the default focus ring only when focus-visible takes over.
+:focus:not(:focus-visible) {
+  outline: none;
+}

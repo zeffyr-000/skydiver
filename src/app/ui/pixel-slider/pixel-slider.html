@@ -1,0 +1,10 @@
+<input
+  class="pixel-range"
+  type="range"
+  [min]="min()"
+  [max]="max()"
+  [step]="step()"
+  [value]="value()"
+  [attr.aria-label]="ariaLabel() || null"
+  (input)="onInput($event)"
+/>

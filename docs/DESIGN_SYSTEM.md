@@ -1,0 +1,145 @@
+# Design System — Skydiver
+
+Skydiver has **no UI framework theme** (no Angular Material). The look is a small, bespoke
+**8/16-bit pixel-art** system: a limited palette, chunky bevelled borders, bitmap fonts, and a
+handful of reusable components. This document is the reference for it.
+
+Theme: early-1900s aerobatics — sepia map paper, Sopwith-biplane red, brass instruments, a dusk sky.
+
+## Principles
+
+- **No image assets for chrome.** Borders/bevels are drawn with multi-layer **zero-blur**
+  `box-shadow`s, so they stay crisp at any zoom/resolution.
+- **Square corners.** `--radius: 0`, always. Pixel art never rounds.
+- **Tokens over literals.** Components reference CSS custom properties; never hardcode a colour or
+  a spacing value.
+- **Accessibility via Angular Aria.** Interactive widgets use `@angular/aria` primitives for roles,
+  focus and keyboard behaviour.
+
+## Tokens
+
+Defined in [`src/styles/_tokens.scss`](../src/styles/_tokens.scss) on `:root`, so every component
+consumes them without `@use`.
+
+### Palette (≈12-colour retro set)
+
+| Token | Hex | Use |
+|-------|-----|-----|
+| `--sky-bg` | `#1a2b45` | deep dusk sky — app background |
+| `--sky-day` | `#5b9bd5` | daytime blue — accents |
+| `--parchment` / `--parchment-dark` | `#e8d8b0` / `#c9b285` | panel fill / shading (sepia map) |
+| `--canvas-cream` | `#f3e9cf` | lightest fills |
+| `--ink` / `--ink-light` | `#2b1f12` / `#e8d8b0` | text on light / on dark |
+| `--biplane-red` / `--biplane-red-dark` | `#c1352b` / `#8f231c` | primary actions / pressed |
+| `--brass` / `--brass-dark` | `#d9a441` / `#a9781f` | highlights, focus |
+| `--shadow` | `#11161f` | pixel border darks |
+| `--highlight` | `#fff7e0` | top-left bevel highlight |
+
+### Spacing (4px grid)
+
+`--px: 4px`, `--sp-1: 4px`, `--sp-2: 8px`, `--sp-3: 12px`, `--sp-4: 16px`, `--sp-6: 24px`,
+`--sp-8: 32px`.
+
+### Borders & type
+
+- `--border-w: 4px` (chunky pixel border), `--radius: 0`
+- Type scale: `--fs-body: 18px`, `--fs-h3: 24px`, `--fs-h2: 32px`, `--fs-h1: 48px`
+- Fonts: `--font-head: 'Press Start 2P'` (titles), `--font-body: 'VT323'` (body) — self-hosted
+  `.woff2` in `public/assets/fonts/`
+- Layers: `--z-overlay: 1000`, `--z-modal: 1100`
+
+## Surface mixins
+
+From [`src/styles/_pixel-ui.scss`](../src/styles/_pixel-ui.scss):
+
+```scss
+@include pixel-bevel($w, $hi, $lo); // raised: light top-left, dark bottom-right, hard outline
+@include pixel-inset($w, $hi, $lo); // sunken/pressed: light source flipped
+```
+
+Both default to `--border-w`, `--highlight`, `--shadow`. Use `pixel-bevel` for panels/buttons at
+rest and `pixel-inset` for pressed/active or recessed wells.
+
+```scss
+.my-panel {
+  background: var(--parchment);
+  padding: var(--sp-4);
+  @include pixel-bevel();
+}
+```
+
+> The renderer (`engine/renderer.ts`) mirrors a few of these hex values in a local `COLORS` map
+> because a `<canvas>` can't cheaply read CSS variables per frame. **If you change a palette
+> token used in-game, update that map too.**
+
+## The UI kit (`src/app/ui/`)
+
+Import from the barrel: `import { PixelButton, PixelPanel } from '../../ui';`
+
+### `PixelButton` — `<app-pixel-button>`
+
+| API | Type | Default | Notes |
+|-----|------|---------|-------|
+| `variant` (input) | `'default' \| 'primary' \| 'brass'` | `'default'` | visual emphasis |
+| `disabled` (input) | `boolean` | `false` | suppresses `pressed` |
+| `type` (input) | `'button' \| 'submit'` | `'button'` | |
+| `pressed` (output) | `void` | — | emitted on click when enabled |
+
+```html
+<app-pixel-button variant="brass" (pressed)="start()">{{ 'menu.play' | transloco }}</app-pixel-button>
+```
+
+### `PixelPanel` — `<app-pixel-panel>`
+
+A bevelled parchment surface with an optional title bar.
+
+| API | Type | Default |
+|-----|------|---------|
+| `heading` (input) | `string` | `''` (title bar hidden when empty) |
+
+Project content as children: `<app-pixel-panel heading="…"> … </app-pixel-panel>`.
+
+### `PixelSlider` — `<app-pixel-slider>`
+
+| API | Type | Default |
+|-----|------|---------|
+| `value` (**model**, two-way) | `number` | `0` |
+| `min` / `max` / `step` (input) | `number` | `0` / `100` / `1` |
+| `ariaLabel` (input) | `string` | `''` |
+
+```html
+<app-pixel-slider [(value)]="settings.volume" [ariaLabel]="'settings.volume' | transloco" />
+```
+
+### `PixelDialog` — `<app-pixel-dialog>`
+
+Wraps the native `<dialog>` (`showModal`/`close`) and keeps it in sync with a signal.
+
+| API | Type | Notes |
+|-----|------|-------|
+| `open` (**model**, two-way) | `boolean` | drives `showModal()` / `close()` |
+| `heading` (input) | `string` | |
+| `closed` (output) | `void` | emitted on ESC, backdrop, or programmatic close |
+
+### `PixelMenuList` — `<app-pixel-menu-list>`
+
+Keyboard-navigable menu built on `@angular/aria` `Listbox`/`Option`. Behaves like a momentary
+trigger (selection resets after each activation).
+
+| API | Type | Notes |
+|-----|------|-------|
+| `items` (input, required) | `PixelMenuItem[]` | `{ value: string; label: string }` |
+| `ariaLabel` (input) | `string` | |
+| `activate` (output) | `string` | the activated item's `value` (Enter / Space / click) |
+
+```html
+<app-pixel-menu-list [items]="menuItems()" (activate)="onSelect($event)" />
+```
+
+## Adding a component to the kit
+
+1. Create `src/app/ui/<name>/<name>.{ts,html,scss}` (standalone, `OnPush`, `inject()`).
+2. Style with tokens + `pixel-bevel`/`pixel-inset`; keep styles host-scoped.
+3. Prefer `input()` / `model()` / `output()` over `@Input`/`@Output` decorators.
+4. Export it (and any public types) from [`src/app/ui/index.ts`](../src/app/ui/index.ts).
+5. Add a `<name>.spec.ts` covering its inputs/outputs.
