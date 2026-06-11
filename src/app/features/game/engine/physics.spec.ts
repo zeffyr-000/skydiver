@@ -5,11 +5,19 @@ import type { GameConfig, GameState, InputState } from './types';
 import { Phase } from './types';
 
 const DT = 1 / 60;
-const NEUTRAL: InputState = { steerX: 0, steerY: 0, deployPressed: false, flare: 0 };
+const NEUTRAL: InputState = {
+  steerX: 0,
+  steerY: 0,
+  deployPressed: false,
+  skipPressed: false,
+  flare: 0,
+};
 const DEPLOY: InputState = { ...NEUTRAL, deployPressed: true };
+const SKIP: InputState = { ...NEUTRAL, skipPressed: true };
 
+/** Wind off and intro skipped: most physics tests want to start falling at once. */
 function noWind(overrides: Partial<GameConfig> = {}): GameConfig {
-  return { ...BASE_CONFIG, windBase: 0, windGust: 0, ...overrides };
+  return { ...BASE_CONFIG, windBase: 0, windGust: 0, introDuration: 0, ...overrides };
 }
 
 function run(state: GameState, input: InputState, cfg: GameConfig, frames: number): GameState {
@@ -70,7 +78,7 @@ describe('physics: horizontal inertia & wind', () => {
   });
 
   it('wind drifts the diver far more under canopy than in free fall', () => {
-    const cfg: GameConfig = { ...BASE_CONFIG, windBase: 5, windGust: 0 };
+    const cfg: GameConfig = { ...BASE_CONFIG, windBase: 5, windGust: 0, introDuration: 0 };
     const base: GameState = {
       ...createInitialState(cfg, () => 0.5),
       posX: 0,
@@ -143,20 +151,42 @@ describe('physics: landing & scoring', () => {
 });
 
 describe('physics: determinism & difficulty', () => {
-  it('is deterministic for a fixed seed and input sequence', () => {
-    const cfg = BASE_CONFIG;
+  it('is deterministic for a fixed seed and input sequence across all phases', () => {
+    // Covers intro skip, pitched freefall, deploying, canopy flare, touchdown
+    // and the outro countdown in a single replay.
+    const cfg: GameConfig = { ...BASE_CONFIG, startAltitude: 300 };
     const play = (): GameState => {
       let s = createInitialState(cfg, () => 0.42);
-      for (let i = 0; i < 500; i++) {
+      for (let i = 0; i < 2500; i++) {
         const input: InputState =
-          i === 100
-            ? { steerX: 1, steerY: -1, deployPressed: true, flare: 0 }
-            : { steerX: i % 2 ? 1 : -1, steerY: 0, deployPressed: false, flare: i > 300 ? 0.4 : 0 };
+          i === 30
+            ? SKIP
+            : i === 250
+              ? { ...DEPLOY, steerX: 1 }
+              : {
+                  ...NEUTRAL,
+                  steerX: i % 2 ? 1 : -1,
+                  steerY: i < 150 ? -1 : 1,
+                  flare: i > 600 ? 0.4 : 0,
+                };
         s = integrate(s, input, DT, cfg);
       }
       return s;
     };
-    expect(play()).toEqual(play());
+    const a = play();
+    expect(a).toEqual(play());
+    expect(a.phase === Phase.Landed || a.phase === Phase.Crashed).toBe(true);
+    expect(a.outroTimer).toBe(0);
+  });
+
+  it('keeps the original rng draw order: a fixed seed still yields the same wind and spawn', () => {
+    // The plane direction and ground seed were appended AFTER the original three
+    // draws (windDir, spreadDir, spreadMag) — these values must never change.
+    const s = createInitialState(BASE_CONFIG, () => 0.5);
+    expect(s.windBaseX).toBeCloseTo(-3, 10); // cos(π) * windBase
+    expect(s.windBaseY).toBeCloseTo(0, 10);
+    expect(s.posX).toBeCloseTo(-112, 10); // cos(π) * 0.7 * startSpread
+    expect(s.posY).toBeCloseTo(0, 10);
   });
 
   it('difficulty scales wind up and target down', () => {
@@ -179,7 +209,8 @@ describe('physics: stall recovery & gentle landing', () => {
       200,
     );
     s = integrate(s, DEPLOY, DT, cfg);
-    s = run(s, { ...NEUTRAL, flare: 1 }, cfg, 30); // over-flare into a stall
+    // Ride out the opening (~60 frames), then over-flare into a stall.
+    s = run(s, { ...NEUTRAL, flare: 1 }, cfg, 100);
     expect(s.stalled).toBe(true);
 
     // Release and wait out the stall (stallDuration = 1.5s ≈ 90 frames).
@@ -210,5 +241,213 @@ describe('physics: scoring bonuses', () => {
     const justOutside = computeScore(cfg.bullseyeRadius + 0.01, 0, cfg);
     expect(justOutside).toBeLessThanOrEqual(1000);
     expect(computeScore(0, 0, cfg) - justOutside).toBeGreaterThanOrEqual(500);
+  });
+});
+
+describe('physics: plane-approach intro', () => {
+  it('starts in the plane when introDuration > 0 and freezes the diver until exit', () => {
+    const cfg = noWind({ introDuration: 1 });
+    let s = createInitialState(cfg, () => 0.5);
+    expect(s.phase).toBe(Phase.PlaneApproach);
+    const startAlt = s.altitude;
+    const startX = s.posX;
+
+    s = run(s, NEUTRAL, cfg, 30); // halfway through the intro
+    expect(s.phase).toBe(Phase.PlaneApproach);
+    expect(s.altitude).toBe(startAlt);
+    expect(s.posX).toBe(startX);
+    expect(s.descentSpeed).toBe(0);
+
+    s = run(s, NEUTRAL, cfg, 31); // past the full second
+    expect(s.phase).toBe(Phase.Freefall);
+  });
+
+  it('skips straight to free fall on the skip edge and realigns the clock', () => {
+    const cfg = noWind({ introDuration: 2 });
+    let s = createInitialState(cfg, () => 0.5);
+    s = integrate(s, SKIP, DT, cfg);
+    expect(s.phase).toBe(Phase.Freefall);
+    expect(s.elapsed).toBe(cfg.introDuration);
+    expect(s.introTimer).toBe(0);
+  });
+
+  it('treats a deploy press during the intro as a skip, not a deploy', () => {
+    const cfg = noWind({ introDuration: 2 });
+    let s = createInitialState(cfg, () => 0.5);
+    s = integrate(s, DEPLOY, DT, cfg);
+    expect(s.phase).toBe(Phase.Freefall);
+  });
+
+  it('starts directly in free fall when introDuration is 0', () => {
+    const s = createInitialState(noWind(), () => 0.5);
+    expect(s.phase).toBe(Phase.Freefall);
+  });
+});
+
+describe('physics: freefall pitch', () => {
+  const TRACK: InputState = { ...NEUTRAL, steerY: -1 }; // up arrow → lean forward
+  const ARCH: InputState = { ...NEUTRAL, steerY: 1 }; // down arrow → arch back
+
+  it('smooths pitch toward the stick instead of snapping', () => {
+    const cfg = noWind();
+    let s = createInitialState(cfg, () => 0.5);
+    s = integrate(s, TRACK, DT, cfg);
+    expect(s.pitch).toBeGreaterThan(0);
+    expect(s.pitch).toBeLessThan(0.2);
+    s = run(s, TRACK, cfg, 120);
+    expect(s.pitch).toBeCloseTo(1, 2);
+  });
+
+  it('tracking raises terminal velocity, arching lowers it', () => {
+    const cfg = noWind();
+    const base = createInitialState(cfg, () => 0.5);
+    const tracked = run(base, TRACK, cfg, 300);
+    const arched = run(base, ARCH, cfg, 300);
+    expect(tracked.descentSpeed).toBeGreaterThan(cfg.freefallTerminal);
+    expect(tracked.descentSpeed).toBeLessThanOrEqual(
+      cfg.freefallTerminal + cfg.trackTerminalBoost + 1e-9,
+    );
+    expect(arched.descentSpeed).toBeLessThan(cfg.freefallTerminal - cfg.archTerminalDrop + 2);
+  });
+
+  it('tracking drives hard toward -Y while arching backslides weakly toward +Y', () => {
+    const cfg = noWind();
+    const base = { ...createInitialState(cfg, () => 0.5), posX: 0, posY: 0 };
+    const tracked = run(base, TRACK, cfg, 180);
+    const arched = run(base, ARCH, cfg, 180);
+    expect(tracked.posY).toBeLessThan(0);
+    expect(arched.posY).toBeGreaterThan(0);
+    expect(Math.abs(tracked.posY)).toBeGreaterThan(Math.abs(arched.posY));
+  });
+
+  it('arching costs lateral authority', () => {
+    const cfg = noWind();
+    const base = { ...createInitialState(cfg, () => 0.5), posX: 0, posY: 0 };
+    const neutral = run(base, { ...NEUTRAL, steerX: 1 }, cfg, 180);
+    const arched = run(base, { ...ARCH, steerX: 1 }, cfg, 180);
+    expect(arched.posX).toBeGreaterThan(0);
+    expect(arched.posX).toBeLessThan(neutral.posX);
+  });
+
+  it('a full-track jump leaves less freefall time than a full-arch jump', () => {
+    const cfg = noWind({ startAltitude: 400 });
+    const base = createInitialState(cfg, () => 0.5);
+    const tracked = run(base, TRACK, cfg, 3000);
+    const arched = run(base, ARCH, cfg, 3000);
+    expect(tracked.phase).toBe(Phase.Crashed);
+    expect(arched.phase).toBe(Phase.Crashed);
+    expect(tracked.freefallTime).toBeLessThan(arched.freefallTime);
+  });
+});
+
+describe('physics: canopy opening (Deploying)', () => {
+  it('passes through Deploying for deployDuration before reaching Canopy', () => {
+    const cfg = noWind();
+    let s = run(
+      createInitialState(cfg, () => 0.5),
+      NEUTRAL,
+      cfg,
+      200,
+    );
+    s = integrate(s, DEPLOY, DT, cfg);
+    expect(s.phase).toBe(Phase.Deploying);
+
+    const midway = run(s, NEUTRAL, cfg, 30); // ~0.5s into a 1s opening
+    expect(midway.phase).toBe(Phase.Deploying);
+    expect(midway.descentSpeed).toBeLessThan(cfg.freefallTerminal);
+    expect(midway.descentSpeed).toBeGreaterThan(cfg.canopyTerminal);
+
+    const open = run(s, NEUTRAL, cfg, Math.ceil(cfg.deployDuration / DT) + 2);
+    expect(open.phase).toBe(Phase.Canopy);
+  });
+
+  it('ignores a second deploy press while the canopy is opening', () => {
+    const cfg = noWind();
+    let s = run(
+      createInitialState(cfg, () => 0.5),
+      NEUTRAL,
+      cfg,
+      200,
+    );
+    s = integrate(s, DEPLOY, DT, cfg);
+    const timer = s.deployTimer;
+    s = integrate(s, DEPLOY, DT, cfg);
+    expect(s.phase).toBe(Phase.Deploying);
+    expect(s.deployTimer).toBeLessThan(timer); // still counting down, not reset
+  });
+
+  it('stops accumulating freefall time at the pull, not at full inflation', () => {
+    const cfg = noWind();
+    let s = run(
+      createInitialState(cfg, () => 0.5),
+      NEUTRAL,
+      cfg,
+      200,
+    );
+    const atPull = s.freefallTime;
+    s = integrate(s, DEPLOY, DT, cfg);
+    s = run(s, NEUTRAL, cfg, 30);
+    expect(s.freefallTime).toBeCloseTo(atPull + DT, 10);
+  });
+
+  it('hitting the ground while still opening is a crash', () => {
+    const cfg = noWind({ startAltitude: 200 });
+    let s = run(
+      createInitialState(cfg, () => 0.5),
+      NEUTRAL,
+      cfg,
+      270,
+    ); // ~4.5s of freefall
+    expect(s.phase).toBe(Phase.Freefall);
+    s = integrate(s, DEPLOY, DT, cfg); // pull at ~40m — far too low
+    s = run(s, NEUTRAL, cfg, 600);
+    expect(s.phase).toBe(Phase.Crashed);
+    expect(s.result?.crashed).toBe(true);
+  });
+});
+
+describe('physics: landing outro', () => {
+  function landed(cfg: GameConfig): GameState {
+    let s = createInitialState(cfg, () => 0.5);
+    s = integrate(s, DEPLOY, DT, cfg);
+    return run(s, NEUTRAL, cfg, 2000);
+  }
+
+  it('sets the result immediately at touchdown and starts the outro countdown', () => {
+    const cfg = noWind({ startAltitude: 40 });
+    const s = landed(cfg);
+    expect(s.phase).toBe(Phase.Landed);
+    expect(s.result).not.toBeNull();
+    expect(s.outroTimer).toBe(0); // 2000 frames is far past the outro
+  });
+
+  it('counts the outro down and then freezes the state for good', () => {
+    const cfg = noWind({ startAltitude: 40, outroDuration: 1 });
+    let s = createInitialState(cfg, () => 0.5);
+    s = integrate(s, DEPLOY, DT, cfg);
+    while (s.phase !== Phase.Landed && s.phase !== Phase.Crashed) {
+      s = integrate(s, NEUTRAL, DT, cfg);
+    }
+    expect(s.outroTimer).toBeCloseTo(1, 10);
+
+    s = run(s, NEUTRAL, cfg, 30);
+    expect(s.outroTimer).toBeCloseTo(0.5, 5);
+    expect(s.result).not.toBeNull();
+
+    s = run(s, NEUTRAL, cfg, 31);
+    expect(s.outroTimer).toBe(0);
+    const frozen = integrate(s, NEUTRAL, DT, cfg);
+    expect(frozen).toBe(s); // identical reference once fully resolved
+  });
+
+  it('skip fast-forwards the outro', () => {
+    const cfg = noWind({ startAltitude: 40, outroDuration: 5 });
+    let s = createInitialState(cfg, () => 0.5);
+    s = integrate(s, DEPLOY, DT, cfg);
+    while (s.phase !== Phase.Landed && s.phase !== Phase.Crashed) {
+      s = integrate(s, NEUTRAL, DT, cfg);
+    }
+    s = integrate(s, SKIP, DT, cfg);
+    expect(s.outroTimer).toBe(0);
   });
 });

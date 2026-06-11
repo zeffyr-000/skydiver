@@ -32,8 +32,14 @@
 
         <div class="game__hint">
           @switch (phaseKey()) {
+            @case ('plane') {
+              {{ 'game.hintPlane' | transloco }}
+            }
             @case ('freefall') {
               {{ 'game.hintFreefall' | transloco }}
+            }
+            @case ('deploying') {
+              {{ 'game.hintDeploying' | transloco }}
             }
             @case ('canopy') {
               {{ 'game.hintCanopy' | transloco }}
