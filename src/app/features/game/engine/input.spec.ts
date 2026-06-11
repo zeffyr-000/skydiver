@@ -55,6 +55,23 @@ describe('InputController', () => {
     expect(input.read().deployPressed).toBe(true);
   });
 
+  it('edge-triggers skip from Space and Enter alike', () => {
+    key('keydown', ' ');
+    const fromSpace = input.read();
+    expect(fromSpace.deployPressed).toBe(true);
+    expect(fromSpace.skipPressed).toBe(true); // one Space press raises both edges once
+    expect(input.read().skipPressed).toBe(false); // consumed together
+
+    key('keyup', ' ');
+    key('keydown', 'Enter');
+    const fromEnter = input.read();
+    expect(fromEnter.skipPressed).toBe(true);
+    expect(fromEnter.deployPressed).toBe(false); // Enter never deploys
+
+    key('keydown', 'Enter'); // still held → no new edge
+    expect(input.read().skipPressed).toBe(false);
+  });
+
   it('reports flare only while shift is held', () => {
     expect(input.read().flare).toBe(0);
     key('keydown', 'shift');
@@ -73,5 +90,32 @@ describe('InputController', () => {
     input.dispose();
     key('keydown', 'ArrowRight');
     expect(input.read().steerX).toBe(0);
+  });
+
+  it('ignores Space/Enter from focused interactive elements', () => {
+    const btn = document.createElement('button');
+    target.appendChild(btn);
+
+    // Space on a button: should NOT set edges and should NOT prevent default
+    const spaceEvt = new KeyboardEvent('keydown', { key: ' ', cancelable: true, bubbles: true });
+    btn.dispatchEvent(spaceEvt);
+    const state = input.read();
+    expect(state.deployPressed).toBe(false);
+    expect(state.skipPressed).toBe(false);
+    expect(spaceEvt.defaultPrevented).toBe(false);
+  });
+
+  it('ignores game keys from an anchor element so links still work', () => {
+    const a = document.createElement('a');
+    target.appendChild(a);
+
+    const enterEvt = new KeyboardEvent('keydown', {
+      key: 'Enter',
+      cancelable: true,
+      bubbles: true,
+    });
+    a.dispatchEvent(enterEvt);
+    expect(input.read().skipPressed).toBe(false);
+    expect(enterEvt.defaultPrevented).toBe(false);
   });
 });

@@ -18,12 +18,17 @@ Built with Angular 21, a hand-rolled retro pixel-art UI, and Transloco.
 
 | Action | Keys |
 |--------|------|
-| Steer | `← ↑ → ↓` or `W A S D` |
+| Steer left / right | `← →` or `A D` |
+| Free fall: lean forward (**track** — dive faster, surge ahead) | `↑` or `W` |
+| Free fall: arch back (**flatten** — fall slower, weaker steering) | `↓` or `S` |
+| Canopy: steer up / down | `↑ ↓` or `W S` |
 | Open the parachute | `Space` |
+| Skip the plane intro / outro | `Space` or `Enter` |
 | Flare (slow the canopy near the ground) | `Shift` |
 | Pause | `Esc` |
 
-Fall toward the target, deploy in time, fight the wind drift under canopy, and flare for a
+The biplane crosses the drop zone and your diver bails out. Track or arch to manage the fall,
+deploy in time (the canopy takes a moment to open!), fight the wind drift, and flare for a
 gentle touchdown. Land inside the rings to score — the bullseye is worth the most. A crash
 (never deploying, deploying too low, or stalling into the ground) costs a life. You get three.
 

@@ -25,6 +25,16 @@ export const BASE_CONFIG: GameConfig = {
   targetRadius: 50,
   bullseyeRadius: 6,
   startSpread: 160,
+  introDuration: 2.8,
+  deployDuration: 1,
+  outroDuration: 2,
+  pitchRate: 3,
+  trackTerminalBoost: 20,
+  archTerminalDrop: 25,
+  trackAccel: 14,
+  backslideAccel: 5,
+  archSteerPenalty: 0.5,
+  deploySteerFactor: 0.4,
 };
 
 /**
@@ -52,6 +62,7 @@ export function configForDifficulty(difficulty: Difficulty): GameConfig {
         targetRadius: 35,
         safeLandingSpeed: 7,
         startSpread: 210,
+        deployDuration: 1.3, // slower opening punishes low pulls harder
       };
   }
 }

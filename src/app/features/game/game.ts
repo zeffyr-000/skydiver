@@ -19,6 +19,7 @@ import { GameLoop } from './engine/loop';
 import { InputController } from './engine/input';
 import { createInitialState, integrate } from './engine/physics';
 import { SkyDiverRenderer } from './engine/renderer';
+import { loadAtlas } from './engine/sprites';
 import type { GameConfig, GameState, JumpResult } from './engine/types';
 import { Phase } from './engine/types';
 
@@ -58,9 +59,20 @@ export class Game {
   protected readonly resultOpen = signal(false);
   protected readonly gameOver = signal(false);
   protected readonly lastResult = signal<JumpResult | null>(null);
-  protected readonly resultHeading = computed(() =>
-    this.lastResult()?.crashed ? 'game.crashed' : 'game.jumpComplete',
-  );
+  // Original-game flavour: the result card judges the jump, not just reports it.
+  protected readonly resultHeading = computed(() => {
+    const r = this.lastResult();
+    if (!r) {
+      return 'game.jumpComplete';
+    }
+    if (r.crashed) {
+      return 'game.crashed';
+    }
+    if (r.bullseye || r.score >= 800) {
+      return 'game.greatJump';
+    }
+    return r.score < 300 ? 'game.poorJump' : 'game.jumpComplete';
+  });
 
   // --- Engine (plain fields; never read in the template, so no CD churn) ---
   private config: GameConfig = configForDifficulty('ace');
@@ -70,6 +82,8 @@ export class Game {
   private loop?: GameLoop;
   private runningScore = 0;
   private lastHudPush = 0;
+  /** Set at touchdown; the result dialog waits for the outro to finish. */
+  private resultPending = false;
 
   constructor() {
     afterNextRender(() => this.boot());
@@ -84,8 +98,19 @@ export class Game {
     }
     this.config = this.buildConfig();
     this.state = createInitialState(this.config);
+    this.phaseKey.set(this.state.phase);
     this.input = new InputController(window);
     this.renderer = new SkyDiverRenderer(ctx, canvas.width, canvas.height);
+    // Fire-and-forget: the renderer draws procedural fallbacks until the
+    // sprite atlas arrives (and forever, should loading fail).
+    // Capture a local reference so the promise doesn't retain the component
+    // instance past navigation (the renderer itself is lightweight).
+    const renderer = this.renderer;
+    void loadAtlas()
+      .then((atlas) => {
+        renderer.atlas = atlas;
+      })
+      .catch(() => undefined);
     this.loop = new GameLoop(
       (dt) => this.step(dt),
       () => this.render(),
@@ -108,6 +133,9 @@ export class Game {
         canopyTerminal: 10,
         safeLandingSpeed: 30,
         startSpread: 30,
+        introDuration: 0, // no plane cinematic
+        deployDuration: 0.3,
+        outroDuration: 0.2,
       };
     }
     return cfg;
@@ -117,10 +145,26 @@ export class Game {
     if (this.paused()) {
       return;
     }
+    const input = this.input;
+    if (!input) {
+      return;
+    }
 
-    // While a jump is resolved we freeze until the player continues. If the
-    // dialog was dismissed (e.g. Escape), advance — but never past a game over.
     if (this.state.phase === Phase.Landed || this.state.phase === Phase.Crashed) {
+      // The outro cinematic plays first (skippable — integrate consumes skip).
+      if (this.state.outroTimer > 0) {
+        this.state = integrate(this.state, input.read(), dt, this.config);
+        this.pushHud();
+        return;
+      }
+      // Outro done: surface the touchdown's result exactly once.
+      if (this.resultPending) {
+        this.resultPending = false;
+        this.surfaceResult();
+        return;
+      }
+      // Then freeze until the player continues. If the dialog was dismissed
+      // (e.g. Escape), advance — but never past a game over.
       if (this.gameOver() || this.resultOpen()) {
         return;
       }
@@ -132,10 +176,6 @@ export class Game {
       return;
     }
 
-    const input = this.input;
-    if (!input) {
-      return;
-    }
     const prevPhase = this.state.phase;
     this.state = integrate(this.state, input.read(), dt, this.config);
 
@@ -165,6 +205,7 @@ export class Game {
     this.phaseKey.set(s.phase);
   }
 
+  /** Touchdown bookkeeping: lives/score update immediately, dialogs wait for the outro. */
   private onJumpResolved(result: JumpResult): void {
     this.lastResult.set(result);
     if (result.crashed) {
@@ -173,6 +214,10 @@ export class Game {
       this.runningScore += result.score;
       this.score.set(this.runningScore);
     }
+    this.resultPending = true;
+  }
+
+  private surfaceResult(): void {
     if (this.lives() <= 0) {
       this.records.add({
         name: this.transloco.translate('records.defaultPilot'),
@@ -187,6 +232,7 @@ export class Game {
 
   private nextJump(): void {
     this.lastResult.set(null);
+    this.resultPending = false;
     this.state = createInitialState(this.config);
     this.phaseKey.set(this.state.phase);
   }
@@ -207,6 +253,7 @@ export class Game {
   protected playAgain(): void {
     this.gameOver.set(false);
     this.resultOpen.set(false);
+    this.resultPending = false;
     this.lives.set(STARTING_LIVES);
     this.runningScore = 0;
     this.score.set(0);

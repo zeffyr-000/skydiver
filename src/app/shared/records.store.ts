@@ -55,8 +55,10 @@ export class RecordsStore {
       const parsed: unknown = JSON.parse(raw);
       if (Array.isArray(parsed)) {
         // Drop anything that doesn't match the shape — a tampered/corrupt entry
-        // with a non-numeric score would otherwise yield NaN in the sort.
-        this._records.set(parsed.filter(isScoreRecord));
+        // with a non-numeric score would otherwise yield NaN in the sort — then
+        // clamp to the top entries so a bloated payload can't grow unbounded.
+        const cleaned = parsed.filter(isScoreRecord).sort((a, b) => b.score - a.score);
+        this._records.set(cleaned.slice(0, MAX_RECORDS));
       }
     } catch {
       // Corrupt payload — start empty.
