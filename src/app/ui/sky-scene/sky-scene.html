@@ -1,0 +1,31 @@
+<div class="scene">
+  <div class="scene__clouds scene__clouds--far"></div>
+  <div class="scene__clouds scene__clouds--mid"></div>
+  <div class="scene__sun"></div>
+  <div class="scene__flock">
+    <div class="scene__bird"></div>
+    <div class="scene__bird scene__bird--b"></div>
+    <div class="scene__bird scene__bird--c"></div>
+  </div>
+  <div class="scene__hills scene__hills--far"></div>
+  <div class="scene__hills scene__hills--near"></div>
+  @if (variant() === 'full') {
+    <div class="scene__clouds scene__clouds--near"></div>
+    <div class="scene__flyby">
+      <div class="scene__plane"></div>
+    </div>
+    <div class="scene__diver scene__diver--fall"></div>
+    <div class="scene__diver scene__diver--canopy"></div>
+  }
+  <div class="scene__ground">
+    @if (variant() === 'full') {
+      <div class="scene__deco scene__deco--tent"></div>
+      <div class="scene__deco scene__deco--tree-a"></div>
+      <div class="scene__deco scene__deco--bush"></div>
+      <div class="scene__deco scene__deco--crowd"></div>
+      <div class="scene__deco scene__deco--crowd scene__deco--crowd-alt"></div>
+      <div class="scene__deco scene__deco--hay"></div>
+    }
+    <div class="scene__deco scene__deco--windsock"></div>
+  </div>
+</div>

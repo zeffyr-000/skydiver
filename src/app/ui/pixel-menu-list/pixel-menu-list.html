@@ -1,6 +1,7 @@
 <ul
   ngListbox
   class="pixel-menu"
+  [class.pixel-menu--animate]="animateIn()"
   orientation="vertical"
   focusMode="roving"
   selectionMode="explicit"
@@ -10,7 +11,13 @@
   [attr.aria-label]="ariaLabel() || null"
 >
   @for (item of items(); track item.value) {
-    <li ngOption [value]="item.value" [label]="item.label" class="pixel-menu__item">
+    <li
+      ngOption
+      [value]="item.value"
+      [label]="item.label"
+      class="pixel-menu__item"
+      [style.--i]="$index"
+    >
       <span class="pixel-menu__caret" aria-hidden="true">&#9656;</span>
       <span class="pixel-menu__label">{{ item.label }}</span>
     </li>

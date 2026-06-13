@@ -126,6 +126,8 @@ export interface GameState {
   /** Steady base wind vector chosen at exit (m/s). */
   windBaseX: number;
   windBaseY: number;
+  /** Per-jump weather multiplier (0.4–1.4) applied to base wind and gusts. */
+  windGustScale: number;
   /** Current wind vector including the gust wander (what the HUD shows). */
   windX: number;
   windY: number;

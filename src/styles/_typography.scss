@@ -1,8 +1,9 @@
 // Self-hosted pixel fonts. `font-display: block` avoids a wrong-metric fallback flash.
+// Pixelify Sans (OFL) is a variable font: one file covers weights 400–700.
 @font-face {
-  font-family: 'Press Start 2P';
-  src: url('/assets/fonts/press-start-2p.woff2') format('woff2');
-  font-weight: 400;
+  font-family: 'Pixelify Sans';
+  src: url('/assets/fonts/pixelify-sans.woff2') format('woff2');
+  font-weight: 400 700;
   font-style: normal;
   font-display: block;
 }
@@ -15,14 +16,15 @@
   font-display: block;
 }
 
-// Headings use the blocky 8-bit face — keep them short and >=16px for legibility.
+// Headings use the 16-bit display face, bold for the chunky menu look.
 h1,
 h2,
 h3 {
   font-family: var(--font-head);
+  font-weight: 700;
   line-height: 1.2;
   text-transform: uppercase;
-  letter-spacing: 0; // Press Start 2P is already very wide
+  letter-spacing: 1px;
   margin: 0;
   color: var(--ink-light);
 }

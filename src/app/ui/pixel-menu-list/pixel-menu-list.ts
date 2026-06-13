@@ -16,6 +16,8 @@ export interface PixelMenuItem {
 export class PixelMenuList {
   readonly items = input.required<PixelMenuItem[]>();
   readonly ariaLabel = input('');
+  /** Plays a staggered entrance when the menu first renders (title screen). */
+  readonly animateIn = input(false);
   /** Emits the value of the activated item (Enter / Space / click). */
   readonly activate = output<string>();
 

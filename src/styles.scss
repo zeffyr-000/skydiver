@@ -30,3 +30,25 @@ input,
 select {
   font-family: var(--font-body);
 }
+
+// Motion kill-switch: every entrance uses backwards/forwards fills and every
+// scene loop ends on a neutral/hidden keyframe, so instantly-finished
+// animations leave a correct static screen (no plane, no blink, calm sky).
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    animation-fill-mode: both !important;
+  }
+
+  // Blink animations end at opacity: 0 — don't strand these affordances invisible.
+  .title__prompt,
+  .pixel-menu__caret,
+  .settings__difficulty--active::before {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+}

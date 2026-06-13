@@ -25,6 +25,7 @@ const PALETTE = {
   R: '#c1352b', // biplane red
   r: '#8f231c', // dark red
   B: '#d9a441', // brass
+  b: '#a9781f', // dark brass (--brass-dark)
   H: '#fff7e0', // highlight
   P: '#e8d8b0', // parchment (suspension lines, dust)
   O: '#e0a878', // skin
@@ -34,6 +35,23 @@ const PALETTE = {
   W: '#3a6ea5', // water
   N: '#7a5230', // wood / boots
   Y: '#8a8a8a', // rock grey
+  // golden-hour sky ramp (--sky-* tokens)
+  Z: '#1a2b45', // deep dusk (--sky-bg)
+  T: '#34416b', // twilight (--sky-twilight)
+  M: '#6b5480', // mauve (--sky-mauve)
+  E: '#c1683f', // ember (--sky-ember)
+  A: '#e8a35c', // amber glow (--sky-glow)
+  U: '#4a3a5e', // far hill silhouette (--hill-far)
+  V: '#2e2440', // near hill silhouette (--hill-near)
+  // hi-bit shading ramps (generator-only; not part of the UI token set)
+  Q: '#d96a52', // red lit edge
+  C: '#e8c476', // brass lit edge
+  D: '#2c4a1e', // deepest green
+  p: '#c9b285', // parchment shade (--parchment-dark)
+  o: '#c08858', // skin shade
+  n: '#9a6a40', // wood lit edge
+  y: '#a8a8a8', // rock lit edge
+  w: '#5b8cc0', // water lit edge
 };
 
 // --------------------------------------------------------------------------
@@ -147,6 +165,98 @@ class Frame {
   }
 }
 
+// --------------------------------------------------------------------------
+// Hi-bit pass: the tooling that lifts art from flat 8-bit fills to 16-bit
+// modelling. Frames are upscaled 2x, then a directional shading pass lights
+// the edge facing the light source and darkens the opposite edge, one
+// hi-res pixel deep, using per-material ramps.
+// --------------------------------------------------------------------------
+
+const RGB_TO_KEY = Object.fromEntries(
+  Object.entries(PALETTE)
+    .filter(([, v]) => v)
+    .map(([k, v]) => [v.toLowerCase(), k]),
+);
+
+function keyAt(f, x, y) {
+  if (x < 0 || y < 0 || x >= f.w || y >= f.h) return null;
+  const i = (y * f.w + x) * 4;
+  if (!f.data[i + 3]) return null;
+  const hex =
+    '#' +
+    [0, 1, 2].map((c) => f.data[i + c].toString(16).padStart(2, '0')).join('');
+  return RGB_TO_KEY[hex] ?? null;
+}
+
+/** Deterministic LCG so textures stay byte-identical run-to-run. */
+function lcg(seed) {
+  let s = seed >>> 0;
+  return () => ((s = (Math.imul(s, 1664525) + 1013904223) >>> 0) / 0x100000000);
+}
+
+/** Nearest-neighbour 2x upscale. */
+function upscaleFrame(f, k = 2) {
+  const out = new Frame(f.w * k, f.h * k);
+  for (let y = 0; y < out.h; y++) {
+    const sy = (y / k) | 0;
+    for (let x = 0; x < out.w; x++) {
+      const si = (sy * f.w + ((x / k) | 0)) * 4;
+      if (f.data[si + 3]) f.data.copy(out.data, (y * out.w + x) * 4, si, si + 4);
+    }
+  }
+  return out;
+}
+
+// Per-material light/dark variants used by the shading pass.
+const SHADE = {
+  R: { light: 'Q', dark: 'r' },
+  B: { light: 'C', dark: 'b' },
+  G: { light: 'L', dark: 'g' },
+  g: { light: 'G', dark: 'D' },
+  P: { light: 'H', dark: 'p' },
+  O: { light: null, dark: 'o' },
+  N: { light: 'n', dark: 'K' },
+  Y: { light: 'y', dark: 'S' },
+  W: { light: 'w', dark: null },
+  L: { light: null, dark: 'G' },
+};
+
+/** lightDir points TOWARD the light: [-1, -1] = key light up-left (in-game). */
+function shadeFrame(f, lightDir = [-1, -1]) {
+  const [lx, ly] = lightDir;
+  const edits = [];
+  for (let y = 0; y < f.h; y++) {
+    for (let x = 0; x < f.w; x++) {
+      const k = keyAt(f, x, y);
+      const ramp = k && SHADE[k];
+      if (!ramp) continue;
+      if (keyAt(f, x + lx, y + ly) !== k) {
+        if (ramp.light) edits.push([x, y, ramp.light]);
+      } else if (keyAt(f, x - lx, y - ly) !== k) {
+        if (ramp.dark) edits.push([x, y, ramp.dark]);
+      }
+    }
+  }
+  for (const [x, y, k] of edits) f.set(x, y, k);
+  return f;
+}
+
+/** Recolour the silhouette edge facing `dir` (e.g. sunset rim light). */
+function rimLight(f, key, dir) {
+  const [dx, dy] = dir;
+  const edits = [];
+  for (let y = 0; y < f.h; y++) {
+    for (let x = 0; x < f.w; x++) {
+      if (keyAt(f, x, y) && !keyAt(f, x + dx, y + dy)) edits.push([x, y]);
+    }
+  }
+  for (const [x, y] of edits) f.set(x, y, key);
+  return f;
+}
+
+const hibitFrame = (f, dir = [-1, -1]) => shadeFrame(upscaleFrame(f), dir);
+const hibit = (frames, dir = [-1, -1]) => frames.map((f) => hibitFrame(f, dir));
+
 /** Compose frames into one horizontal strip and write the PNG. */
 function writeSheet(name, frames, fw, fh) {
   for (const [i, f] of frames.entries()) {
@@ -227,6 +337,25 @@ const FREEFALL = [
     '....KK....KK....',
   ],
   [
+    // arms sweeping back, legs narrowing (between neutral and semi-track)
+    '................',
+    '......KKKK......',
+    '.....KBBBBK.....',
+    '.....KBHHBK.....',
+    '.....KBBBBK.....',
+    '......KKKK......',
+    '..KK..KRRK..KK..',
+    '.KOOKKRRRRKKOOK.',
+    '..KKKRRRRRRKKK..',
+    '....KRRRRRRK....',
+    '....KRRRRRRK....',
+    '.....KRRRRK.....',
+    '....KRK..KRK....',
+    '....KRK..KRK....',
+    '....KRK..KRK....',
+    '.....KK..KK.....',
+  ],
+  [
     '................',
     '......KKKK......',
     '.....KBBBBK.....',
@@ -243,6 +372,25 @@ const FREEFALL = [
     '....KRK..KRK....',
     '....KRRK.KRRK...',
     '.....KK...KK....',
+  ],
+  [
+    // arms pinned, legs closing (between semi-track and full track)
+    '................',
+    '......KKKK......',
+    '.....KBBBBK.....',
+    '.....KBHHBK.....',
+    '.....KBBBBK.....',
+    '......KKKK......',
+    '.....KRRRRK.....',
+    '....KRRRRRRK....',
+    '...KORRRRRROK...',
+    '....KORRRROK....',
+    '.....KRRRRK.....',
+    '.....KRRRRK.....',
+    '.....KRKKRK.....',
+    '.....KRKKRK.....',
+    '.....KRK.KRK....',
+    '......KK.KK.....',
   ],
   [
     '................',
@@ -333,7 +481,7 @@ const DEPLOY_TOPS = [
 ];
 
 const DEPLOY = DEPLOY_TOPS.map((top) => {
-  const trackDiver = FREEFALL[4];
+  const trackDiver = FREEFALL.at(-1); // full-track pose
   const f = new Frame(16, 24);
   Frame.fromGrid(top).data.copy(f.data, 0);
   trackDiver.data.copy(f.data, 16 * 8 * 4);
@@ -345,10 +493,10 @@ const DEPLOY = DEPLOY_TOPS.map((top) => {
 // from above: 8 alternating red/white gores, ink rim, dark centre vent.
 // --------------------------------------------------------------------------
 
-function canopyFrame({ cx = 15.5, cy = 15.5, rx = 14, ry = 14, crumple = 0 }) {
-  const f = new Frame(32, 32);
-  for (let y = 0; y < 32; y++) {
-    for (let x = 0; x < 32; x++) {
+function canopyFrame({ cx = 31.5, cy = 31.5, rx = 28, ry = 28, crumple = 0 }) {
+  const f = new Frame(64, 64);
+  for (let y = 0; y < 64; y++) {
+    for (let x = 0; x < 64; x++) {
       const a = Math.atan2(y - cy, x - cx);
       // Crumpling pinches the radius with a fixed 3-lobe wobble (stall frame).
       const wobble = 1 - crumple * (0.5 + 0.5 * Math.sin(a * 3 + 1));
@@ -356,19 +504,20 @@ function canopyFrame({ cx = 15.5, cy = 15.5, rx = 14, ry = 14, crumple = 0 }) {
       if (d > 1) continue;
       const sector = Math.floor(((a + Math.PI) / (Math.PI / 4)) % 8);
       let key = sector % 2 ? 'R' : 'H';
-      if (d > 1 - 1.6 / Math.min(rx, ry)) key = 'K'; // rim
-      if (d < 0.16) key = 'S'; // centre vent
+      if (d > 1 - 2.4 / Math.min(rx, ry)) key = 'K'; // rim
+      else if (d > 1 - 6 / Math.min(rx, ry)) key = sector % 2 ? 'r' : 'P'; // curved gore edge
+      if (d < 0.14) key = 'S'; // centre vent
       f.set(x, y, key);
     }
   }
-  return f;
+  return shadeFrame(f);
 }
 
 const CANOPY = [
   canopyFrame({}),
-  canopyFrame({ cx: 16.5, cy: 15.8 }), // sway
-  canopyFrame({ rx: 15.5, ry: 11.5, cy: 17 }), // flared: flatter & wider
-  canopyFrame({ rx: 13, ry: 9, cy: 17, crumple: 0.45 }), // stalled: crumpled
+  canopyFrame({ cx: 33.5, cy: 32.1 }), // sway
+  canopyFrame({ rx: 31, ry: 23, cy: 34 }), // flared: flatter & wider
+  canopyFrame({ rx: 26, ry: 18, cy: 34, crumple: 0.45 }), // stalled: crumpled
 ];
 
 // --------------------------------------------------------------------------
@@ -619,42 +768,54 @@ const PLANE = [planeFrame(0), planeFrame(1), planeFrame(2)];
 // spectator A, spectator B, windsock (pointing +X; renderer rotates it).
 // --------------------------------------------------------------------------
 
-function treeFrame(r, light) {
-  const f = new Frame(16, 16);
-  f.ellipse(7.5, 7.5, r, r, 'g');
-  f.ellipse(6.5, 6.5, r * 0.55, r * 0.55, light, light);
-  f.set(7, 7, 'G');
-  f.set(8, 9, 'G');
-  return f;
+// Trees & co are rendered natively at 32x32 (not upscaled) so the curves stay
+// smooth at the doubled resolution; foliage gets deterministic leaf clusters.
+function treeFrame(r, light, seed) {
+  const f = new Frame(32, 32);
+  f.ellipse(15.5, 15.5, r, r, 'g');
+  f.ellipse(13.5, 13.5, r * 0.55, r * 0.55, light, light);
+  const rand = lcg(seed);
+  for (let i = 0; i < 14; i++) {
+    const a = rand() * Math.PI * 2;
+    const d = rand() * (r - 3);
+    f.set(15.5 + Math.cos(a) * d, 15.5 + Math.sin(a) * d, i % 3 ? 'G' : 'D');
+  }
+  return shadeFrame(f);
 }
 
 function bushFrame() {
-  const f = new Frame(16, 16);
-  f.ellipse(7.5, 9, 5, 3.5, 'G');
-  f.ellipse(6.5, 8, 2, 1.5, 'L', 'L');
-  return f;
+  const f = new Frame(32, 32);
+  f.ellipse(15.5, 19, 10, 7, 'G');
+  f.ellipse(12.5, 16.5, 4.5, 3, 'L', 'L');
+  f.ellipse(20, 19, 3, 2, 'g', 'g');
+  return shadeFrame(f);
 }
 
 function rockFrame() {
-  const f = new Frame(16, 16);
-  f.ellipse(7.5, 9, 5, 4, 'Y');
-  f.ellipse(6, 8, 1.8, 1.2, 'P', 'P');
-  return f;
+  const f = new Frame(32, 32);
+  f.ellipse(15.5, 19, 10, 8, 'Y');
+  f.ellipse(12, 16, 4, 2.5, 'P', 'P');
+  f.ellipse(20, 21, 3, 2, 'S', 'S');
+  return shadeFrame(f);
 }
 
 function hayFrame() {
-  const f = new Frame(16, 16);
-  f.ellipse(7.5, 8, 5, 4.5, 'B');
-  f.ellipse(7.5, 8, 2.6, 2.2, 'N');
-  f.ellipse(7.5, 8, 1.2, 1, 'B', 'B');
-  return f;
+  const f = new Frame(32, 32);
+  f.ellipse(15.5, 16, 10, 9, 'B');
+  f.ellipse(15.5, 16, 7.5, 6.5, 'b', 'b');
+  f.ellipse(15.5, 16, 5.5, 4.5, 'N');
+  f.ellipse(15.5, 16, 2.5, 2, 'B', 'B');
+  return shadeFrame(f);
 }
 
 function pondFrame() {
-  const f = new Frame(16, 16);
-  f.ellipse(7.5, 8, 6.5, 4.5, 'W', 'S');
-  f.rect(5, 7, 3, 1, 'H');
-  f.rect(9, 9, 2, 1, 'H');
+  const f = new Frame(32, 32);
+  f.ellipse(15.5, 16, 13, 9, 'W', 'S');
+  f.ellipse(15.5, 16, 10, 6.5, 'w', '.');
+  f.ellipse(15.5, 16, 8, 5, 'W', 'W');
+  f.rect(10, 14, 6, 1, 'H');
+  f.rect(18, 18, 4, 1, 'H');
+  f.rect(8, 19, 3, 1, 'w');
   return f;
 }
 
@@ -734,27 +895,505 @@ const WINDSOCK = Frame.fromGrid([
   '................',
 ]);
 
+// Slack flutter pose (frame 10) — the menus toggle 9 ↔ 10; in-game the sock
+// stays on frame 9 and is rotated by the wind instead.
+const WINDSOCK_B = Frame.fromGrid([
+  '................',
+  '................',
+  '................',
+  '................',
+  '................',
+  '..K.KKKKK.......',
+  '..KKRRRRRKK.....',
+  '..KKRRRRRRRK....',
+  '..K.KKKRRRK.....',
+  '..K....KKK......',
+  '..K.............',
+  '..K.............',
+  '..K.............',
+  '..KK............',
+  '................',
+  '................',
+]);
+
 const TERRAIN = [
-  treeFrame(6.5, 'L'),
-  treeFrame(5.5, 'G'),
+  treeFrame(13, 'L', 0xa11ce),
+  treeFrame(11, 'G', 0xb0b42),
   bushFrame(),
   rockFrame(),
   hayFrame(),
   pondFrame(),
-  TENT,
-  SPECTATOR_A,
-  SPECTATOR_B,
-  WINDSOCK,
+  hibitFrame(TENT),
+  hibitFrame(SPECTATOR_A),
+  hibitFrame(SPECTATOR_B),
+  hibitFrame(WINDSOCK),
+  hibitFrame(WINDSOCK_B),
 ];
+
+// --------------------------------------------------------------------------
+// clouds.png — 96x48 x3: billow, long drift, bank pair. Modelled with three
+// shades (cream tops, parchment mid, shaded underside) plus an amber sunset
+// rim on the lower-left, sun-facing edge. No ink outline; transparent margins
+// let the raw strip tile as a natural cloud field via repeat-x.
+// --------------------------------------------------------------------------
+
+function cloudFrame(puffs) {
+  const f = new Frame(96, 48);
+  for (const [cx, cy, rx, ry, key] of puffs) {
+    f.ellipse(cx, cy, rx, ry, key, key);
+  }
+  rimLight(f, 'p', [0, 1]); // shaded base
+  rimLight(f, 'A', [-1, 1]); // amber sunset rim, sun side
+  return f;
+}
+
+const CLOUDS = [
+  cloudFrame([
+    [44, 33, 28, 9, 'p'],
+    [44, 31, 26, 8, 'P'],
+    [28, 24, 13, 9, 'P'],
+    [50, 20, 16, 11, 'P'],
+    [30, 22, 11, 7, 'H'],
+    [52, 18, 13, 8, 'H'],
+    [65, 27, 11, 7, 'H'],
+    [42, 27, 17, 9, 'H'],
+  ]),
+  cloudFrame([
+    [48, 31, 34, 7, 'p'],
+    [48, 29, 32, 6, 'P'],
+    [28, 24, 15, 7, 'P'],
+    [53, 21, 17, 8, 'P'],
+    [30, 22, 12, 5, 'H'],
+    [54, 19, 14, 6, 'H'],
+    [71, 26, 12, 5, 'H'],
+  ]),
+  cloudFrame([
+    [32, 29, 19, 7, 'p'],
+    [32, 27, 17, 6, 'P'],
+    [26, 21, 10, 6, 'H'],
+    [41, 23, 10, 5, 'H'],
+    [72, 35, 15, 5, 'p'],
+    [71, 33, 13, 4, 'P'],
+    [68, 30, 8, 4, 'H'],
+  ]),
+];
+
+// --------------------------------------------------------------------------
+// medals.png — 16x16 x3: gold, silver, bronze (Hall of Aces top-3 ranks).
+// One grid templated on 'B'; the metal key is substituted per frame.
+// --------------------------------------------------------------------------
+
+const MEDAL_GRID = [
+  '................',
+  '....KK....KK....',
+  '....KRK..KRK....',
+  '....KRRKKRRK....',
+  '.....KRrrRK.....',
+  '......KrrK......',
+  '.....KKKKKK.....',
+  '....KBBBBBBK....',
+  '...KBHBBBBBBK...',
+  '...KBHBBBBBBK...',
+  '...KBBBBBBBBK...',
+  '....KBBBBBBK....',
+  '.....KKKKKK.....',
+  '......SSSS......',
+  '................',
+  '................',
+];
+
+const medalFrame = (metal) =>
+  Frame.fromGrid(MEDAL_GRID.map((row) => row.replaceAll('B', metal)));
+
+const MEDALS = [medalFrame('B'), medalFrame('Y'), medalFrame('N')];
+
+// --------------------------------------------------------------------------
+// sky.png — 16x544 x1: golden-hour gradient strip. Each band boundary blends
+// through a dense (checker) then sparse dither row pair — far finer steps
+// than an 8-bit gradient. Tiled horizontally, stretched to viewport height.
+// --------------------------------------------------------------------------
+
+// [height, key] solid · [height, [a, b]] 2x2 checker · [height, [a, b, 1]] sparse b in a
+const SKY_BANDS = [
+  [150, 'Z'], // deep dusk top
+  [10, ['Z', 'T', 1]],
+  [14, ['Z', 'T']],
+  [10, ['T', 'Z', 1]],
+  [76, 'T'], // twilight
+  [9, ['T', 'M', 1]],
+  [12, ['T', 'M']],
+  [9, ['M', 'T', 1]],
+  [58, 'M'], // mauve
+  [8, ['M', 'E', 1]],
+  [10, ['M', 'E']],
+  [8, ['E', 'M', 1]],
+  [46, 'E'], // ember
+  [7, ['E', 'A', 1]],
+  [8, ['E', 'A']],
+  [7, ['A', 'E', 1]],
+  [112, 'A'], // amber horizon glow
+]; // heights sum to 544
+
+function skyFrame() {
+  const f = new Frame(16, 544);
+  let y = 0;
+  for (const [h, key] of SKY_BANDS) {
+    for (let yy = y; yy < y + h; yy++) {
+      for (let x = 0; x < 16; x++) {
+        let k = key;
+        if (Array.isArray(key)) {
+          const [a, b, sparse] = key;
+          if (sparse) k = (x * 5 + yy * 3) % 4 === 0 ? b : a;
+          else k = ((x >> 1) + (yy >> 1)) % 2 ? b : a;
+        }
+        f.set(x, yy, k);
+      }
+    }
+    y += h;
+  }
+  return f;
+}
+
+// --------------------------------------------------------------------------
+// sun.png — 48x48 x1: low setting sun, dithered corona → ember rim → amber →
+// brass → cream core.
+// --------------------------------------------------------------------------
+
+function sunFrame() {
+  const f = new Frame(48, 48);
+  for (let y = 0; y < 48; y++) {
+    for (let x = 0; x < 48; x++) {
+      const d = Math.hypot(x - 23.5, y - 23.5);
+      if (d < 23.5 && d >= 20 && (x + y) % 2 === 0) f.set(x, y, 'A'); // corona
+    }
+  }
+  f.ellipse(23.5, 23.5, 19.5, 19.5, 'A', 'E');
+  f.ellipse(23.5, 23.5, 14.5, 14.5, 'B', 'C');
+  f.ellipse(22, 22, 8, 8, 'H', 'H');
+  return f;
+}
+
+// --------------------------------------------------------------------------
+// hills-far.png 128x40 / hills-near.png 128x48 — repeat-x horizon silhouettes
+// with a backlit ridge line and sparse interior texture. Profiles use whole
+// sine cycles over the strip width so they tile seamlessly.
+// --------------------------------------------------------------------------
+
+function hillsFrame(w, h, key, darkKey, rim, profile, seed) {
+  const f = new Frame(w, h);
+  for (let x = 0; x < w; x++) {
+    const top = Math.max(0, Math.round(profile((x / w) * 2 * Math.PI)));
+    for (let y = top; y < h; y++) f.set(x, y, key);
+  }
+  const rand = lcg(seed);
+  for (let i = 0; i < w / 2; i++) {
+    const x = (rand() * w) | 0;
+    const y = h - 1 - ((rand() * (h * 0.55)) | 0);
+    f.set(x, y, darkKey);
+    if (rand() > 0.5) f.set(x + 1, y, darkKey);
+  }
+  rimLight(f, rim, [0, -1]); // backlit ridge
+  return f;
+}
+
+const HILLS_FAR = hillsFrame(
+  128,
+  40,
+  'U',
+  'V',
+  'M',
+  (a) => 14 + 6 * Math.sin(a) + 4 * Math.sin(3 * a + 1.3),
+  0xfa44,
+);
+const HILLS_NEAR = hillsFrame(
+  128,
+  48,
+  'V',
+  'S',
+  'U',
+  (a) => 18 + 8 * Math.sin(a + 2.2) + 6 * Math.sin(2 * a + 0.6),
+  0x9ea4,
+);
+
+// --------------------------------------------------------------------------
+// ground.png — 192x48 x1: tileable airfield grass. A wide tile keeps the
+// repeat from reading: mowing stripes, grass-tuft clusters, daisies and a
+// worn dirt patch. Also overlaid in-game by the renderer as a low-alpha
+// texture pattern.
+// --------------------------------------------------------------------------
+
+function groundFrame() {
+  const f = new Frame(192, 48);
+  for (let y = 0; y < 48; y++) {
+    for (let x = 0; x < 192; x++) {
+      const stripe = ((x / 24) | 0) % 2;
+      let k = 'G';
+      if (stripe && (x * 31 + y * 17) % 11 < 3) k = 'g'; // darker mowing pass
+      if (!stripe && (x * 13 + y * 29) % 23 === 0) k = 'L'; // light blades
+      f.set(x, y, k);
+    }
+  }
+  // Worn dirt patch, away from the tile edges so the repeat stays seamless.
+  f.ellipse(58, 30, 9, 4, 'N', 'N');
+  f.ellipse(56, 29, 5, 2, 'n', 'n');
+  const rand = lcg(0x6a55);
+  for (let i = 0; i < 36; i++) {
+    const x = (rand() * 192) | 0;
+    const y = 3 + ((rand() * 42) | 0);
+    f.set(x, y, 'D');
+    f.set(x + 1, y, 'g');
+    f.set(x - 1, y + 1, 'g');
+    if (rand() > 0.5) f.set(x, y - 1, 'L');
+  }
+  for (let i = 0; i < 9; i++) {
+    const x = (rand() * 192) | 0;
+    const y = 4 + ((rand() * 40) | 0);
+    f.set(x, y, 'H');
+    f.set(x + 1, y, 'P');
+  }
+  return f;
+}
+
+// --------------------------------------------------------------------------
+// birds.png — 16x8 x2: distant gull silhouettes (wings up / down) drifting
+// across the menu sky in a small flock.
+// --------------------------------------------------------------------------
+
+const BIRDS = [
+  Frame.fromGrid([
+    '...V........V...',
+    '..VVV......VVV..',
+    '....VVV..VVV....',
+    '......VVVV......',
+    '................',
+    '................',
+    '................',
+    '................',
+  ]),
+  Frame.fromGrid([
+    '................',
+    '................',
+    '......VVVV......',
+    '....VVV..VVV....',
+    '..VVV......VVV..',
+    '...V........V...',
+    '................',
+    '................',
+  ]),
+];
+
+// --------------------------------------------------------------------------
+// paper.png — 48x48 x1: subtle parchment texture tile for panel surfaces
+// (sparse speckles + short horizontal fibres, low contrast).
+// --------------------------------------------------------------------------
+
+function paperFrame() {
+  const f = new Frame(48, 48);
+  f.rect(0, 0, 48, 48, 'P');
+  for (let y = 0; y < 48; y++) {
+    for (let x = 0; x < 48; x++) {
+      if ((x * 53 + y * 97) % 83 === 0) f.set(x, y, 'p');
+    }
+  }
+  const rand = lcg(0x9a9e2);
+  for (let i = 0; i < 10; i++) {
+    const x = (rand() * 44) | 0;
+    const y = (rand() * 48) | 0;
+    const len = 2 + ((rand() * 3) | 0);
+    for (let dx = 0; dx < len; dx++) f.set(x + dx, y, 'p');
+  }
+  f.set(7, 31, 'H');
+  return f;
+}
+
+// --------------------------------------------------------------------------
+// rivet.png — 8x8 x1: brass dome rivet for panel corners.
+// --------------------------------------------------------------------------
+
+const RIVET = Frame.fromGrid([
+  '..KKKK..',
+  '.KBHHBK.',
+  'KBHHHBBK',
+  'KBHHBBBK',
+  'KBBBBBbK',
+  '.KBBBbK.',
+  '..KKKK..',
+  '........',
+]);
+
+// --------------------------------------------------------------------------
+// logo.png — 24x26 x8: the SKYDIVER logotype, one letter per frame. Glyphs are
+// authored as 10x11 binary grids, doubled to 20x22, then given a five-band
+// metal ramp (cream → light brass → brass → dark brass → ember reflection),
+// a 1px ink outline and a baked drop shadow.
+// --------------------------------------------------------------------------
+
+function logoLetter(base) {
+  // Double the glyph resolution so the ramp and outline read at 2x display.
+  const rows = base.flatMap((r) => {
+    const doubled = [...r].map((c) => c + c).join('');
+    return [doubled, doubled];
+  });
+  const gw = rows[0].length;
+  const gh = rows.length;
+  const f = new Frame(gw + 4, gh + 4);
+  const lit = (x, y) => y >= 0 && y < gh && x >= 0 && x < gw && rows[y][x] === 'X';
+  const nearGlyph = (x, y) => {
+    for (let dy = -1; dy <= 1; dy++) {
+      for (let dx = -1; dx <= 1; dx++) if (lit(x + dx, y + dy)) return true;
+    }
+    return false;
+  };
+  for (let y = -1; y <= gh; y++) {
+    for (let x = -1; x <= gw; x++) {
+      if (nearGlyph(x, y)) f.set(x + 3, y + 3, 'S'); // shadow: outline mask at +2,+2
+    }
+  }
+  for (let y = -1; y <= gh; y++) {
+    for (let x = -1; x <= gw; x++) {
+      if (nearGlyph(x, y) && !lit(x, y)) f.set(x + 1, y + 1, 'K'); // ink outline ring
+    }
+  }
+  for (let y = 0; y < gh; y++) {
+    for (let x = 0; x < gw; x++) {
+      if (!lit(x, y)) continue;
+      const k = y < 4 ? 'H' : y < 9 ? 'C' : y < 15 ? 'B' : y < 19 ? 'b' : 'E';
+      f.set(x + 1, y + 1, k); // five-band metal ramp
+    }
+  }
+  return f;
+}
+
+const LOGO_GLYPHS = {
+  S: [
+    '.XXXXXXXX.',
+    'XXXXXXXXXX',
+    'XXX....XXX',
+    'XXX.......',
+    '.XXXXXXX..',
+    '..XXXXXXX.',
+    '.......XXX',
+    '.......XXX',
+    'XXX....XXX',
+    'XXXXXXXXXX',
+    '.XXXXXXXX.',
+  ],
+  K: [
+    'XXX....XXX',
+    'XXX...XXX.',
+    'XXX..XXX..',
+    'XXX.XXX...',
+    'XXXXXX....',
+    'XXXXX.....',
+    'XXXXXX....',
+    'XXX.XXX...',
+    'XXX..XXX..',
+    'XXX...XXX.',
+    'XXX....XXX',
+  ],
+  Y: [
+    'XXX....XXX',
+    'XXX....XXX',
+    '.XXX..XXX.',
+    '.XXX..XXX.',
+    '..XXXXXX..',
+    '...XXXX...',
+    '...XXX....',
+    '...XXX....',
+    '...XXX....',
+    '...XXX....',
+    '...XXX....',
+  ],
+  D: [
+    'XXXXXXXX..',
+    'XXXXXXXXX.',
+    'XXX....XXX',
+    'XXX....XXX',
+    'XXX....XXX',
+    'XXX....XXX',
+    'XXX....XXX',
+    'XXX....XXX',
+    'XXX....XXX',
+    'XXXXXXXXX.',
+    'XXXXXXXX..',
+  ],
+  I: [
+    '.XXXXXXXX.',
+    '.XXXXXXXX.',
+    '...XXXX...',
+    '...XXXX...',
+    '...XXXX...',
+    '...XXXX...',
+    '...XXXX...',
+    '...XXXX...',
+    '...XXXX...',
+    '.XXXXXXXX.',
+    '.XXXXXXXX.',
+  ],
+  V: [
+    'XXX....XXX',
+    'XXX....XXX',
+    'XXX....XXX',
+    'XXX....XXX',
+    'XXX....XXX',
+    '.XXX..XXX.',
+    '.XXX..XXX.',
+    '.XXX..XXX.',
+    '..XXXXXX..',
+    '...XXXX...',
+    '....XX....',
+  ],
+  E: [
+    'XXXXXXXXXX',
+    'XXXXXXXXXX',
+    'XXX.......',
+    'XXX.......',
+    'XXXXXXXX..',
+    'XXXXXXXX..',
+    'XXX.......',
+    'XXX.......',
+    'XXX.......',
+    'XXXXXXXXXX',
+    'XXXXXXXXXX',
+  ],
+  R: [
+    'XXXXXXXXX.',
+    'XXXXXXXXXX',
+    'XXX....XXX',
+    'XXX....XXX',
+    'XXXXXXXXXX',
+    'XXXXXXXXX.',
+    'XXX.XXX...',
+    'XXX..XXX..',
+    'XXX...XXX.',
+    'XXX....XXX',
+    'XXX....XXX',
+  ],
+};
+
+const LOGO = [...'SKYDIVER'].map((ch) => logoLetter(LOGO_GLYPHS[ch]));
 
 // --------------------------------------------------------------------------
 
 mkdirSync(OUT_DIR, { recursive: true });
 console.log(`Writing sprite sheets to ${OUT_DIR}`);
-writeSheet('diver-freefall.png', FREEFALL, 16, 16);
-writeSheet('diver-deploy.png', DEPLOY, 16, 24);
-writeSheet('canopy.png', CANOPY, 32, 32);
-writeSheet('diver-land.png', LAND, 16, 16);
-writeSheet('diver-crash.png', CRASH, 16, 16);
-writeSheet('plane.png', PLANE, 48, 32);
-writeSheet('terrain.png', TERRAIN, 16, 16);
+// Game sheets ship at 2x source resolution (res: 2 in engine SHEET_SPECS).
+writeSheet('diver-freefall.png', hibit(FREEFALL), 32, 32);
+writeSheet('diver-deploy.png', hibit(DEPLOY), 32, 48);
+writeSheet('canopy.png', CANOPY, 64, 64);
+writeSheet('diver-land.png', hibit(LAND), 32, 32);
+writeSheet('diver-crash.png', hibit(CRASH), 32, 32);
+writeSheet('plane.png', hibit(PLANE), 96, 64);
+writeSheet('terrain.png', TERRAIN, 32, 32);
+// Menu key-arts.
+writeSheet('clouds.png', CLOUDS, 96, 48);
+writeSheet('birds.png', BIRDS, 16, 8);
+writeSheet('medals.png', hibit(MEDALS), 32, 32);
+writeSheet('sky.png', [skyFrame()], 16, 544);
+writeSheet('sun.png', [sunFrame()], 48, 48);
+writeSheet('hills-far.png', [HILLS_FAR], 128, 40);
+writeSheet('hills-near.png', [HILLS_NEAR], 128, 48);
+writeSheet('ground.png', [groundFrame()], 192, 48);
+writeSheet('paper.png', [paperFrame()], 48, 48);
+writeSheet('rivet.png', [hibitFrame(RIVET)], 16, 16);
+writeSheet('logo.png', LOGO, 24, 26);

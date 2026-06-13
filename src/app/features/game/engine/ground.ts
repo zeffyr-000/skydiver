@@ -50,20 +50,44 @@ export interface Decoration {
   sizeM: number;
 }
 
+/** One big landmark per jump — a place, not a sprinkle. */
+export type Landmark =
+  | { kind: 'lake'; x: number; y: number; rx: number; ry: number }
+  | {
+      kind: 'airstrip';
+      orientation: 'h' | 'v';
+      /** Centre of the strip. */
+      x: number;
+      y: number;
+      lengthM: number;
+      widthM: number;
+    }
+  | { kind: 'forest'; x: number; y: number; r: number };
+
 export interface Terrain {
   fields: FieldPatch[];
   road: RoadSpec;
+  landmark: Landmark;
   /** Scenery, pre-sorted by y for painter's-order drawing. */
   decorations: Decoration[];
 }
 
-const SCENERY: { sprite: TerrainSprite; sizeM: number; weight: number }[] = [
-  { sprite: TerrainSprite.TreeA, sizeM: 14, weight: 3 },
-  { sprite: TerrainSprite.TreeB, sizeM: 11, weight: 3 },
-  { sprite: TerrainSprite.Bush, sizeM: 7, weight: 2 },
-  { sprite: TerrainSprite.Rock, sizeM: 6, weight: 1 },
-  { sprite: TerrainSprite.HayBale, sizeM: 5, weight: 2 },
-  { sprite: TerrainSprite.Pond, sizeM: 18, weight: 1 },
+const SCENERY: { sprite: TerrainSprite; sizeM: number }[] = [
+  { sprite: TerrainSprite.TreeA, sizeM: 14 },
+  { sprite: TerrainSprite.TreeB, sizeM: 11 },
+  { sprite: TerrainSprite.Bush, sizeM: 7 },
+  { sprite: TerrainSprite.Rock, sizeM: 6 },
+  { sprite: TerrainSprite.HayBale, sizeM: 5 },
+  { sprite: TerrainSprite.Pond, sizeM: 18 },
+];
+
+// Scenery weights per biome (indexed like SCENERY: treeA, treeB, bush, rock,
+// hay, pond). Each jump rolls one, so consecutive drop zones read differently.
+const BIOME_WEIGHTS: number[][] = [
+  [3, 3, 2, 1, 2, 1], // meadow — the original balanced mix
+  [6, 5, 3, 1, 1, 1], // woodland
+  [2, 2, 3, 2, 1, 4], // wetland
+  [2, 1, 2, 1, 6, 1], // farmstead
 ];
 
 export function generateTerrain(seed: number, cfg: GameConfig): Terrain {
@@ -72,7 +96,7 @@ export function generateTerrain(seed: number, cfg: GameConfig): Terrain {
 
   // --- Farmland patchwork ---
   const fields: FieldPatch[] = [];
-  const fieldCount = 12 + Math.floor(rng() * 5);
+  const fieldCount = 10 + Math.floor(rng() * 9);
   for (let i = 0; i < fieldCount; i++) {
     const w = 80 + rng() * 170;
     const h = 80 + rng() * 170;
@@ -94,17 +118,90 @@ export function generateTerrain(seed: number, cfg: GameConfig): Terrain {
     widthM: 6,
   };
 
-  // --- Scenery: rejection-sampled outside the keep-out circle ---
-  const totalWeight = SCENERY.reduce((s, k) => s + k.weight, 0);
+  // --- Landmark: each jump features one big place — lake, airstrip or forest ---
+  const clampTo = (v: number, margin: number) =>
+    Math.max(-(TERRAIN_EXTENT - margin), Math.min(TERRAIN_EXTENT - margin, v));
+  const landmarkRoll = rng();
+  const landmarkAngle = rng() * Math.PI * 2;
+  let landmark: Landmark;
+  const forestTrees: Decoration[] = [];
+  if (landmarkRoll < 1 / 3) {
+    const rx = 90 + rng() * 70;
+    const ry = 60 + rng() * 50;
+    const dist = keepOut + Math.max(rx, ry) + 60 + rng() * 200;
+    landmark = {
+      kind: 'lake',
+      x: clampTo(Math.cos(landmarkAngle) * dist, rx),
+      y: clampTo(Math.sin(landmarkAngle) * dist, ry),
+      rx,
+      ry,
+    };
+  } else if (landmarkRoll < 2 / 3) {
+    const orientation: 'h' | 'v' = rng() < 0.5 ? 'h' : 'v';
+    const offSide = rng() < 0.5 ? -1 : 1;
+    const lengthM = 220 + rng() * 120;
+    const widthM = 20;
+    const offset = offSide * (keepOut + 40 + rng() * 220);
+    const along = (rng() * 2 - 1) * 200;
+    landmark = {
+      kind: 'airstrip',
+      orientation,
+      x: orientation === 'h' ? clampTo(along, lengthM / 2) : offset,
+      y: orientation === 'h' ? offset : clampTo(along, lengthM / 2),
+      lengthM,
+      widthM,
+    };
+  } else {
+    const r = 110 + rng() * 70;
+    const dist = keepOut + r + 40 + rng() * 180;
+    const fx = clampTo(Math.cos(landmarkAngle) * dist, r);
+    const fy = clampTo(Math.sin(landmarkAngle) * dist, r);
+    landmark = { kind: 'forest', x: fx, y: fy, r };
+    const treeCount = 40 + Math.floor(rng() * 25);
+    for (let i = 0; i < treeCount; i++) {
+      const a = rng() * Math.PI * 2;
+      const d = r * Math.sqrt(rng()) * 0.92; // uniform over the disc, inside the floor
+      const x = fx + Math.cos(a) * d;
+      const y = fy + Math.sin(a) * d;
+      if (Math.hypot(x, y) < keepOut) continue;
+      forestTrees.push({
+        sprite: rng() < 0.55 ? TerrainSprite.TreeA : TerrainSprite.TreeB,
+        x,
+        y,
+        sizeM: 11 + rng() * 5,
+      });
+    }
+  }
+
+  // --- Scenery: biome-weighted, clustered into groves with open clearings ---
+  const weights = BIOME_WEIGHTS[Math.floor(rng() * BIOME_WEIGHTS.length)];
+  const totalWeight = weights.reduce((s, w) => s + w, 0);
+  const clusters = Array.from({ length: 2 + Math.floor(rng() * 2) }, () => ({
+    x: (rng() * 2 - 1) * (TERRAIN_EXTENT - 160),
+    y: (rng() * 2 - 1) * (TERRAIN_EXTENT - 160),
+    r: 60 + rng() * 100,
+  }));
+
   const decorations: Decoration[] = [];
   let guard = 0;
   while (decorations.length < 100 && guard < 1000) {
     guard++;
-    const x = (rng() * 2 - 1) * TERRAIN_EXTENT;
-    const y = (rng() * 2 - 1) * TERRAIN_EXTENT;
+    let x: number;
+    let y: number;
+    if (rng() < 0.55) {
+      // Grove sample: triangular falloff around a cluster centre.
+      const c = clusters[Math.floor(rng() * clusters.length)];
+      x = c.x + (rng() + rng() - 1) * c.r;
+      y = c.y + (rng() + rng() - 1) * c.r;
+    } else {
+      x = (rng() * 2 - 1) * TERRAIN_EXTENT;
+      y = (rng() * 2 - 1) * TERRAIN_EXTENT;
+    }
+    if (Math.abs(x) > TERRAIN_EXTENT || Math.abs(y) > TERRAIN_EXTENT) continue;
     if (Math.hypot(x, y) < keepOut) continue;
     let pick = rng() * totalWeight;
-    const kind = SCENERY.find((k) => (pick -= k.weight) < 0) ?? SCENERY[0];
+    const index = weights.findIndex((w) => (pick -= w) < 0);
+    const kind = SCENERY[Math.max(0, index)];
     decorations.push({ sprite: kind.sprite, x, y, sizeM: kind.sizeM });
   }
 
@@ -135,6 +232,7 @@ export function generateTerrain(seed: number, cfg: GameConfig): Terrain {
     sizeM: 6,
   });
 
+  decorations.push(...forestTrees);
   decorations.sort((a, b) => a.y - b.y);
-  return { fields, road, decorations };
+  return { fields, road, landmark, decorations };
 }

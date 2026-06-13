@@ -1,0 +1,13 @@
+@if (transition.phase() !== 'idle') {
+  <div
+    class="wipe"
+    [class.wipe--reveal]="transition.phase() === 'revealing'"
+    [style.--cell-ms]="cellMs + 'ms'"
+    [style.--stagger-ms]="staggerMs + 'ms'"
+    aria-hidden="true"
+  >
+    @for (d of cells; track $index) {
+      <div class="wipe__cell" [style.--d]="d"></div>
+    }
+  </div>
+}

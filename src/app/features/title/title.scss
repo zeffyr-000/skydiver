@@ -1,3 +1,5 @@
+@use 'sprites' as spr;
+
 .title {
   position: relative;
   min-height: 100vh;
@@ -7,23 +9,6 @@
   justify-content: center;
   gap: var(--sp-8);
   overflow: hidden;
-  // Dusk-to-day sky gradient, banded to feel like limited palette.
-  background: linear-gradient(180deg, var(--sky-bg) 0%, var(--sky-bg) 45%, var(--sky-day) 100%);
-}
-
-// A repeating pixel "horizon" band at the foot of the sky.
-.title__clouds {
-  position: absolute;
-  inset: auto 0 0 0;
-  height: 64px;
-  background: repeating-linear-gradient(
-    90deg,
-    var(--parchment) 0,
-    var(--parchment) 16px,
-    var(--parchment-dark) 16px,
-    var(--parchment-dark) 32px
-  );
-  box-shadow: inset 0 var(--border-w) 0 0 var(--shadow);
 }
 
 .title__head {
@@ -31,19 +16,65 @@
   z-index: 1;
 }
 
+// The logotype is a generated sprite sheet (logo.png, one letter per frame);
+// the spans keep the accessible text but render their frame instead.
 .title__logo {
-  font-size: var(--fs-h1);
-  color: var(--brass);
-  // Hard pixel drop-shadow (no blur).
-  text-shadow:
-    4px 4px 0 var(--biplane-red),
-    8px 8px 0 var(--shadow);
+  font-size: 0;
+  display: flex;
+  justify-content: center;
+  gap: var(--sp-1);
+}
+
+.title__logo-ch {
+  @include spr.sheet-frame('/assets/sprites/logo.png', 24px, 26px, 8, 0, 2);
+  background-position-x: calc(var(--i) * -48px);
+  animation:
+    logo-drop 360ms steps(4, end) backwards,
+    logo-shine 6s steps(1, end) infinite;
+  animation-delay: calc(var(--i) * 60ms), calc(800ms + var(--i) * 70ms);
+}
+
+// Letters slam in left-to-right, falling in four hard jumps.
+@keyframes logo-drop {
+  from {
+    transform: translateY(-60px);
+    visibility: hidden;
+  }
+}
+
+// Discrete brightness flips; the per-letter delay turns the flash into a sweep.
+@keyframes logo-shine {
+  0%,
+  91.9% {
+    filter: none;
+  }
+  92%,
+  94.9% {
+    filter: brightness(1.8);
+  }
+  95%,
+  96.9% {
+    filter: brightness(1.3);
+  }
+  97%,
+  100% {
+    filter: none;
+  }
 }
 
 .title__subtitle {
   margin: var(--sp-4) 0 0;
   font-size: 22px;
   color: var(--ink-light);
+  animation: title-pop 200ms steps(2, end) backwards;
+  animation-delay: 700ms;
+}
+
+@keyframes title-pop {
+  from {
+    transform: translateY(8px);
+    visibility: hidden;
+  }
 }
 
 .title__menu {
@@ -53,7 +84,9 @@
 .title__prompt {
   z-index: 1;
   font-family: var(--font-head);
-  font-size: 14px;
+  font-size: 18px;
+  font-weight: 700;
+  text-transform: uppercase;
   color: var(--ink-light);
   animation: title-blink 1s steps(2, start) infinite;
 }

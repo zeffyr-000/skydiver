@@ -1,4 +1,14 @@
+@use 'sprites' as spr;
+
 .records {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+.records__content {
+  position: relative;
+  z-index: 1;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -16,12 +26,25 @@
 
 .records__back {
   font-family: var(--font-head);
-  font-size: 14px;
+  font-size: 18px;
+  font-weight: 700;
+  text-transform: uppercase;
   color: var(--ink-light);
   text-decoration: none;
 
   &:hover {
     color: var(--brass);
+  }
+}
+
+.records__panel {
+  animation: panel-drop 280ms steps(4, end) backwards;
+}
+
+@keyframes panel-drop {
+  from {
+    transform: translateY(-32px);
+    visibility: hidden;
   }
 }
 
@@ -33,7 +56,8 @@
 
   th {
     font-family: var(--font-head);
-    font-size: 13px;
+    font-size: 16px;
+    font-weight: 700;
     text-transform: uppercase;
     text-align: left;
     color: var(--biplane-red-dark);
@@ -45,8 +69,45 @@
     padding: var(--sp-2) var(--sp-3);
   }
 
+  tbody tr {
+    animation: row-in 200ms steps(3, end) backwards;
+    animation-delay: calc(280ms + var(--i) * 60ms); // after the panel lands
+  }
+
   tbody tr + tr td {
     box-shadow: inset 0 2px 0 0 var(--parchment-dark);
+  }
+}
+
+@keyframes row-in {
+  from {
+    transform: translateX(-12px);
+    visibility: hidden;
+  }
+}
+
+.records__rank {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+// Empty slot keeps ranks 4+ aligned with the medalled top three.
+.records__medal {
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+
+  &--gold {
+    @include spr.medal(0);
+  }
+
+  &--silver {
+    @include spr.medal(1);
+  }
+
+  &--bronze {
+    @include spr.medal(2);
   }
 }
 
@@ -61,8 +122,26 @@
 }
 
 .records__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-8) 0;
+  text-align: center;
+}
+
+.records__windsock {
+  @include spr.terrain(9);
+}
+
+.records__empty-line {
+  margin: 0;
   font-size: 24px;
   color: var(--ink);
-  text-align: center;
-  padding: var(--sp-8) 0;
+}
+
+.records__empty-hint {
+  margin: 0;
+  font-size: 20px;
+  color: var(--biplane-red-dark);
 }

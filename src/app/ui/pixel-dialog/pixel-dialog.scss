@@ -3,7 +3,8 @@
 .pixel-dialog {
   padding: 0;
   border: 0;
-  background: var(--parchment);
+  // Parchment with the generated paper-grain tile.
+  background: url('/assets/sprites/paper.png') repeat 0 0 / 96px 96px var(--parchment);
   color: var(--ink);
   min-width: 320px;
   @include px.pixel-bevel();
@@ -16,7 +17,8 @@
 
 .pixel-dialog__bar {
   font-family: var(--font-head);
-  font-size: 16px;
+  font-size: 20px;
+  font-weight: 700;
   text-transform: uppercase;
   color: var(--ink-light);
   background: var(--biplane-red);

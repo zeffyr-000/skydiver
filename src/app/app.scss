@@ -1,0 +1,9 @@
+.app-shell {
+  min-height: 100vh;
+
+  // Programmatic focus target after each route change — never ring the viewport.
+  &:focus,
+  &:focus-visible {
+    outline: none;
+  }
+}

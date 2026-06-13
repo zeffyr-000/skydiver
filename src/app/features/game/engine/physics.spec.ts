@@ -180,12 +180,14 @@ describe('physics: determinism & difficulty', () => {
   });
 
   it('keeps the original rng draw order: a fixed seed still yields the same wind and spawn', () => {
-    // The plane direction and ground seed were appended AFTER the original three
-    // draws (windDir, spreadDir, spreadMag) — these values must never change.
+    // Plane direction, ground seed and the weather scale were appended AFTER
+    // the original three draws (windDir, spreadDir, spreadMag) — the wind
+    // DIRECTION and spawn position must never move for a given seed.
     const s = createInitialState(BASE_CONFIG, () => 0.5);
-    expect(s.windBaseX).toBeCloseTo(-3, 10); // cos(π) * windBase
+    expect(s.windGustScale).toBeCloseTo(0.9, 10); // 0.4 + rng
+    expect(s.windBaseX).toBeCloseTo(-BASE_CONFIG.windBase * 0.9, 10); // cos(π) · base · weather
     expect(s.windBaseY).toBeCloseTo(0, 10);
-    expect(s.posX).toBeCloseTo(-112, 10); // cos(π) * 0.7 * startSpread
+    expect(s.posX).toBeCloseTo(-0.7 * BASE_CONFIG.startSpread, 10); // cos(π) · 0.7 · spread
     expect(s.posY).toBeCloseTo(0, 10);
   });
 

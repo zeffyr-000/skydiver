@@ -12,8 +12,12 @@
   align-items: center;
   gap: var(--sp-3);
   font-family: var(--font-head);
-  font-size: 20px;
+  font-size: 28px;
+  font-weight: 700;
+  text-transform: uppercase; // Pixelify's lowercase c/o collide at UI sizes
   color: var(--ink-light);
+  // Hard pixel shadow keeps labels readable over passing clouds.
+  text-shadow: 2px 2px 0 var(--shadow);
   padding: var(--sp-2) var(--sp-4);
   cursor: pointer;
   user-select: none;
@@ -27,6 +31,19 @@
     .pixel-menu__caret {
       visibility: visible;
     }
+  }
+}
+
+// Staggered entrance: items pop in left-to-right in three hard jumps.
+.pixel-menu--animate .pixel-menu__item {
+  animation: menu-pop 240ms steps(3, end) backwards;
+  animation-delay: calc(900ms + var(--i) * 90ms);
+}
+
+@keyframes menu-pop {
+  from {
+    visibility: hidden;
+    transform: translateX(-16px);
   }
 }
 
