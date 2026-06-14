@@ -13,10 +13,13 @@ const COLORS = {
   parchment: '#e8d8b0', // --parchment
   highlight: '#fff7e0', // --highlight
   shadow: '#11161f', // --shadow
-  skyHigh: '#1a2b45', // --sky-bg (atmospheric haze when high up)
+  skyHigh: '#34416b', // --sky-twilight (golden-hour atmospheric haze when high up)
   // Game-world ground (fields seen from above) — not part of the UI token set.
   ground: '#4f7a3a',
   road: '#a89570',
+  water: '#3a6ea5', // sprite palette W
+  waterLight: '#5b8cc0', // sprite palette w
+  forestFloor: '#3a5c2b', // sprite palette g
 };
 
 // Muted farmland tints indexed by FieldPatch.tint.
@@ -43,6 +46,10 @@ const PLANE_SPEED = 60; // m/s along its flight line
 /** Metres of fall over which the exit close-up settles to the regular size. */
 const EXIT_ZOOM_METRES = 120;
 
+// Virtual eye height (m) at touchdown for the perspective zoom: ppm(alt) =
+// groundPpm · H / (alt + H). Smaller = harder ground rush at the end.
+const CAMERA_HEIGHT_M = 90;
+
 /**
  * Top-down renderer. The diver is the camera (always screen-centre); the ground
  * — terrain, target, decorations — is drawn relative to it. Pixels-per-metre
@@ -59,6 +66,7 @@ export class SkyDiverRenderer {
   private terrain: Terrain | null = null;
   private terrainSeed = -1;
   private terrainTargetRadius = -1;
+  private groundPattern: CanvasPattern | null = null;
 
   constructor(
     private readonly ctx: CanvasRenderingContext2D,
@@ -79,12 +87,19 @@ export class SkyDiverRenderer {
     }
 
     const altFraction = clamp(s.altitude / cfg.startAltitude, 0, 1);
-    const ppm = lerp(this.groundPpm(cfg), 0.22, altFraction);
+    // Perspective zoom: ground features' angular size grows as 1/altitude, so
+    // the world barely moves at exit height then rushes up over the last
+    // hundred metres (real "ground rush") — a linear blend front-loads the
+    // growth and makes the target huge moments after exit.
+    const ppm =
+      (this.groundPpm(cfg) * CAMERA_HEIGHT_M) / (Math.max(0, s.altitude) + CAMERA_HEIGHT_M);
 
     // --- Ground layers ---
     ctx.fillStyle = COLORS.ground;
     ctx.fillRect(0, 0, this.w, this.h);
     this.drawTerrain(s, ppm, cx, cy);
+    this.drawLandmark(s, ppm, cx, cy);
+    this.drawGroundTexture();
     this.drawGrid(s, ppm, cx, cy);
     this.drawTarget(s, cfg, ppm, cx, cy);
     this.drawDecorations(s, ppm, cx, cy);
@@ -96,8 +111,9 @@ export class SkyDiverRenderer {
 
     // --- Air layers (unaffected by haze) ---
     this.drawOutroEffects(s, cfg, cx, cy);
-    this.drawPlane(s, cfg, cx, cy);
+    // The diver falls away BELOW the plane, so the plane draws on top of him.
     this.drawDiver(s, cfg, cx, cy);
+    this.drawPlane(s, cfg, cx, cy);
 
     if (s.phase === Phase.Freefall || s.phase === Phase.Deploying || s.phase === Phase.Canopy) {
       this.drawReticle(cx, cy);
@@ -107,6 +123,27 @@ export class SkyDiverRenderer {
   /** Pixels-per-metre at ground level: sized so the target nearly fills the view. */
   private groundPpm(cfg: GameConfig): number {
     return (this.w * 0.42) / cfg.targetRadius;
+  }
+
+  /**
+   * Low-alpha grass-texture pattern over the base green and field tints —
+   * screen-space on purpose (a subtle film grain, not world geometry).
+   */
+  private drawGroundTexture(): void {
+    const ctx = this.ctx;
+    const sheet = this.atlas?.ground;
+    if (!sheet || typeof ctx.createPattern !== 'function') {
+      return; // procedural fallback: flat ground, same as pre-atlas
+    }
+    this.groundPattern ??= ctx.createPattern(sheet.image, 'repeat');
+    if (!this.groundPattern) {
+      return;
+    }
+    ctx.save();
+    ctx.globalAlpha = 0.22;
+    ctx.fillStyle = this.groundPattern;
+    ctx.fillRect(0, 0, this.w, this.h);
+    ctx.restore();
   }
 
   private drawTerrain(s: GameState, ppm: number, cx: number, cy: number): void {
@@ -151,6 +188,93 @@ export class SkyDiverRenderer {
         widthPx,
         lengthPx,
       );
+    }
+  }
+
+  /** The jump's big landmark: a lake, an airstrip (with a parked plane) or a
+   *  forest floor (its trees ship as regular decorations). */
+  private drawLandmark(s: GameState, ppm: number, cx: number, cy: number): void {
+    const lm = this.terrain?.landmark;
+    if (!lm) {
+      return;
+    }
+    const ctx = this.ctx;
+    const sx = (wx: number) => cx + (wx - s.posX) * ppm;
+    const sy = (wy: number) => cy + (wy - s.posY) * ppm;
+
+    switch (lm.kind) {
+      case 'lake': {
+        // Dark shore ring, water body, lit inner sheen.
+        fillEllipse(ctx, sx(lm.x), sy(lm.y), lm.rx * ppm + 2, lm.ry * ppm + 2, COLORS.shadow);
+        fillEllipse(ctx, sx(lm.x), sy(lm.y), lm.rx * ppm, lm.ry * ppm, COLORS.water);
+        fillEllipse(
+          ctx,
+          sx(lm.x - lm.rx * 0.18),
+          sy(lm.y - lm.ry * 0.18),
+          lm.rx * 0.62 * ppm,
+          lm.ry * 0.62 * ppm,
+          COLORS.waterLight,
+        );
+        fillEllipse(
+          ctx,
+          sx(lm.x - lm.rx * 0.18),
+          sy(lm.y - lm.ry * 0.18),
+          lm.rx * 0.4 * ppm,
+          lm.ry * 0.4 * ppm,
+          COLORS.water,
+        );
+        return;
+      }
+
+      case 'airstrip': {
+        const horizontal = lm.orientation === 'h';
+        const len = lm.lengthM * ppm;
+        const wid = lm.widthM * ppm;
+        const x = sx(lm.x);
+        const y = sy(lm.y);
+        const rect = (cxp: number, cyp: number, w: number, h: number, color: string) => {
+          ctx.fillStyle = color;
+          ctx.fillRect(
+            Math.round(cxp - w / 2),
+            Math.round(cyp - h / 2),
+            Math.max(1, Math.round(w)),
+            Math.max(1, Math.round(h)),
+          );
+        };
+        // Dirt strip with hard edges, threshold bars and centreline dashes.
+        if (horizontal) {
+          rect(x, y, len + 2, wid + 2, COLORS.shadow);
+          rect(x, y, len, wid, COLORS.road);
+          rect(x - len / 2 + 4 * ppm, y, 3 * ppm, wid * 0.7, COLORS.highlight);
+          rect(x + len / 2 - 4 * ppm, y, 3 * ppm, wid * 0.7, COLORS.highlight);
+          for (let m = -lm.lengthM / 2 + 24; m < lm.lengthM / 2 - 16; m += 24) {
+            rect(sx(lm.x + m), y, 8 * ppm, 1.5 * ppm, COLORS.highlight);
+          }
+        } else {
+          rect(x, y, wid + 2, len + 2, COLORS.shadow);
+          rect(x, y, wid, len, COLORS.road);
+          rect(x, y - len / 2 + 4 * ppm, wid * 0.7, 3 * ppm, COLORS.highlight);
+          rect(x, y + len / 2 - 4 * ppm, wid * 0.7, 3 * ppm, COLORS.highlight);
+          for (let m = -lm.lengthM / 2 + 24; m < lm.lengthM / 2 - 16; m += 24) {
+            rect(x, sy(lm.y + m), 1.5 * ppm, 8 * ppm, COLORS.highlight);
+          }
+        }
+        // A biplane parked beside the threshold — this is where the jump ship
+        // takes off from.
+        const sheet = this.atlas?.plane;
+        if (sheet) {
+          const planeScale = (14 * ppm) / (sheet.fw / sheet.res);
+          const px = horizontal ? lm.x - lm.lengthM / 2 + 12 : lm.x + lm.widthM / 2 + 9;
+          const py = horizontal ? lm.y + lm.widthM / 2 + 9 : lm.y - lm.lengthM / 2 + 12;
+          drawSprite(ctx, sheet, 0, sx(px), sy(py), planeScale, horizontal ? 0 : Math.PI / 2);
+        }
+        return;
+      }
+
+      case 'forest': {
+        fillEllipse(ctx, sx(lm.x), sy(lm.y), lm.r * ppm, lm.r * ppm, COLORS.forestFloor);
+        return; // the trees themselves are regular decorations
+      }
     }
   }
 
@@ -222,7 +346,8 @@ export class SkyDiverRenderer {
         continue;
       }
       const rotation = d.sprite === TerrainSprite.Windsock ? Math.atan2(s.windY, s.windX) : 0;
-      drawSprite(ctx, sheet, d.sprite, x, y, sizePx / sheet.fw, rotation);
+      // Scale is in logical art pixels, so divide by the sheet's logical width.
+      drawSprite(ctx, sheet, d.sprite, x, y, (sizePx * sheet.res) / sheet.fw, rotation);
     }
   }
 
@@ -457,10 +582,6 @@ function clamp(v: number, lo: number, hi: number): number {
   return Math.max(lo, Math.min(hi, v));
 }
 
-function lerp(a: number, b: number, t: number): number {
-  return a + (b - a) * t;
-}
-
 function hexToRgb(hex: string): [number, number, number] {
   const h = hex.replace('#', '');
   return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
@@ -491,6 +612,23 @@ function strokeRing(
   ctx.beginPath();
   ctx.arc(x, y, r, 0, Math.PI * 2);
   ctx.stroke();
+}
+
+function fillEllipse(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  rx: number,
+  ry: number,
+  color: string,
+): void {
+  if (rx <= 0 || ry <= 0) {
+    return;
+  }
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2);
+  ctx.fill();
 }
 
 function fillCircle(

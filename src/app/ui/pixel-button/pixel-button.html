@@ -2,6 +2,7 @@
   [type]="type()"
   [class]="'pixel-btn pixel-btn--' + variant()"
   [disabled]="disabled()"
+  [attr.aria-pressed]="ariaPressed()"
   (click)="onClick()"
 >
   <ng-content />

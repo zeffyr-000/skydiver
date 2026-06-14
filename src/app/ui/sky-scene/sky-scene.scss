@@ -1,0 +1,342 @@
+@use 'sprites' as spr;
+
+:host {
+  position: absolute;
+  inset: 0;
+  display: block;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.scene {
+  position: absolute;
+  inset: 0;
+  // Golden-hour gradient strip (deep dusk → amber), banded + dithered in the
+  // sprite itself; tiled horizontally and stretched to the viewport height.
+  background: url('/assets/sprites/sky.png') repeat-x;
+  background-size: auto 100%;
+  // One shared timeline for the attract-mode actors (flyby + diver drop).
+  --attract-period: 30s;
+}
+
+// --- Low sun + horizon silhouettes (shared by both variants). ---
+
+.scene__sun {
+  position: absolute;
+  left: 12vw;
+  bottom: 132px; // sinks behind the hills and the ground strip
+  @include spr.sheet-frame('/assets/sprites/sun.png', 48px, 48px, 1, 0, 2);
+}
+
+.scene__hills {
+  position: absolute;
+  left: 0;
+  right: 0;
+  background-repeat: repeat-x;
+}
+
+.scene__hills--far {
+  bottom: 96px; // sits on the ground-strip horizon
+  height: 80px;
+  background-image: url('/assets/sprites/hills-far.png');
+  background-size: 256px 80px;
+}
+
+.scene__hills--near {
+  bottom: 88px; // tucks slightly behind the ground strip drawn after it
+  height: 96px;
+  background-image: url('/assets/sprites/hills-near.png');
+  background-size: 256px 96px;
+}
+
+// --- Parallax cloud banks: the raw clouds.png strip tiled along X. ---
+// One pixel grid for every layer (2x); depth comes from speed and opacity
+// (atmospheric perspective), not from blowing the pixels up.
+
+.scene__clouds {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 96px;
+  background: url('/assets/sprites/clouds.png') repeat-x;
+  background-size: 576px 96px;
+  animation: cloud-drift linear infinite;
+}
+
+.scene__clouds--far {
+  top: 6%;
+  opacity: 0.5;
+  animation-duration: 90s;
+}
+
+.scene__clouds--mid {
+  top: 22%;
+  opacity: 0.75;
+  animation-duration: 55s;
+  animation-delay: -18s; // negative delays phase the shared pattern apart
+}
+
+.scene__clouds--near {
+  top: 46%;
+  animation-duration: 30s;
+  animation-delay: -21s;
+}
+
+// Travels exactly one tile width per loop, so the band stays seamless.
+@keyframes cloud-drift {
+  from {
+    background-position-x: 0;
+  }
+  to {
+    background-position-x: -576px;
+  }
+}
+
+// --- Bird flock: distant gulls drifting right-to-left, flapping in steps. ---
+
+.scene__flock {
+  position: absolute;
+  top: 64%; // crosses the amber glow above the hills, where silhouettes pop
+  left: 0;
+  display: flex;
+  gap: 18px;
+  animation: flock-drift 75s linear infinite;
+}
+
+.scene__bird {
+  @include spr.sheet-frame('/assets/sprites/birds.png', 16px, 8px, 2, 0, 2);
+  animation: bird-flap 600ms steps(1, end) infinite;
+}
+
+.scene__bird--b {
+  margin-top: 10px;
+  animation-delay: -200ms;
+}
+
+.scene__bird--c {
+  margin-top: -6px;
+  animation-delay: -400ms;
+}
+
+@keyframes flock-drift {
+  0% {
+    transform: translateX(100vw);
+    visibility: visible;
+  }
+  60% {
+    transform: translateX(-160px);
+    visibility: visible;
+  }
+  60.1%,
+  100% {
+    transform: translateX(-160px);
+    visibility: hidden;
+  }
+}
+
+@keyframes bird-flap {
+  0%,
+  49.9% {
+    background-position-x: 0;
+  }
+  50%,
+  100% {
+    background-position-x: -32px;
+  }
+}
+
+// --- Plane flyby: one pass per attract period, hidden the rest of the time. ---
+
+.scene__flyby {
+  position: absolute;
+  top: 10%;
+  left: 0;
+  animation: flyby var(--attract-period) linear infinite;
+}
+
+.scene__plane {
+  width: 192px;
+  height: 128px;
+  background: url('/assets/sprites/plane.png') no-repeat;
+  background-size: 576px 128px;
+  animation: plane-prop 240ms steps(3, end) infinite;
+}
+
+@keyframes flyby {
+  0% {
+    transform: translateX(-200px);
+    visibility: visible;
+  }
+  40% {
+    transform: translateX(100vw);
+    visibility: visible;
+  }
+  41%,
+  100% {
+    transform: translateX(100vw);
+    visibility: hidden;
+  }
+}
+
+@keyframes plane-prop {
+  to {
+    background-position-x: -576px;
+  }
+}
+
+// --- Diver drop, synced to the flyby: the plane passes ~22vw at ~13% of the
+// period (clear of the centred logo/menu); freefall ends as the canopy element
+// takes over (the deploy beat). ---
+
+.scene__diver {
+  position: absolute;
+  top: 0;
+  visibility: hidden;
+}
+
+.scene__diver--fall {
+  left: 22vw;
+  @include spr.sheet-frame('/assets/sprites/diver-freefall.png', 32px, 32px, 7, 6, 2);
+  animation: diver-fall var(--attract-period) steps(12, end) infinite;
+}
+
+.scene__diver--canopy {
+  left: calc(22vw - 32px);
+  @include spr.sheet-frame('/assets/sprites/canopy.png', 64px, 64px, 4, 0, 2);
+  animation:
+    canopy-drop var(--attract-period) linear infinite,
+    canopy-sway 1.8s linear infinite;
+}
+
+@keyframes diver-fall {
+  0%,
+  12.9% {
+    transform: translateY(12vh);
+    visibility: hidden;
+  }
+  13% {
+    transform: translateY(12vh);
+    visibility: visible;
+  }
+  21% {
+    transform: translateY(38vh);
+    visibility: visible;
+  }
+  21.1%,
+  100% {
+    transform: translateY(38vh);
+    visibility: hidden;
+  }
+}
+
+@keyframes canopy-drop {
+  0%,
+  20.9% {
+    transform: translateY(36vh);
+    visibility: hidden;
+  }
+  21% {
+    transform: translateY(36vh);
+    visibility: visible;
+  }
+  // Sinks behind the ground strip (drawn later in the DOM) before vanishing.
+  50% {
+    transform: translateY(80vh);
+    visibility: visible;
+  }
+  50.1%,
+  100% {
+    transform: translateY(80vh);
+    visibility: hidden;
+  }
+}
+
+// Plateau keyframes flip the crop instantly — no smooth slide between frames.
+@keyframes canopy-sway {
+  0%,
+  49.9% {
+    background-position-x: 0;
+  }
+  50%,
+  100% {
+    background-position-x: -128px;
+  }
+}
+
+// --- Airfield ground strip + decorations (terrain.png crops). ---
+
+.scene__ground {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 96px;
+  // Generated grass tile: mowing stripes, tufts, daisies and dirt patch at 2x.
+  background: url('/assets/sprites/ground.png') repeat 0 0 / 384px 96px var(--grass);
+  box-shadow: inset 0 var(--border-w) 0 0 var(--shadow);
+}
+
+.scene__deco {
+  position: absolute;
+  bottom: 24px;
+}
+
+.scene__deco--tent {
+  left: 8%;
+  @include spr.terrain(6);
+}
+
+.scene__deco--tree-a {
+  left: 20%;
+  @include spr.terrain(0);
+}
+
+// Hay bale: the dark tree frame disappears against the grass, brass pops.
+.scene__deco--hay {
+  left: 90%;
+  @include spr.terrain(4);
+}
+
+.scene__deco--bush {
+  left: 28%;
+  @include spr.terrain(2);
+}
+
+.scene__deco--crowd {
+  left: 58%;
+  @include spr.terrain(7);
+  animation: crowd-wave 1.6s linear infinite;
+}
+
+.scene__deco--crowd-alt {
+  left: 65%;
+  animation-delay: -0.8s;
+}
+
+.scene__deco--windsock {
+  left: 76%;
+  @include spr.terrain(9);
+  animation: windsock-flutter 2.4s steps(1, end) infinite;
+}
+
+// Toggles between the taut and slack sock poses (frames 9 ↔ 10 at 2x).
+@keyframes windsock-flutter {
+  0%,
+  69.9% {
+    background-position-x: -576px;
+  }
+  70%,
+  100% {
+    background-position-x: -640px;
+  }
+}
+
+// Toggles between the two spectator frames (7 ↔ 8 at 4x = -448px ↔ -512px).
+@keyframes crowd-wave {
+  0%,
+  49.9% {
+    background-position-x: -448px;
+  }
+  50%,
+  100% {
+    background-position-x: -512px;
+  }
+}

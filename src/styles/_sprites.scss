@@ -1,0 +1,26 @@
+// CSS-side crops of the generated sprite sheets (public/assets/sprites/).
+// Sheets are horizontal strips of equal frames, so a fixed-size box +
+// background-position-x selects one frame at an integer scale — no JS needed.
+// Frame sizes/counts mirror tools/generate-sprites.mjs; the UI never imports
+// the game engine's sprite metadata. Sheets ship at 2x source resolution
+// (hi-bit pass), so a $scale of 1 here = one screen pixel per source pixel.
+
+@mixin sheet-frame($url, $fw, $fh, $frames, $frame, $scale) {
+  width: $fw * $scale;
+  height: $fh * $scale;
+  background: url($url) no-repeat;
+  image-rendering: pixelated;
+  background-size: ($fw * $frames * $scale) ($fh * $scale);
+  background-position: (-$fw * $scale * $frame) 0;
+}
+
+// terrain.png frames (32x32 source): 0/1 trees, 2 bush, 3 rock, 4 hay,
+// 5 pond, 6 tent, 7/8 spectators, 9 windsock, 10 windsock flutter.
+@mixin terrain($frame, $scale: 2) {
+  @include sheet-frame('/assets/sprites/terrain.png', 32px, 32px, 11, $frame, $scale);
+}
+
+// medals.png frames (32x32 source): 0 gold, 1 silver, 2 bronze.
+@mixin medal($frame, $scale: 1) {
+  @include sheet-frame('/assets/sprites/medals.png', 32px, 32px, 3, $frame, $scale);
+}

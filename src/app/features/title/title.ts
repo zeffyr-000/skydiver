@@ -1,19 +1,19 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { Router } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { map } from 'rxjs';
-import { PixelMenuItem, PixelMenuList } from '../../ui';
+import { TransitionService } from '../../shared/transition.service';
+import { PixelMenuItem, PixelMenuList, SkyScene } from '../../ui';
 
 @Component({
   selector: 'app-title',
   templateUrl: './title.html',
   styleUrl: './title.scss',
-  imports: [PixelMenuList, TranslocoPipe],
+  imports: [PixelMenuList, SkyScene, TranslocoPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Title {
-  private readonly router = inject(Router);
+  private readonly transition = inject(TransitionService);
   private readonly transloco = inject(TranslocoService);
 
   // `selectTranslate` only emits once the active language is loaded (and again on
@@ -31,7 +31,16 @@ export class Title {
     { initialValue: [] as PixelMenuItem[] },
   );
 
+  // One span per letter so the logo can slam in / shine-sweep character by
+  // character (same loaded-language-safe pattern as `menuItems` above).
+  protected readonly logoChars = toSignal(
+    this.transloco
+      .selectTranslate('app.title')
+      .pipe(map((title: string) => [...title].map((ch) => (ch === ' ' ? ' ' : ch)))),
+    { initialValue: [] as string[] },
+  );
+
   onSelect(route: string): void {
-    this.router.navigateByUrl(route);
+    this.transition.navigate(route);
   }
 }

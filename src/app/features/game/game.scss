@@ -15,7 +15,9 @@
 
 .game__back {
   font-family: var(--font-head);
-  font-size: 14px;
+  font-size: 18px;
+  font-weight: 700;
+  text-transform: uppercase;
   color: var(--ink-light);
   text-decoration: none;
 
@@ -28,7 +30,9 @@
   display: flex;
   gap: var(--sp-6);
   font-family: var(--font-head);
-  font-size: 16px;
+  font-size: 20px;
+  font-weight: 700;
+  text-transform: uppercase;
   color: var(--brass);
 }
 
@@ -87,7 +91,9 @@
 
 .game__gauge-label {
   font-family: var(--font-head);
-  font-size: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
   color: var(--brass);
 }
 
@@ -101,7 +107,9 @@
   left: 50%;
   transform: translateX(-50%);
   font-family: var(--font-head);
-  font-size: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  text-transform: uppercase;
   color: var(--brass);
   text-shadow: 2px 2px 0 var(--shadow);
 }
@@ -139,6 +147,7 @@
 .game__result-line--good,
 .game__result-line--bad {
   font-family: var(--font-head);
-  font-size: 14px;
+  font-size: 18px;
+  font-weight: 700;
   color: var(--biplane-red);
 }

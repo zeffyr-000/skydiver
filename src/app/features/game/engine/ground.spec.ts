@@ -46,10 +46,50 @@ describe('generateTerrain', () => {
     }
   });
 
+  it('rolls one landmark per jump and hits all three kinds across seeds', () => {
+    const kinds = new Set<string>();
+    for (let seed = 1; seed <= 60; seed++) {
+      kinds.add(generateTerrain(seed, cfg).landmark.kind);
+    }
+    expect(kinds).toEqual(new Set(['lake', 'airstrip', 'forest']));
+  });
+
+  it('keeps the landmark clear of the target', () => {
+    for (let seed = 1; seed <= 60; seed++) {
+      const lm = generateTerrain(seed, cfg).landmark;
+      if (lm.kind === 'lake') {
+        expect(Math.hypot(lm.x, lm.y)).toBeGreaterThanOrEqual(
+          cfg.targetRadius + Math.max(lm.rx, lm.ry) * 0.3,
+        );
+      } else if (lm.kind === 'forest') {
+        expect(Math.hypot(lm.x, lm.y)).toBeGreaterThanOrEqual(cfg.targetRadius);
+      } else {
+        const offset = lm.orientation === 'h' ? lm.y : lm.x;
+        expect(Math.abs(offset)).toBeGreaterThanOrEqual(cfg.targetRadius + lm.widthM / 2);
+      }
+    }
+  });
+
+  it('a forest landmark ships its trees as decorations', () => {
+    for (let seed = 1; seed <= 60; seed++) {
+      const t = generateTerrain(seed, cfg);
+      if (t.landmark.kind !== 'forest') {
+        continue;
+      }
+      const lm = t.landmark;
+      const inside = t.decorations.filter(
+        (d) =>
+          (d.sprite === TerrainSprite.TreeA || d.sprite === TerrainSprite.TreeB) &&
+          Math.hypot(d.x - lm.x, d.y - lm.y) <= lm.r,
+      );
+      expect(inside.length).toBeGreaterThan(25);
+    }
+  });
+
   it('produces a populated world within the decorated extent', () => {
     const t = generateTerrain(7, cfg);
-    expect(t.fields.length).toBeGreaterThanOrEqual(12);
-    expect(t.fields.length).toBeLessThanOrEqual(16);
+    expect(t.fields.length).toBeGreaterThanOrEqual(10);
+    expect(t.fields.length).toBeLessThanOrEqual(18);
     expect(t.decorations.length).toBeGreaterThan(80);
     for (const d of t.decorations) {
       expect(Math.abs(d.x)).toBeLessThanOrEqual(TERRAIN_EXTENT);

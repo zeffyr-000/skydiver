@@ -18,16 +18,19 @@ function lerp(a: number, b: number, t: number): number {
 /** Build a fresh jump. `rng` is injectable so tests can seed it. */
 export function createInitialState(cfg: GameConfig, rng: () => number = Math.random): GameState {
   const windDir = rng() * Math.PI * 2;
-  const windBaseX = Math.cos(windDir) * cfg.windBase;
-  const windBaseY = Math.sin(windDir) * cfg.windBase;
 
   const spreadDir = rng() * Math.PI * 2;
   const spreadMag = (0.4 + 0.6 * rng()) * cfg.startSpread;
 
   // New draws are APPENDED after the three above: fixed-seed tests must keep
-  // producing the same wind and spawn position as before.
+  // producing the same wind direction and spawn position as before.
   const planeDir = rng() * Math.PI * 2;
   const groundSeed = Math.floor(rng() * 0xffffffff) >>> 0;
+  // Per-jump weather: 40%–140% of the difficulty's base wind and gusts, so
+  // the same setting deals calm mornings and rough days.
+  const windScale = 0.4 + rng();
+  const windBaseX = Math.cos(windDir) * cfg.windBase * windScale;
+  const windBaseY = Math.sin(windDir) * cfg.windBase * windScale;
 
   return {
     phase: cfg.introDuration > 0 ? Phase.PlaneApproach : Phase.Freefall,
@@ -39,6 +42,7 @@ export function createInitialState(cfg: GameConfig, rng: () => number = Math.ran
     velY: 0,
     windBaseX,
     windBaseY,
+    windGustScale: windScale,
     windX: windBaseX,
     windY: windBaseY,
     flareAmount: 0,
@@ -153,9 +157,10 @@ export function integrate(s: GameState, input: InputState, dt: number, cfg: Game
   n.descentSpeed += (terminal - n.descentSpeed) * approach;
   n.altitude = Math.max(0, n.altitude - n.descentSpeed * dt);
 
-  // --- Wind: deterministic gust around the steady base vector ---
-  n.windX = n.windBaseX + Math.sin(n.elapsed * GUST_FREQ_X) * cfg.windGust;
-  n.windY = n.windBaseY + Math.cos(n.elapsed * GUST_FREQ_Y) * cfg.windGust;
+  // --- Wind: deterministic gust around the steady base vector, both scaled
+  // by the jump's weather draw ---
+  n.windX = n.windBaseX + Math.sin(n.elapsed * GUST_FREQ_X) * cfg.windGust * n.windGustScale;
+  n.windY = n.windBaseY + Math.cos(n.elapsed * GUST_FREQ_Y) * cfg.windGust * n.windGustScale;
   // Effective air velocity: the canopy catches much more wind than a falling
   // body, and an opening canopy catches progressively more.
   const windFactor = underCanopy

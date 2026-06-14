@@ -1,39 +1,60 @@
 <section class="records">
-  <header class="records__head">
-    <a class="records__back" routerLink="/">&#9664; {{ 'common.back' | transloco }}</a>
-    <h2>{{ 'records.title' | transloco }}</h2>
-  </header>
+  <app-sky-scene />
 
-  <app-pixel-panel class="records__panel">
-    @if (store.records().length) {
-      <table class="records__table">
-        <thead>
-          <tr>
-            <th>{{ 'records.rank' | transloco }}</th>
-            <th>{{ 'records.pilot' | transloco }}</th>
-            <th class="records__num">{{ 'records.score' | transloco }}</th>
-            <th>{{ 'records.date' | transloco }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (record of store.records(); track $index) {
+  <div class="records__content">
+    <header class="records__head">
+      <a class="records__back" href="/" (click)="onBack($event)"
+        >&#9664; {{ 'common.back' | transloco }}</a
+      >
+      <h2>{{ 'records.title' | transloco }}</h2>
+    </header>
+
+    <app-pixel-panel class="records__panel">
+      @if (store.records().length) {
+        <table class="records__table">
+          <thead>
             <tr>
-              <td>{{ $index + 1 }}</td>
-              <td>{{ record.name }}</td>
-              <td class="records__num">{{ record.score }}</td>
-              <td>{{ record.date | date: 'mediumDate' }}</td>
+              <th>{{ 'records.rank' | transloco }}</th>
+              <th>{{ 'records.pilot' | transloco }}</th>
+              <th class="records__num">{{ 'records.score' | transloco }}</th>
+              <th>{{ 'records.date' | transloco }}</th>
             </tr>
-          }
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            @for (record of store.records(); track $index) {
+              <tr [style.--i]="$index">
+                <td>
+                  <span class="records__rank">
+                    <span
+                      class="records__medal"
+                      [class.records__medal--gold]="$index === 0"
+                      [class.records__medal--silver]="$index === 1"
+                      [class.records__medal--bronze]="$index === 2"
+                      aria-hidden="true"
+                    ></span>
+                    {{ $index + 1 }}
+                  </span>
+                </td>
+                <td>{{ record.name }}</td>
+                <td class="records__num">{{ record.score }}</td>
+                <td>{{ record.date | date: 'mediumDate' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
 
-      <div class="records__actions">
-        <app-pixel-button (pressed)="store.clear()">
-          {{ 'records.clear' | transloco }}
-        </app-pixel-button>
-      </div>
-    } @else {
-      <p class="records__empty">{{ 'records.empty' | transloco }}</p>
-    }
-  </app-pixel-panel>
+        <div class="records__actions">
+          <app-pixel-button (pressed)="store.clear()">
+            {{ 'records.clear' | transloco }}
+          </app-pixel-button>
+        </div>
+      } @else {
+        <div class="records__empty">
+          <span class="records__windsock" aria-hidden="true"></span>
+          <p class="records__empty-line">{{ 'records.empty' | transloco }}</p>
+          <p class="records__empty-hint">{{ 'records.emptyHint' | transloco }}</p>
+        </div>
+      }
+    </app-pixel-panel>
+  </div>
 </section>

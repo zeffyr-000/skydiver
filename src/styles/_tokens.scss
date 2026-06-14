@@ -17,6 +17,16 @@
   --brass-dark: #a9781f; // brass shadow
   --shadow: #11161f; // pixel border darks / pressed shadow
   --highlight: #fff7e0; // top-left bevel highlight
+  --grass: #4f7a3a; // airfield grass (mirrors sprite palette G)
+  --grass-dark: #3a5c2b; // grass shading (mirrors sprite palette g)
+
+  // --- Golden-hour sky ramp (top → horizon; mirrors sprite palette Z/T/M/E/A/U/V) ---
+  --sky-twilight: #34416b; // indigo-violet below the deep dusk
+  --sky-mauve: #6b5480; // soft violet mid-sky
+  --sky-ember: #c1683f; // burnt orange above the horizon
+  --sky-glow: #e8a35c; // amber horizon glow
+  --hill-far: #4a3a5e; // far hill silhouette
+  --hill-near: #2e2440; // near hill silhouette
 
   // --- Pixel spacing grid (4px base) ---
   --px: 4px;
@@ -36,10 +46,11 @@
   --fs-h3: 24px;
   --fs-h2: 32px;
   --fs-h1: 48px;
-  --font-head: 'Press Start 2P', monospace;
+  --font-head: 'Pixelify Sans', sans-serif;
   --font-body: 'VT323', monospace;
 
   // --- z-index ---
   --z-overlay: 1000;
   --z-modal: 1100;
+  --z-wipe: 1200; // route-transition wipe sits above everything, modals included
 }

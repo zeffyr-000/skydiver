@@ -1,4 +1,12 @@
 .settings {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+.settings__content {
+  position: relative;
+  z-index: 1;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -16,12 +24,25 @@
 
 .settings__back {
   font-family: var(--font-head);
-  font-size: 14px;
+  font-size: 18px;
+  font-weight: 700;
+  text-transform: uppercase;
   color: var(--ink-light);
   text-decoration: none;
 
   &:hover {
     color: var(--brass);
+  }
+}
+
+.settings__panel {
+  animation: panel-drop 280ms steps(4, end) backwards;
+}
+
+@keyframes panel-drop {
+  from {
+    transform: translateY(-32px);
+    visibility: hidden;
   }
 }
 
@@ -39,7 +60,9 @@
 
 .settings__label {
   font-family: var(--font-head);
-  font-size: 14px;
+  font-size: 18px;
+  font-weight: 700;
+  text-transform: uppercase;
   color: var(--ink);
 }
 
@@ -62,7 +85,37 @@
   flex-wrap: wrap;
 }
 
+// Reserved caret slot so toggling the active option never shifts the row.
+.settings__difficulty {
+  position: relative;
+  padding-left: 18px;
+
+  &::before {
+    content: '\25B8';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: var(--font-head);
+    font-size: 16px;
+    color: var(--biplane-red);
+    visibility: hidden;
+  }
+
+  &--active::before {
+    visibility: visible;
+    animation: pixel-blink 1s steps(2, start) infinite;
+  }
+}
+
+@keyframes pixel-blink {
+  to {
+    opacity: 0;
+  }
+}
+
 .settings__lang {
   font-family: var(--font-head);
-  font-size: 16px;
+  font-size: 20px;
+  font-weight: 700;
 }

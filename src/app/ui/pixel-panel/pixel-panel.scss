@@ -2,7 +2,13 @@
 
 :host {
   display: block;
-  background: var(--parchment);
+  // Parchment with paper grain and a brass rivet pinned in each corner.
+  background:
+    url('/assets/sprites/rivet.png') no-repeat 8px 8px / 16px 16px,
+    url('/assets/sprites/rivet.png') no-repeat calc(100% - 8px) 8px / 16px 16px,
+    url('/assets/sprites/rivet.png') no-repeat 8px calc(100% - 8px) / 16px 16px,
+    url('/assets/sprites/rivet.png') no-repeat calc(100% - 8px) calc(100% - 8px) / 16px 16px,
+    url('/assets/sprites/paper.png') repeat 0 0 / 96px 96px var(--parchment);
   color: var(--ink);
   margin: var(--border-w); // room for the outer pixel outline
   @include px.pixel-bevel();
@@ -10,7 +16,8 @@
 
 .pixel-panel__bar {
   font-family: var(--font-head);
-  font-size: 16px;
+  font-size: 20px;
+  font-weight: 700;
   text-transform: uppercase;
   color: var(--ink-light);
   background: var(--biplane-red);

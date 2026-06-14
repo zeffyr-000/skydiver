@@ -12,6 +12,8 @@ export class PixelButton {
   readonly variant = input<PixelButtonVariant>('default');
   readonly disabled = input(false);
   readonly type = input<'button' | 'submit'>('button');
+  /** Toggle semantics (aria-pressed) for buttons used as exclusive options. */
+  readonly ariaPressed = input<boolean | null>(null);
   readonly pressed = output<void>();
 
   onClick(): void {

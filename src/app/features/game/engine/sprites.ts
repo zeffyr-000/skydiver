@@ -8,19 +8,24 @@
  * falls back to its procedural shapes, so nothing ever blocks on an image.
  */
 
+// `res` = source pixels per logical art pixel: sheets ship at 2x resolution
+// (hi-bit shading pass in the generator) while the renderer keeps reasoning
+// in the original logical sizes — drawSprite divides the destination by res.
 export const SHEET_SPECS = {
-  'diver-freefall': { fw: 16, fh: 16, frames: 5 },
-  'diver-deploy': { fw: 16, fh: 24, frames: 6 },
-  canopy: { fw: 32, fh: 32, frames: 4 },
-  'diver-land': { fw: 16, fh: 16, frames: 6 },
-  'diver-crash': { fw: 16, fh: 16, frames: 4 },
-  plane: { fw: 48, fh: 32, frames: 3 },
-  terrain: { fw: 16, fh: 16, frames: 10 },
+  'diver-freefall': { fw: 32, fh: 32, frames: 7, res: 2 },
+  'diver-deploy': { fw: 32, fh: 48, frames: 6, res: 2 },
+  canopy: { fw: 64, fh: 64, frames: 4, res: 2 },
+  'diver-land': { fw: 32, fh: 32, frames: 6, res: 2 },
+  'diver-crash': { fw: 32, fh: 32, frames: 4, res: 2 },
+  plane: { fw: 96, fh: 64, frames: 3, res: 2 },
+  terrain: { fw: 32, fh: 32, frames: 11, res: 2 },
+  // Grass texture tile, overlaid on the ground at low alpha by the renderer.
+  ground: { fw: 192, fh: 48, frames: 1, res: 2 },
 } as const;
 
 export type SheetName = keyof typeof SHEET_SPECS;
 
-/** Frame indices inside terrain.png. */
+/** Frame indices inside terrain.png (10 = windsock flutter pose, menu-only). */
 export enum TerrainSprite {
   TreeA = 0,
   TreeB = 1,
@@ -40,6 +45,8 @@ export interface SpriteSheet {
   fw: number;
   fh: number;
   frames: number;
+  /** Source pixels per logical art pixel (2 = hi-bit sheets). */
+  res: number;
 }
 
 export type SpriteAtlas = Record<SheetName, SpriteSheet>;
@@ -59,7 +66,8 @@ export async function loadAtlas(basePath = 'assets/sprites'): Promise<SpriteAtla
 }
 
 /**
- * Draw one frame centred on (x, y), scaled by `scale` (1 = native pixels) and
+ * Draw one frame centred on (x, y), scaled by `scale` (1 = one screen pixel
+ * per LOGICAL art pixel, regardless of the sheet's source resolution) and
  * optionally rotated. Coordinates are snapped to whole pixels so nearest-
  * neighbour sampling stays crisp.
  */
@@ -73,8 +81,8 @@ export function drawSprite(
   rotation = 0,
 ): void {
   const f = Math.min(sheet.frames - 1, Math.max(0, Math.round(frame)));
-  const dw = Math.max(1, Math.round(sheet.fw * scale));
-  const dh = Math.max(1, Math.round(sheet.fh * scale));
+  const dw = Math.max(1, Math.round((sheet.fw / sheet.res) * scale));
+  const dh = Math.max(1, Math.round((sheet.fh / sheet.res) * scale));
   if (rotation !== 0) {
     ctx.save();
     ctx.translate(Math.round(x), Math.round(y));

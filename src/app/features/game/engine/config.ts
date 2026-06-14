@@ -24,7 +24,7 @@ export const BASE_CONFIG: GameConfig = {
   safeLandingSpeed: 9,
   targetRadius: 50,
   bullseyeRadius: 6,
-  startSpread: 160,
+  startSpread: 320,
   introDuration: 2.8,
   deployDuration: 1,
   outroDuration: 2,
@@ -38,8 +38,11 @@ export const BASE_CONFIG: GameConfig = {
 };
 
 /**
- * Difficulty changes three things: wind strength (drift to fight), target size
- * (margin for error), and landing tolerance (how gentle you must be).
+ * Difficulty changes four things: wind strength (drift to fight), target size
+ * (margin for error), landing tolerance (how gentle you must be), and exit
+ * offset (how far from the target the plane drops you — far exits make
+ * tracking matter). Each jump then re-rolls its own weather and exit within
+ * those bounds (`createInitialState`).
  */
 export function configForDifficulty(difficulty: Difficulty): GameConfig {
   switch (difficulty) {
@@ -50,7 +53,7 @@ export function configForDifficulty(difficulty: Difficulty): GameConfig {
         windGust: 0.3,
         targetRadius: 70,
         safeLandingSpeed: 11,
-        startSpread: 120,
+        startSpread: 200,
       };
     case 'ace':
       return { ...BASE_CONFIG };
@@ -61,7 +64,7 @@ export function configForDifficulty(difficulty: Difficulty): GameConfig {
         windGust: 1,
         targetRadius: 35,
         safeLandingSpeed: 7,
-        startSpread: 210,
+        startSpread: 420,
         deployDuration: 1.3, // slower opening punishes low pulls harder
       };
   }

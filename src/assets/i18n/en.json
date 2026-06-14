@@ -67,6 +67,7 @@
     "score": "Score",
     "date": "Date",
     "empty": "No flights logged yet.",
+    "emptyHint": "Fly a mission to earn your wings.",
     "clear": "Clear Records",
     "defaultPilot": "Ace"
   }
