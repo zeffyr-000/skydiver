@@ -1,0 +1,61 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Allow the workflow to publish to GitHub Pages.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deploy at a time; let an in-progress deploy finish (don't cancel prod rollouts).
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Project page lives at https://zeffyr-000.github.io/skydiver/, so assets and
+      # router links must be resolved against /skydiver/ rather than the domain root.
+      - name: Build (production)
+        run: npm run build -- --configuration production --base-href=/skydiver/
+
+      # GitHub Pages has no SPA fallback; serving index.html as 404.html lets deep
+      # links (e.g. /skydiver/records) resolve to the Angular router on reload.
+      - name: SPA fallback (404 -> index)
+        run: cp dist/skydiver/browser/index.html dist/skydiver/browser/404.html
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/skydiver/browser
+
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

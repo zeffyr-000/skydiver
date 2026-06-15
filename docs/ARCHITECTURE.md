@@ -81,8 +81,11 @@ Route changes play a retro checkerboard wipe, driven by
 
 All user-facing strings live in `src/assets/i18n/*.json`. [`TranslocoStaticLoader`](../src/app/transloco.loader.ts)
 **imports** the JSON at build time and returns it from a lookup map — there is no HTTP request.
-Configured with default language `en`, `reRenderOnLangChange: true`, and MessageFormat for ICU
-plural/select. Adding a language is documented in the [README](../README.md#-internationalisation).
+Configured with default language `en` (also ships `fr`), `reRenderOnLangChange: true`, and
+MessageFormat for ICU plural/select. The active language is driven from the persisted
+[`SettingsStore`](../src/app/shared/settings.store.ts) choice by the root
+[`App`](../src/app/app.ts). Adding a language is documented in the
+[README](../README.md#-internationalisation).
 
 ### Styling — bespoke pixel-art design system
 

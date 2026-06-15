@@ -168,7 +168,9 @@ npm run format:check   # Prettier (verify, used in CI)
 
 User-facing strings live in `src/assets/i18n/` and are **bundled at build time** (imported
 statically by [`TranslocoStaticLoader`](src/app/transloco.loader.ts) — there is no HTTP call).
-The app currently ships **English** (`en`).
+The app ships **English** (`en`) and **French** (`fr`), selectable in **Settings** and persisted
+to `localStorage`. The root [`App`](src/app/app.ts) drives Transloco's active language from the
+saved choice on startup.
 
 To add a language:
 
@@ -176,6 +178,8 @@ To add a language:
 2. Import it and add it to the map in [transloco.loader.ts](src/app/transloco.loader.ts)
 3. Add the code to the `Language` union in [settings.store.ts](src/app/shared/settings.store.ts)
    and to `availableLangs` in [app.config.ts](src/app/app.config.ts)
+4. Add an entry (with its autonym label) to `languages` in
+   [settings.ts](src/app/features/settings/settings.ts) so it appears in the picker
 
 ## 🤖 AI Development
 

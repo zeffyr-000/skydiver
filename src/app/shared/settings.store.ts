@@ -1,7 +1,7 @@
 import { effect, Injectable, signal } from '@angular/core';
 
 export type Difficulty = 'rookie' | 'ace' | 'barnstormer';
-export type Language = 'en';
+export type Language = 'en' | 'fr';
 
 interface SettingsState {
   volume: number;
@@ -46,7 +46,7 @@ export class SettingsStore {
       if (typeof state.volume === 'number') {
         this.volume.set(state.volume);
       }
-      if (state.language === 'en') {
+      if (state.language === 'en' || state.language === 'fr') {
         this.language.set(state.language);
       }
       if (
