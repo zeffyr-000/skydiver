@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Translation, TranslocoLoader } from '@jsverse/transloco';
 
 import en from 'src/assets/i18n/en.json';
+import fr from 'src/assets/i18n/fr.json';
 
 /**
  * Resolves translations from statically bundled JSON — there is no backend and
@@ -12,6 +13,7 @@ import en from 'src/assets/i18n/en.json';
 export class TranslocoStaticLoader implements TranslocoLoader {
   private readonly translations: Record<string, Translation> = {
     en: en,
+    fr: fr,
   };
 
   getTranslation(lang: string) {

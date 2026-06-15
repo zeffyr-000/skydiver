@@ -43,7 +43,22 @@
 
       <div class="settings__row">
         <span class="settings__label">{{ 'settings.language' | transloco }}</span>
-        <span class="settings__value settings__lang">{{ settings.language() | uppercase }}</span>
+        <div class="settings__control settings__difficulties">
+          @for (option of languages; track option.value) {
+            <span
+              class="settings__difficulty"
+              [class.settings__difficulty--active]="settings.language() === option.value"
+            >
+              <app-pixel-button
+                [variant]="settings.language() === option.value ? 'brass' : 'default'"
+                [ariaPressed]="settings.language() === option.value"
+                (pressed)="settings.language.set(option.value)"
+              >
+                {{ option.label }}
+              </app-pixel-button>
+            </span>
+          }
+        </div>
       </div>
     </app-pixel-panel>
   </div>

@@ -1,0 +1,74 @@
+{
+  "app": {
+    "title": "Skydiver"
+  },
+  "menu": {
+    "subtitle": "Acrobaties des Années folles",
+    "play": "Jouer",
+    "records": "Records",
+    "settings": "Réglages",
+    "prompt": "Appuyez sur Entrée"
+  },
+  "common": {
+    "back": "Retour"
+  },
+  "game": {
+    "title": "Poste de pilotage",
+    "area": "Zone de saut",
+    "placeholder": "Le vol commence ici",
+    "score": "Score",
+    "lives": "Vies",
+    "pause": "Pause",
+    "paused": "En pause",
+    "resume": "Reprendre",
+    "quit": "Quitter vers le menu",
+    "altitude": "Altitude",
+    "wind": "Vent",
+    "distance": "Distance",
+    "deploy": "Ouvrir",
+    "flare": "Freiner",
+    "jumpComplete": "Saut terminé",
+    "greatJump": "Beau saut !",
+    "poorJump": "Saut médiocre…",
+    "crashed": "Écrasé",
+    "crashedMsg": "Vous avez heurté le sol trop fort !",
+    "bullseye": "En plein dans le mille !",
+    "jumpScore": "Score du saut",
+    "nextJump": "Saut suivant",
+    "gameOver": "Partie terminée",
+    "finalScore": "Score final",
+    "playAgain": "Rejouer",
+    "hintPlane": "Préparez-vous… ESPACE pour sauter",
+    "hintFreefall": "←/→ diriger · ↑ filer ↓ cambrer · ESPACE ouvre la voile",
+    "hintDeploying": "Ouverture de la voile — restez stable",
+    "hintCanopy": "Visez la cible · MAJ pour freiner",
+    "phase": {
+      "plane": "Largage",
+      "freefall": "Chute libre",
+      "deploying": "Ouverture",
+      "canopy": "Sous voile",
+      "landed": "Posé",
+      "crashed": "Écrasé"
+    }
+  },
+  "settings": {
+    "title": "Réglages",
+    "volume": "Volume",
+    "difficulty": "Difficulté",
+    "language": "Langue",
+    "difficultyRookie": "Débutant",
+    "difficultyAce": "As",
+    "difficultyBarnstormer": "Casse-cou"
+  },
+  "records": {
+    "title": "Panthéon des As",
+    "rank": "Rang",
+    "pilot": "Pilote",
+    "score": "Score",
+    "date": "Date",
+    "empty": "Aucun vol enregistré pour l'instant.",
+    "emptyHint": "Effectuez une mission pour gagner vos ailes.",
+    "clear": "Effacer les records",
+    "defaultPilot": "As"
+  }
+}

@@ -117,7 +117,8 @@ private readonly transloco = inject(TranslocoService);
 label = this.transloco.translate('menu.play');
 ```
 
-Add every new key to [src/assets/i18n/en.json](src/assets/i18n/en.json).
+Add every new key to **both** [src/assets/i18n/en.json](src/assets/i18n/en.json) and
+[src/assets/i18n/fr.json](src/assets/i18n/fr.json) — the two files must stay key-for-key in sync.
 
 ### 6. Use the pixel-art UI kit, not raw HTML controls
 

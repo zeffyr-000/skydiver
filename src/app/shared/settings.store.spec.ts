@@ -22,11 +22,18 @@ describe('SettingsStore', () => {
   it('hydrates from a previously persisted state', () => {
     localStorage.setItem(
       STORAGE_KEY,
-      JSON.stringify({ volume: 30, language: 'en', difficulty: 'barnstormer' }),
+      JSON.stringify({ volume: 30, language: 'fr', difficulty: 'barnstormer' }),
     );
     const store = makeStore();
     expect(store.volume()).toBe(30);
+    expect(store.language()).toBe('fr');
     expect(store.difficulty()).toBe('barnstormer');
+  });
+
+  it('ignores an unsupported language and keeps the default', () => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ language: 'de' }));
+    const store = makeStore();
+    expect(store.language()).toBe('en');
   });
 
   it('ignores a corrupt payload and keeps the defaults', () => {
