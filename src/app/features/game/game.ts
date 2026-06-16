@@ -11,20 +11,24 @@ import {
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { PixelButton, PixelDialog, PixelPanel } from '../../ui';
+import { InitialsEntry, PixelButton, PixelDialog, PixelPanel } from '../../ui';
 import { RecordsStore } from '../../shared/records.store';
 import { SettingsStore } from '../../shared/settings.store';
 import { configForDifficulty } from './engine/config';
 import { GameLoop } from './engine/loop';
 import { InputController } from './engine/input';
-import { createInitialState, integrate } from './engine/physics';
+import { createCloudDive, createInitialState, integrate } from './engine/physics';
 import { SkyDiverRenderer } from './engine/renderer';
 import { loadAtlas } from './engine/sprites';
-import type { GameConfig, GameState, JumpResult } from './engine/types';
+import type { CloudResult, GameConfig, GameState, JumpResult } from './engine/types';
 import { Phase } from './engine/types';
 
-const STARTING_LIVES = 3;
+/** A game is a fixed run: this many jumps, then one cloud bonus dive. */
+const TOTAL_JUMPS = 3;
 const HUD_INTERVAL_MS = 100; // throttle HUD signal writes to ~10Hz (keeps CD off the hot loop)
+
+/** The segment of the run currently in play. */
+type Segment = 'jump' | 'clouds';
 
 // Eight-way arrow glyphs indexed by octant of atan2(dy, dx) with +y pointing down.
 const ARROWS = ['→', '↘', '↓', '↙', '←', '↖', '↑', '↗'];
@@ -33,7 +37,7 @@ const ARROWS = ['→', '↘', '↓', '↙', '←', '↖', '↑', '↗'];
   selector: 'app-game',
   templateUrl: './game.html',
   styleUrl: './game.scss',
-  imports: [RouterLink, TranslocoPipe, PixelButton, PixelPanel, PixelDialog],
+  imports: [RouterLink, TranslocoPipe, PixelButton, PixelPanel, PixelDialog, InitialsEntry],
   host: { '(document:keydown.escape)': 'togglePause()' },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -47,18 +51,31 @@ export class Game {
 
   // --- HUD state surfaced to the template (throttled to ~10Hz from the loop) ---
   protected readonly score = signal(0);
-  protected readonly lives = signal(STARTING_LIVES);
+  /** Which segment is in play, and which jump (1..TOTAL_JUMPS) within the run. */
+  protected readonly segment = signal<Segment>('jump');
+  protected readonly jumpNumber = signal(1);
+  protected readonly totalJumps = TOTAL_JUMPS;
   protected readonly paused = signal(false);
   protected readonly altitude = signal(0);
   protected readonly windLabel = signal('');
   protected readonly distance = signal(0);
   protected readonly bearing = signal('·');
+  /** Cloud-dive HUD: "passed/total" hoops. */
+  protected readonly ringsLabel = signal('0/0');
   protected readonly phaseKey = signal<string>(Phase.Freefall);
 
-  // --- Per-jump / game-over flow ---
+  // --- Per-segment / end-of-run flow ---
   protected readonly resultOpen = signal(false);
+  protected readonly cloudResultOpen = signal(false);
   protected readonly gameOver = signal(false);
   protected readonly lastResult = signal<JumpResult | null>(null);
+  protected readonly cloudResult = signal<CloudResult | null>(null);
+  /** Game over qualified for the table → prompt the player for their initials. */
+  protected readonly needsInitials = signal(false);
+  /** Set once a qualifying run has been written to the records table. */
+  protected readonly recordSaved = signal(false);
+  /** Current high score, surfaced on the game-over scoreboard. */
+  protected readonly bestScore = this.records.best;
   // Original-game flavour: the result card judges the jump, not just reports it.
   protected readonly resultHeading = computed(() => {
     const r = this.lastResult();
@@ -68,10 +85,13 @@ export class Game {
     if (r.crashed) {
       return 'game.crashed';
     }
-    if (r.bullseye || r.score >= 800) {
+    if (r.score === 0) {
+      return 'game.missed'; // landed safely but off the target
+    }
+    if (r.bullseye || r.score >= 1500) {
       return 'game.greatJump';
     }
-    return r.score < 300 ? 'game.poorJump' : 'game.jumpComplete';
+    return r.score < 600 ? 'game.poorJump' : 'game.jumpComplete';
   });
 
   // --- Engine (plain fields; never read in the template, so no CD churn) ---
@@ -136,6 +156,8 @@ export class Game {
         introDuration: 0, // no plane cinematic
         deployDuration: 0.3,
         outroDuration: 0.2,
+        cloudStartAltitude: 80, // a brief cloud round, too
+        cloudRingCount: 3,
       };
     }
     return cfg;
@@ -150,39 +172,33 @@ export class Game {
       return;
     }
 
-    if (this.state.phase === Phase.Landed || this.state.phase === Phase.Crashed) {
+    if (isResolved(this.state.phase)) {
       // The outro cinematic plays first (skippable — integrate consumes skip).
       if (this.state.outroTimer > 0) {
         this.state = integrate(this.state, input.read(), dt, this.config);
         this.pushHud();
         return;
       }
-      // Outro done: surface the touchdown's result exactly once.
+      // Outro done: surface this segment's result exactly once.
       if (this.resultPending) {
         this.resultPending = false;
         this.surfaceResult();
         return;
       }
       // Then freeze until the player continues. If the dialog was dismissed
-      // (e.g. Escape), advance — but never past a game over.
-      if (this.gameOver() || this.resultOpen()) {
+      // (e.g. Escape), advance — but never past the end of the run.
+      if (this.gameOver() || this.resultOpen() || this.cloudResultOpen()) {
         return;
       }
-      if (this.lives() <= 0) {
-        this.gameOver.set(true);
-        return;
-      }
-      this.nextJump();
+      this.advance();
       return;
     }
 
     const prevPhase = this.state.phase;
     this.state = integrate(this.state, input.read(), dt, this.config);
 
-    const resolved = this.state.phase === Phase.Landed || this.state.phase === Phase.Crashed;
-    const result = this.state.result;
-    if (resolved && this.state.phase !== prevPhase && result) {
-      this.onJumpResolved(result);
+    if (isResolved(this.state.phase) && this.state.phase !== prevPhase) {
+      this.onResolved();
     }
     this.pushHud();
   }
@@ -199,35 +215,85 @@ export class Game {
     this.lastHudPush = now;
     const s = this.state;
     this.altitude.set(Math.round(s.altitude));
-    this.distance.set(Math.round(Math.hypot(s.posX, s.posY)));
-    this.bearing.set(arrowFor(-s.posX, -s.posY));
     this.windLabel.set(`${arrowFor(s.windX, s.windY)} ${Math.round(Math.hypot(s.windX, s.windY))}`);
     this.phaseKey.set(s.phase);
+    if (this.segment() === 'clouds') {
+      this.ringsLabel.set(`${s.ringsPassed}/${s.rings.length}`);
+    } else {
+      this.distance.set(Math.round(Math.hypot(s.posX, s.posY)));
+      this.bearing.set(arrowFor(-s.posX, -s.posY));
+    }
   }
 
-  /** Touchdown bookkeeping: lives/score update immediately, dialogs wait for the outro. */
-  private onJumpResolved(result: JumpResult): void {
-    this.lastResult.set(result);
-    if (result.crashed) {
-      this.lives.update((l) => Math.max(0, l - 1));
+  /**
+   * Segment resolved: tally its points into the running total (a crashed jump
+   * just scores 0 — no more lives), then defer the dialog until the outro ends.
+   */
+  private onResolved(): void {
+    if (this.segment() === 'clouds') {
+      const cr = this.state.cloudResult;
+      this.cloudResult.set(cr);
+      if (cr) {
+        this.runningScore += cr.score;
+        this.score.set(this.runningScore);
+      }
     } else {
-      this.runningScore += result.score;
-      this.score.set(this.runningScore);
+      const r = this.state.result;
+      this.lastResult.set(r);
+      if (r && !r.crashed) {
+        this.runningScore += r.score;
+        this.score.set(this.runningScore);
+      }
     }
     this.resultPending = true;
   }
 
+  /** Show the segment's recap dialog (the run only ends after the cloud round). */
   private surfaceResult(): void {
-    if (this.lives() <= 0) {
-      this.records.add({
-        name: this.transloco.translate('records.defaultPilot'),
-        score: this.runningScore,
-        date: new Date().toISOString(),
-      });
-      this.gameOver.set(true);
+    if (this.segment() === 'clouds') {
+      this.cloudResultOpen.set(true);
     } else {
       this.resultOpen.set(true);
     }
+  }
+
+  /** Recap dialog closed: move to the next jump, the cloud round, or the finish. */
+  private advance(): void {
+    if (this.segment() === 'clouds') {
+      this.finishGame();
+    } else if (this.jumpNumber() < TOTAL_JUMPS) {
+      this.jumpNumber.update((n) => n + 1);
+      this.nextJump();
+    } else {
+      this.startCloudRound();
+    }
+  }
+
+  /** After the three jumps: drop into the cloud bonus dive. */
+  private startCloudRound(): void {
+    this.segment.set('clouds');
+    this.lastResult.set(null);
+    this.resultPending = false;
+    this.state = createCloudDive(this.config);
+    this.phaseKey.set(this.state.phase);
+    this.ringsLabel.set(`0/${this.state.rings.length}`);
+  }
+
+  /** End of the run: tally the final score and offer to sign the board. */
+  private finishGame(): void {
+    // Only a top-10 run gets to sign the board (arcade-style); everything else
+    // just sees its final tally.
+    this.needsInitials.set(this.records.qualifies(this.runningScore));
+    this.recordSaved.set(false);
+    this.gameOver.set(true);
+  }
+
+  /** Sign the high score: add the run to the records table under the initials. */
+  protected submitInitials(initials: string): void {
+    const name = initials.trim() || this.transloco.translate('records.defaultPilot');
+    this.records.add({ name, score: this.runningScore, date: new Date().toISOString() });
+    this.needsInitials.set(false);
+    this.recordSaved.set(true);
   }
 
   private nextJump(): void {
@@ -237,27 +303,36 @@ export class Game {
     this.phaseKey.set(this.state.phase);
   }
 
-  /** Pause is suppressed while a result/game-over dialog is showing. */
+  /** Pause is suppressed while any recap / end-of-run dialog is showing. */
   protected togglePause(): void {
-    if (this.resultOpen() || this.gameOver()) {
+    if (this.resultOpen() || this.cloudResultOpen() || this.gameOver()) {
       return;
     }
     this.paused.update((p) => !p);
   }
 
-  /** Closing the result dialog lets the loop spawn the next jump. */
+  /** Closing a recap dialog lets the loop advance to the next segment. */
   protected continueJump(): void {
     this.resultOpen.set(false);
+  }
+
+  protected continueClouds(): void {
+    this.cloudResultOpen.set(false);
   }
 
   protected playAgain(): void {
     this.gameOver.set(false);
     this.resultOpen.set(false);
+    this.cloudResultOpen.set(false);
     this.resultPending = false;
-    this.lives.set(STARTING_LIVES);
+    this.needsInitials.set(false);
+    this.recordSaved.set(false);
+    this.segment.set('jump');
+    this.jumpNumber.set(1);
     this.runningScore = 0;
     this.score.set(0);
     this.lastResult.set(null);
+    this.cloudResult.set(null);
     this.config = this.buildConfig();
     this.state = createInitialState(this.config);
     this.phaseKey.set(this.state.phase);
@@ -278,4 +353,9 @@ function arrowFor(dx: number, dy: number): string {
   }
   const octant = ((Math.round(Math.atan2(dy, dx) / (Math.PI / 4)) % 8) + 8) % 8;
   return ARROWS[octant];
+}
+
+/** Terminal phases that freeze the sim and wait on a recap dialog. */
+function isResolved(phase: Phase): boolean {
+  return phase === Phase.Landed || phase === Phase.Crashed || phase === Phase.CloudDone;
 }

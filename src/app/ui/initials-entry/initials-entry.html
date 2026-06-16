@@ -1,0 +1,38 @@
+<div class="initials">
+  <div class="initials__reel">
+    @for (ch of chars(); track $index) {
+      <div class="initials__cell" [class.initials__cell--active]="$index === pos()">
+        <button
+          type="button"
+          class="initials__step"
+          tabindex="-1"
+          aria-hidden="true"
+          (click)="cycle($index, 1)"
+        >
+          &#9650;
+        </button>
+        <button
+          type="button"
+          class="initials__glyph"
+          [attr.aria-label]="ch"
+          (click)="select($index)"
+        >
+          {{ ch }}
+        </button>
+        <button
+          type="button"
+          class="initials__step"
+          tabindex="-1"
+          aria-hidden="true"
+          (click)="cycle($index, -1)"
+        >
+          &#9660;
+        </button>
+      </div>
+    }
+  </div>
+
+  <app-pixel-button variant="brass" (pressed)="confirm()">
+    <ng-content />
+  </app-pixel-button>
+</div>

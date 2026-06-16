@@ -3,7 +3,13 @@
     <a class="game__back" routerLink="/">&#9664; {{ 'common.back' | transloco }}</a>
     <div class="game__stats">
       <span>{{ 'game.score' | transloco }}: {{ score() }}</span>
-      <span>{{ 'game.lives' | transloco }}: {{ lives() }}</span>
+      @if (segment() === 'clouds') {
+        <span>{{ 'game.cloudRound' | transloco }}</span>
+      } @else {
+        <span>{{
+          'game.jumpProgress' | transloco: { current: jumpNumber(), total: totalJumps }
+        }}</span>
+      }
     </div>
     <app-pixel-button variant="primary" (pressed)="togglePause()">
       {{ 'game.pause' | transloco }}
@@ -24,8 +30,13 @@
           <span class="game__gauge-value">{{ windLabel() }}</span>
         </div>
         <div class="game__gauge game__gauge--right">
-          <span class="game__gauge-label">{{ 'game.distance' | transloco }}</span>
-          <span class="game__gauge-value">{{ bearing() }} {{ distance() }}m</span>
+          @if (segment() === 'clouds') {
+            <span class="game__gauge-label">{{ 'game.rings' | transloco }}</span>
+            <span class="game__gauge-value">{{ ringsLabel() }}</span>
+          } @else {
+            <span class="game__gauge-label">{{ 'game.distance' | transloco }}</span>
+            <span class="game__gauge-value">{{ bearing() }} {{ distance() }}m</span>
+          }
         </div>
 
         <div class="game__phase">{{ 'game.phase.' + phaseKey() | transloco }}</div>
@@ -43,6 +54,9 @@
             }
             @case ('canopy') {
               {{ 'game.hintCanopy' | transloco }}
+            }
+            @case ('clouds') {
+              {{ 'game.hintClouds' | transloco }}
             }
           }
         </div>
@@ -63,34 +77,114 @@
 </app-pixel-dialog>
 
 <app-pixel-dialog [(open)]="resultOpen" [heading]="resultHeading() | transloco">
-  <div class="game__result">
-    @if (lastResult(); as r) {
+  @if (lastResult(); as r) {
+    <div class="recap">
       @if (r.crashed) {
-        <p class="game__result-line game__result-line--bad">{{ 'game.crashedMsg' | transloco }}</p>
-      } @else {
-        @if (r.bullseye) {
-          <p class="game__result-line game__result-line--good">{{ 'game.bullseye' | transloco }}</p>
-        }
-        <p class="game__result-line">
+        <p class="recap__verdict">{{ 'game.crashedMsg' | transloco }}</p>
+      } @else if (r.score === 0) {
+        <p class="recap__verdict">{{ 'game.missedMsg' | transloco }}</p>
+        <p class="recap__telemetry">
           {{ 'game.distance' | transloco }}: {{ round(r.landedDistance) }}m
         </p>
-        <p class="game__result-line">{{ 'game.jumpScore' | transloco }}: {{ r.score }}</p>
+      } @else if (r.breakdown; as b) {
+        @if (r.bullseye) {
+          <p class="recap__banner">&#9733; {{ 'game.bullseye' | transloco }} &#9733;</p>
+        }
+        <dl class="recap__rows">
+          <div class="recap__row" style="--row: 0">
+            <dt>{{ 'game.scoreAccuracy' | transloco }}</dt>
+            <dd>{{ b.proximity }}</dd>
+          </div>
+          @if (b.freefall) {
+            <div class="recap__row" style="--row: 1">
+              <dt>
+                {{ 'game.scoreFreefall' | transloco }} <em>{{ round(r.freefallTime) }}s</em>
+              </dt>
+              <dd>+{{ b.freefall }}</dd>
+            </div>
+          }
+          @if (b.softLanding) {
+            <div class="recap__row" style="--row: 2">
+              <dt>{{ 'game.scoreSoftLanding' | transloco }}</dt>
+              <dd>+{{ b.softLanding }}</dd>
+            </div>
+          }
+          @if (b.bullseye) {
+            <div class="recap__row recap__row--bonus" style="--row: 3">
+              <dt>{{ 'game.scoreBullseye' | transloco }}</dt>
+              <dd>+{{ b.bullseye }}</dd>
+            </div>
+          }
+          @if (b.multiplier !== 1) {
+            <div class="recap__row recap__row--mult" style="--row: 4">
+              <dt>{{ 'game.scoreMultiplier' | transloco }}</dt>
+              <dd>&times;{{ b.multiplier }}</dd>
+            </div>
+          }
+        </dl>
+        <div class="recap__total" style="--row: 5">
+          <span>{{ 'game.jumpScore' | transloco }}</span>
+          <span class="recap__total-value">{{ r.score }}</span>
+        </div>
+        <p class="recap__telemetry">
+          {{ 'game.landingSpeed' | transloco }}: {{ round(r.landingSpeed) }} m/s ·
+          {{ 'game.distance' | transloco }}: {{ round(r.landedDistance) }}m
+        </p>
       }
-    }
-    <app-pixel-button variant="brass" (pressed)="continueJump()">
-      {{ 'game.nextJump' | transloco }}
-    </app-pixel-button>
-  </div>
+      <app-pixel-button variant="brass" (pressed)="continueJump()">
+        {{ (jumpNumber() >= totalJumps ? 'game.toClouds' : 'game.nextJump') | transloco }}
+      </app-pixel-button>
+    </div>
+  }
+</app-pixel-dialog>
+
+<app-pixel-dialog [(open)]="cloudResultOpen" [heading]="'game.cloudRound' | transloco">
+  @if (cloudResult(); as c) {
+    <div class="recap">
+      <p class="recap__banner">&#9729; {{ 'game.cloudRound' | transloco }} &#9729;</p>
+      <dl class="recap__rows">
+        <div class="recap__row" style="--row: 0">
+          <dt>{{ 'game.rings' | transloco }}</dt>
+          <dd>{{ c.ringsPassed }}/{{ c.ringsTotal }}</dd>
+        </div>
+      </dl>
+      <div class="recap__total" style="--row: 1">
+        <span>{{ 'game.cloudBonus' | transloco }}</span>
+        <span class="recap__total-value">{{ c.score }}</span>
+      </div>
+      <app-pixel-button variant="brass" (pressed)="continueClouds()">
+        {{ 'game.continue' | transloco }}
+      </app-pixel-button>
+    </div>
+  }
 </app-pixel-dialog>
 
 <app-pixel-dialog [(open)]="gameOver" [heading]="'game.gameOver' | transloco">
-  <div class="game__result">
-    <p class="game__result-line">{{ 'game.finalScore' | transloco }}: {{ score() }}</p>
-    <app-pixel-button variant="brass" (pressed)="playAgain()">
-      {{ 'game.playAgain' | transloco }}
-    </app-pixel-button>
-    <app-pixel-button (pressed)="quit()">
-      {{ 'game.quit' | transloco }}
-    </app-pixel-button>
+  <div class="gameover">
+    <div class="gameover__scoreboard">
+      <p class="gameover__final-label">{{ 'game.finalScore' | transloco }}</p>
+      <p class="gameover__final-value">{{ score() }}</p>
+      <p class="gameover__best">{{ 'game.bestScore' | transloco }}: {{ bestScore() }}</p>
+    </div>
+
+    @if (needsInitials()) {
+      <p class="gameover__hi">&#9733; {{ 'game.newHighScore' | transloco }} &#9733;</p>
+      <p class="gameover__hi-hint">{{ 'game.enterInitials' | transloco }}</p>
+      <app-initials-entry (confirmed)="submitInitials($event)">
+        {{ 'game.confirmInitials' | transloco }}
+      </app-initials-entry>
+    } @else {
+      @if (recordSaved()) {
+        <p class="gameover__saved">{{ 'game.recordSaved' | transloco }}</p>
+      }
+      <div class="gameover__actions">
+        <app-pixel-button variant="brass" (pressed)="playAgain()">
+          {{ 'game.playAgain' | transloco }}
+        </app-pixel-button>
+        <app-pixel-button (pressed)="quit()">
+          {{ 'game.quit' | transloco }}
+        </app-pixel-button>
+      </div>
+    }
   </div>
 </app-pixel-dialog>

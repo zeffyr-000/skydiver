@@ -1,6 +1,6 @@
 import { generateTerrain, TERRAIN_EXTENT, type Terrain } from './ground';
 import { drawSprite, TerrainSprite, type SpriteAtlas } from './sprites';
-import type { GameConfig, GameState } from './types';
+import type { CloudRing, GameConfig, GameState } from './types';
 import { Phase } from './types';
 
 // Palette accents mirrored from src/styles/_tokens.scss (a canvas can't cheaply
@@ -50,6 +50,10 @@ const EXIT_ZOOM_METRES = 120;
 // groundPpm · H / (alt + H). Smaller = harder ground rush at the end.
 const CAMERA_HEIGHT_M = 90;
 
+// Lead colour for the next cloud hoop — a vivid gold that pops on both the blue
+// sky and the white clouds (paired with a dark halo by drawHoop).
+const HOOP_NEXT = '#ffcc33';
+
 /**
  * Top-down renderer. The diver is the camera (always screen-centre); the ground
  * — terrain, target, decorations — is drawn relative to it. Pixels-per-metre
@@ -79,6 +83,12 @@ export class SkyDiverRenderer {
     ctx.imageSmoothingEnabled = false; // nearest-neighbour, always
     const cx = this.w / 2;
     const cy = this.h / 2;
+
+    // The cloud bonus dive is a different world (sky + hoops, no ground).
+    if (s.phase === Phase.CloudDive || s.phase === Phase.CloudDone) {
+      this.drawCloudScene(s, cfg, cx, cy);
+      return;
+    }
 
     if (s.groundSeed !== this.terrainSeed || cfg.targetRadius !== this.terrainTargetRadius) {
       this.terrain = generateTerrain(s.groundSeed, cfg);
@@ -443,7 +453,9 @@ export class SkyDiverRenderer {
       case Phase.PlaneApproach:
         return; // still aboard the plane
 
-      case Phase.Freefall: {
+      case Phase.Freefall:
+      case Phase.CloudDive:
+      case Phase.CloudDone: {
         this.drawSpeedTrail(s, cfg, cx, cy);
         const sheet = atlas?.['diver-freefall'];
         // Lean into the lateral motion (pure function of state: velocity).
@@ -569,6 +581,200 @@ export class SkyDiverRenderer {
     ctx.lineTo(cx + 0.5, cy + 9);
     ctx.stroke();
   }
+
+  /** The cloud bonus dive: warm sky, a top-down cloud field, then the scoring hoops. */
+  private drawCloudScene(s: GameState, cfg: GameConfig, cx: number, cy: number): void {
+    const ctx = this.ctx;
+    // A warm high-altitude sky that flatters the cream/amber-rimmed cloud sprites.
+    const sky = ctx.createLinearGradient(0, 0, 0, this.h);
+    sky.addColorStop(0, '#34508a');
+    sky.addColorStop(0.55, '#7f9fc9');
+    sky.addColorStop(1, '#c9c3a8');
+    ctx.fillStyle = sky;
+    ctx.fillRect(0, 0, this.w, this.h);
+
+    this.drawClouds(s, cfg, cx, cy);
+    this.drawCloudRings(s, cx, cy);
+    this.drawDiver(s, cfg, cx, cy);
+    this.drawReticle(cx, cy);
+  }
+
+  /**
+   * Top-down cloud field: puffs live at world positions and altitudes and are
+   * projected by their depth below the diver — exactly like the jump camera
+   * grows the ground. As he falls they swell and stream outward from centre,
+   * then fade as they sweep past his level, so the plummet feels alive without
+   * leaving the straight-down view. Deterministic (a pure function of state).
+   */
+  private drawClouds(s: GameState, cfg: GameConfig, cx: number, cy: number): void {
+    const ctx = this.ctx;
+    const sheet = this.atlas?.clouds ?? null;
+    const SPAN = 700; // depth band (m) the field endlessly recycles over
+    const SPREAD = 170; // world offset of a puff from the dive line (m)
+    const BASE = 2.2; // puff pixels-per-metre at the diver's own level
+    const H = 160; // perspective falloff
+    const COUNT = 16;
+    const fallen = cfg.cloudStartAltitude - s.altitude;
+
+    const puffs: {
+      depth: number;
+      a: number;
+      x: number;
+      y: number;
+      scale: number;
+      frame: number;
+    }[] = [];
+    for (let i = 0; i < COUNT; i++) {
+      const depth = mod(cloudHash(s.groundSeed, i * 4) * SPAN - fallen, SPAN);
+      // Fade in as a puff spawns far below, out as it sweeps past the diver.
+      const a = clamp(Math.min(depth / 90, (SPAN - depth) / 130), 0, 1) * 0.92;
+      if (a < 0.03) {
+        continue;
+      }
+      const dir = cloudHash(s.groundSeed, i * 4 + 1) * Math.PI * 2;
+      const mag = (0.15 + 0.85 * cloudHash(s.groundSeed, i * 4 + 2)) * SPREAD;
+      const ppm = (BASE * H) / (depth + H);
+      puffs.push({
+        depth,
+        a,
+        x: cx + (Math.cos(dir) * mag - s.posX) * ppm,
+        y: cy + (Math.sin(dir) * mag - s.posY) * ppm,
+        scale: ppm,
+        frame: Math.floor(cloudHash(s.groundSeed, i * 4 + 3) * 3),
+      });
+    }
+    puffs.sort((p, q) => q.depth - p.depth); // far → near, so nearer puffs overlap
+    for (const p of puffs) {
+      ctx.globalAlpha = p.a;
+      if (sheet) {
+        drawSprite(ctx, sheet, Math.min(sheet.frames - 1, p.frame), p.x, p.y, p.scale);
+      } else {
+        this.drawPuff(p.x, p.y, 22 * p.scale);
+      }
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  private drawPuff(x: number, y: number, r: number): void {
+    const ctx = this.ctx;
+    fillEllipse(ctx, x, y + r * 0.18, r * 1.05, r * 0.5, withAlphaHex(COLORS.parchment, 0.55)); // shaded base
+    fillEllipse(ctx, x, y, r, r * 0.6, withAlphaHex(COLORS.parchment, 0.9));
+    fillEllipse(ctx, x - r * 0.35, y - r * 0.12, r * 0.6, r * 0.42, withAlpha(255, 255, 255, 0.95)); // lit crown
+  }
+
+  /**
+   * Scoring hoops as flat top-down rings (matching the bullseye target), grown
+   * by their depth below the diver. Only the NEXT hoop (vivid, pulsing) and the
+   * one after it (dim) are shown for readability; a just-passed hoop bursts into
+   * a green ring + sparkles, a missed one fades red, and a chevron points to the
+   * next hoop when it drifts off-centre. Pure function of (state): the flashes
+   * derive from how far the diver has dropped past each hoop.
+   */
+  private drawCloudRings(s: GameState, cx: number, cy: number): void {
+    const ctx = this.ctx;
+    // Sized so a hoop frames the diver (fits the canvas with margin) at the
+    // moment of crossing; the offset/radius ratio — "am I inside?" — is
+    // independent of this scale, so readability of the catch is preserved.
+    const BASE_PPM = 2.5;
+    const RING_H = 120;
+    const BURST = 16; // metres of fall (~0.5s) for a brief pass/miss flash
+
+    const project = (ring: CloudRing): { depth: number; x: number; y: number; r: number } => {
+      const depth = s.altitude - ring.altitude;
+      const ppm = (BASE_PPM * RING_H) / (Math.max(0, depth) + RING_H);
+      return {
+        depth,
+        x: cx + (ring.x - s.posX) * ppm,
+        y: cy + (ring.y - s.posY) * ppm,
+        r: ring.radius * ppm,
+      };
+    };
+
+    // Pass / miss flash: a resolved hoop sits just above us (depth < 0) and
+    // expands+fades as we drop away; a clean pass throws off sparkles.
+    for (const ring of s.rings) {
+      if (ring.passed === null) {
+        continue;
+      }
+      const { depth, x, y, r } = project(ring);
+      const p = -depth / BURST;
+      if (p < 0 || p > 1) {
+        continue;
+      }
+      const col = ring.passed ? '#7bbf5a' : COLORS.red;
+      strokeRing(ctx, x, y, r * (1 + p * 0.35), withAlphaHex(col, 1 - p), 2);
+      if (ring.passed) {
+        ctx.fillStyle = withAlphaHex('#eafbe0', 1 - p);
+        for (let k = 0; k < 6; k++) {
+          const a2 = (k / 6) * Math.PI * 2 + s.elapsed * 2;
+          const rr = r * (1.1 + p * 0.7);
+          ctx.fillRect(
+            Math.round(x + Math.cos(a2) * rr) - 1,
+            Math.round(y + Math.sin(a2) * rr) - 1,
+            2,
+            2,
+          );
+        }
+      }
+    }
+
+    // Upcoming hoops, nearest (highest altitude below us) first.
+    const upcoming = s.rings
+      .filter((ring) => ring.passed === null)
+      .sort((a, b) => b.altitude - a.altitude);
+    const soon = upcoming[1];
+    if (soon) {
+      const { x, y, r } = project(soon);
+      this.drawHoop(x, y, r, COLORS.brass, 2, 0.4);
+    }
+    const next = upcoming[0];
+    if (next) {
+      const { x, y, r } = project(next);
+      this.drawHoop(x, y, r, blink(s.elapsed) ? COLORS.highlight : HOOP_NEXT, 3, 1);
+      this.drawHoopArrow(cx, cy, x, y, HOOP_NEXT);
+    }
+  }
+
+  /** A flat hoop: dark halo for contrast, coloured rim, faint inner sheen. */
+  private drawHoop(
+    x: number,
+    y: number,
+    r: number,
+    color: string,
+    width: number,
+    alpha: number,
+  ): void {
+    if (r <= 0) {
+      return;
+    }
+    const ctx = this.ctx;
+    strokeRing(ctx, x, y, r + 1, withAlphaHex(COLORS.shadow, 0.4 * alpha), width + 2);
+    strokeRing(ctx, x, y, r, withAlphaHex(color, alpha), width);
+    strokeRing(ctx, x, y, Math.max(1, r - width), withAlphaHex(COLORS.highlight, 0.5 * alpha), 1);
+  }
+
+  /** Chevron at a fixed radius pointing toward the next hoop when it's off-centre. */
+  private drawHoopArrow(cx: number, cy: number, px: number, py: number, color: string): void {
+    const dx = px - cx;
+    const dy = py - cy;
+    const dist = Math.hypot(dx, dy);
+    if (dist < 42) {
+      return; // already lined up — no need to nag
+    }
+    const ang = Math.atan2(dy, dx);
+    const rad = Math.min(dist, 96);
+    const ctx = this.ctx;
+    ctx.save();
+    ctx.translate(cx + Math.cos(ang) * rad, cy + Math.sin(ang) * rad);
+    ctx.rotate(ang);
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(7, 0);
+    ctx.lineTo(-5, -6);
+    ctx.lineTo(-5, 6);
+    ctx.fill();
+    ctx.restore();
+  }
 }
 
 // --- small drawing/colour helpers (kept local; no external dependency) ---
@@ -580,6 +786,17 @@ function blink(elapsed: number): boolean {
 
 function clamp(v: number, lo: number, hi: number): number {
   return Math.max(lo, Math.min(hi, v));
+}
+
+/** Screen-space wrap that stays positive (JS `%` can return negatives). */
+function mod(a: number, n: number): number {
+  return ((a % n) + n) % n;
+}
+
+/** Stateless 0..1 hash for deterministic cloud placement (GLSL-style). */
+function cloudHash(seed: number, i: number): number {
+  const x = Math.sin(seed * 0.013 + i * 12.9898) * 43758.5453;
+  return x - Math.floor(x);
 }
 
 function hexToRgb(hex: string): [number, number, number] {

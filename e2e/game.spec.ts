@@ -16,6 +16,32 @@ test.describe('Sky Diver game', () => {
     await expect(page.getByText('Next Jump')).toBeVisible({ timeout: 15000 });
   });
 
+  test('a run is three jumps then the cloud bonus round', async ({ page }) => {
+    // `fast=1` shrinks every segment (jumps and the cloud dive) to a few seconds.
+    await page.goto('/game?fast=1');
+    await expect(page.locator('canvas.game__canvas')).toBeVisible();
+
+    // Jumps 1 and 2 each end on a recap with a "Next Jump" button.
+    for (let i = 0; i < 2; i++) {
+      const next = page.getByRole('button', { name: 'Next Jump' });
+      await expect(next).toBeVisible({ timeout: 15000 });
+      await next.click();
+    }
+
+    // The third jump leads into the cloud round instead.
+    const toClouds = page.getByRole('button', { name: 'To the Clouds' });
+    await expect(toClouds).toBeVisible({ timeout: 15000 });
+    await toClouds.click();
+
+    // The cloud bonus dive resolves into its own recap…
+    const cont = page.getByRole('button', { name: 'Continue' });
+    await expect(cont).toBeVisible({ timeout: 15000 });
+    await cont.click();
+
+    // …and the run is then complete.
+    await expect(page.getByText('Run Complete')).toBeVisible({ timeout: 15000 });
+  });
+
   test('starts on the jump run and Space skips to free fall', async ({ page }) => {
     await page.goto('/game');
     await expect(page.locator('canvas.game__canvas')).toBeVisible();

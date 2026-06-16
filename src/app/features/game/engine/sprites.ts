@@ -21,6 +21,9 @@ export const SHEET_SPECS = {
   terrain: { fw: 32, fh: 32, frames: 11, res: 2 },
   // Grass texture tile, overlaid on the ground at low alpha by the renderer.
   ground: { fw: 192, fh: 48, frames: 1, res: 2 },
+  // Cloud puffs (billow, long drift, bank pair) for the cloud bonus dive's
+  // parallax sky — shared with the menu's CSS sky-scene.
+  clouds: { fw: 96, fh: 48, frames: 3, res: 2 },
 } as const;
 
 export type SheetName = keyof typeof SHEET_SPECS;

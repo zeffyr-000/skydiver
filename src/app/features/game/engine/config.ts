@@ -11,7 +11,7 @@ export const BASE_CONFIG: GameConfig = {
   gravity: 30,
   freefallTerminal: 60,
   canopyTerminal: 6,
-  steerAccelFreefall: 8,
+  steerAccelFreefall: 12,
   steerAccelCanopy: 16,
   damping: 0.35,
   windBase: 3,
@@ -28,20 +28,34 @@ export const BASE_CONFIG: GameConfig = {
   introDuration: 2.8,
   deployDuration: 1,
   outroDuration: 2,
-  pitchRate: 3,
+  // Free-fall handling (pre-canopy). Tuned so the diver is responsive while the
+  // chute is still closed: snappier pitch, more lateral bite, a less punishing
+  // arch and a less mushy opening window — without abandoning the pitch model.
+  pitchRate: 5,
   trackTerminalBoost: 20,
   archTerminalDrop: 25,
   trackAccel: 14,
-  backslideAccel: 5,
-  archSteerPenalty: 0.5,
-  deploySteerFactor: 0.4,
+  backslideAccel: 9,
+  archSteerPenalty: 0.3,
+  deploySteerFactor: 0.6,
+  scoreMultiplier: 1.5, // the "Ace" baseline
+  // Cloud bonus round. Few, large, well-spaced hoops so 1–2 are in play at once
+  // and the dive is readable (the renderer only emphasises the next hoop).
+  cloudStartAltitude: 800,
+  cloudTerminal: 30,
+  cloudRingCount: 5,
+  cloudRingRadius: 32,
+  cloudRingSpread: 90,
+  cloudRingPoints: 120,
+  cloudClearBonus: 400,
 };
 
 /**
- * Difficulty changes four things: wind strength (drift to fight), target size
- * (margin for error), landing tolerance (how gentle you must be), and exit
- * offset (how far from the target the plane drops you — far exits make
- * tracking matter). Each jump then re-rolls its own weather and exit within
+ * Difficulty changes wind strength (drift to fight), target size (margin for
+ * error), landing tolerance (how gentle you must be), exit offset (how far from
+ * the target the plane drops you — far exits make tracking matter), the score
+ * multiplier (rougher conditions pay more), and the cloud-round hoops (size,
+ * count and spread). Each jump then re-rolls its own weather and exit within
  * those bounds (`createInitialState`).
  */
 export function configForDifficulty(difficulty: Difficulty): GameConfig {
@@ -54,6 +68,10 @@ export function configForDifficulty(difficulty: Difficulty): GameConfig {
         targetRadius: 70,
         safeLandingSpeed: 11,
         startSpread: 200,
+        scoreMultiplier: 1,
+        cloudRingCount: 4, // fewer, very forgiving hoops
+        cloudRingRadius: 40,
+        cloudRingSpread: 70,
       };
     case 'ace':
       return { ...BASE_CONFIG };
@@ -66,6 +84,10 @@ export function configForDifficulty(difficulty: Difficulty): GameConfig {
         safeLandingSpeed: 7,
         startSpread: 420,
         deployDuration: 1.3, // slower opening punishes low pulls harder
+        scoreMultiplier: 2,
+        cloudRingCount: 6, // more, tighter, wider-spread rings
+        cloudRingRadius: 26,
+        cloudRingSpread: 120,
       };
   }
 }

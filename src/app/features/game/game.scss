@@ -130,24 +130,204 @@
   gap: var(--sp-4);
 }
 
-.game__result {
+// --- Per-jump score recap (arcade tally) ---
+.recap {
   display: flex;
   flex-direction: column;
   gap: var(--sp-3);
-  min-width: 220px;
+  min-width: 300px;
+
+  app-pixel-button {
+    align-self: center;
+    margin-top: var(--sp-2);
+  }
 }
 
-.game__result-line {
+.recap__verdict {
   margin: 0;
   text-align: center;
-  font-size: 20px;
-  color: var(--ink);
-}
-
-.game__result-line--good,
-.game__result-line--bad {
   font-family: var(--font-head);
   font-size: 18px;
   font-weight: 700;
   color: var(--biplane-red);
+}
+
+.recap__banner {
+  margin: 0;
+  text-align: center;
+  font-family: var(--font-head);
+  font-size: 22px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--biplane-red);
+  text-shadow: 2px 2px 0 var(--brass);
+  animation: recap-pop 320ms steps(4, end) backwards;
+}
+
+.recap__rows {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.recap__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--sp-6);
+  padding: var(--sp-1) 0;
+  font-size: 20px;
+  color: var(--ink);
+  box-shadow: inset 0 -2px 0 0 var(--parchment-dark);
+  animation: recap-row 220ms steps(3, end) backwards;
+  animation-delay: calc(var(--row) * 110ms);
+
+  dt {
+    margin: 0;
+    font-family: var(--font-body);
+  }
+
+  dd {
+    margin: 0;
+    font-family: var(--font-head);
+    font-weight: 700;
+  }
+
+  em {
+    font-style: normal;
+    font-size: 16px;
+    color: var(--biplane-red-dark);
+  }
+}
+
+.recap__row--bonus dd {
+  color: var(--biplane-red);
+}
+
+.recap__row--mult {
+  color: var(--brass-dark);
+
+  dd {
+    color: var(--brass-dark);
+  }
+}
+
+.recap__total {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--sp-6);
+  margin-top: var(--sp-2);
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--biplane-red);
+  color: var(--ink-light);
+  font-family: var(--font-head);
+  font-weight: 700;
+  text-transform: uppercase;
+  box-shadow: inset 0 calc(-1 * var(--border-w)) 0 0 var(--shadow);
+  animation: recap-row 260ms steps(3, end) backwards;
+  animation-delay: calc(var(--row) * 110ms);
+}
+
+.recap__total-value {
+  font-size: 28px;
+  color: var(--brass);
+}
+
+.recap__telemetry {
+  margin: 0;
+  text-align: center;
+  font-size: 16px;
+  color: var(--biplane-red-dark);
+}
+
+@keyframes recap-row {
+  from {
+    transform: translateX(-10px);
+    visibility: hidden;
+  }
+}
+
+@keyframes recap-pop {
+  from {
+    transform: scale(0.6);
+  }
+}
+
+// --- Game-over scoreboard ---
+.gameover {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-4);
+  min-width: 320px;
+}
+
+.gameover__scoreboard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-1);
+}
+
+.gameover__final-label {
+  margin: 0;
+  font-family: var(--font-head);
+  font-size: 16px;
+  text-transform: uppercase;
+  color: var(--biplane-red-dark);
+}
+
+.gameover__final-value {
+  margin: 0;
+  font-family: var(--font-head);
+  font-size: 56px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--biplane-red);
+  text-shadow: 3px 3px 0 var(--brass);
+}
+
+.gameover__best {
+  margin: 0;
+  font-size: 18px;
+  color: var(--ink);
+}
+
+.gameover__hi {
+  margin: 0;
+  font-family: var(--font-head);
+  font-size: 24px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--brass-dark);
+  animation:
+    recap-pop 400ms steps(4, end) backwards,
+    gameover-flash 900ms steps(1, end) 400ms infinite;
+}
+
+@keyframes gameover-flash {
+  50% {
+    color: var(--biplane-red);
+  }
+}
+
+.gameover__hi-hint {
+  margin: 0;
+  font-size: 16px;
+  color: var(--biplane-red-dark);
+}
+
+.gameover__saved {
+  margin: 0;
+  font-family: var(--font-head);
+  font-size: 18px;
+  color: var(--grass-dark);
+}
+
+.gameover__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  align-items: center;
 }

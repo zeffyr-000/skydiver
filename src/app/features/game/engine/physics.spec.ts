@@ -1,7 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { BASE_CONFIG, configForDifficulty } from './config';
-import { computeScore, createInitialState, integrate } from './physics';
-import type { GameConfig, GameState, InputState } from './types';
+import {
+  createCloudDive,
+  createInitialState,
+  integrate,
+  scoreCloudRound,
+  scoreJump,
+} from './physics';
+import type { CloudRing, GameConfig, GameState, InputState } from './types';
 import { Phase } from './types';
 
 const DT = 1 / 60;
@@ -133,20 +139,21 @@ describe('physics: landing & scoring', () => {
     expect(s.phase).toBe(Phase.Crashed);
     expect(s.result?.crashed).toBe(true);
     expect(s.result?.score).toBe(0);
+    expect(s.result?.breakdown).toBeNull();
   });
 
   it('scores highest at the centre and zero beyond the target', () => {
     const cfg = BASE_CONFIG;
-    expect(computeScore(0, 0, cfg)).toBeGreaterThan(computeScore(cfg.targetRadius * 0.5, 0, cfg));
-    expect(computeScore(cfg.targetRadius * 0.5, 0, cfg)).toBeGreaterThan(
-      computeScore(cfg.targetRadius * 0.9, 0, cfg),
-    );
-    expect(computeScore(cfg.targetRadius + 1, 0, cfg)).toBe(0);
+    const total = (d: number) => scoreJump(d, 0, 0, cfg).total;
+    expect(total(0)).toBeGreaterThan(total(cfg.targetRadius * 0.5));
+    expect(total(cfg.targetRadius * 0.5)).toBeGreaterThan(total(cfg.targetRadius * 0.9));
+    expect(total(cfg.targetRadius + 1)).toBe(0);
   });
 
   it('rewards a longer free fall (later deploy)', () => {
     const cfg = BASE_CONFIG;
-    expect(computeScore(0, 20, cfg)).toBeGreaterThan(computeScore(0, 5, cfg));
+    expect(scoreJump(0, 20, 0, cfg).freefall).toBeGreaterThan(scoreJump(0, 5, 0, cfg).freefall);
+    expect(scoreJump(0, 20, 0, cfg).total).toBeGreaterThan(scoreJump(0, 5, 0, cfg).total);
   });
 });
 
@@ -236,13 +243,40 @@ describe('physics: stall recovery & gentle landing', () => {
 describe('physics: scoring bonuses', () => {
   it('awards the bullseye bonus only inside the inner radius', () => {
     const cfg = BASE_CONFIG;
-    // Dead centre: 1000 proximity + 500 bullseye, no freefall bonus.
-    expect(computeScore(0, 0, cfg)).toBe(1500);
-    // Just outside the bullseye: max proximity but no 500 bonus, so the centre
-    // beats it by at least the bonus.
-    const justOutside = computeScore(cfg.bullseyeRadius + 0.01, 0, cfg);
-    expect(justOutside).toBeLessThanOrEqual(1000);
-    expect(computeScore(0, 0, cfg) - justOutside).toBeGreaterThanOrEqual(500);
+    const centre = scoreJump(0, 0, 0, cfg);
+    expect(centre.bullseye).toBe(500);
+    // Just outside the bullseye: max proximity but no bullseye bonus, so the
+    // centre beats it by at least the bonus.
+    const justOutside = scoreJump(cfg.bullseyeRadius + 0.01, 0, 0, cfg);
+    expect(justOutside.bullseye).toBe(0);
+    expect(justOutside.proximity).toBeLessThanOrEqual(1000);
+    expect(centre.base - justOutside.base).toBeGreaterThanOrEqual(500);
+  });
+
+  it('rewards a gentle touchdown over a hard one', () => {
+    const cfg = BASE_CONFIG;
+    const soft = scoreJump(0, 0, 0, cfg);
+    const hard = scoreJump(0, 0, cfg.safeLandingSpeed, cfg);
+    expect(soft.softLanding).toBeGreaterThan(0);
+    expect(hard.softLanding).toBe(0);
+    expect(soft.total).toBeGreaterThan(hard.total);
+  });
+
+  it('scales the whole score by the difficulty multiplier', () => {
+    const rookie = scoreJump(0, 10, 2, configForDifficulty('rookie'));
+    const barnstormer = scoreJump(0, 10, 2, configForDifficulty('barnstormer'));
+    expect(rookie.multiplier).toBe(1);
+    expect(rookie.total).toBe(rookie.base); // ×1 is a no-op
+    expect(barnstormer.multiplier).toBe(2);
+    expect(barnstormer.total).toBe(Math.round(barnstormer.base * 2));
+  });
+
+  it('returns an all-zero breakdown for a landing outside the target', () => {
+    const cfg = BASE_CONFIG;
+    const miss = scoreJump(cfg.targetRadius + 5, 12, 1, cfg);
+    expect(miss.total).toBe(0);
+    expect(miss.proximity).toBe(0);
+    expect(miss.freefall).toBe(0);
   });
 });
 
@@ -451,5 +485,108 @@ describe('physics: landing outro', () => {
     }
     s = integrate(s, SKIP, DT, cfg);
     expect(s.outroTimer).toBe(0);
+  });
+});
+
+describe('physics: freefall handling (pre-canopy steering)', () => {
+  const RIGHT: InputState = { ...NEUTRAL, steerX: 1 };
+
+  it('keeps a healthy share of the canopy steering authority before the chute is out', () => {
+    const cfg = noWind();
+    // Top lateral speed in free fall…
+    const ff = run(
+      createInitialState(cfg, () => 0.5),
+      RIGHT,
+      cfg,
+      120,
+    );
+    // …vs under a fully open canopy.
+    let c = run(
+      createInitialState(cfg, () => 0.5),
+      NEUTRAL,
+      cfg,
+      60,
+    );
+    c = integrate(c, DEPLOY, DT, cfg);
+    c = run(c, NEUTRAL, cfg, 120); // ride out the opening
+    c = run({ ...c, velX: 0 }, RIGHT, cfg, 120);
+    // Pre-canopy authority is now at least 60% of the canopy's (~50% before the fix).
+    expect(ff.velX).toBeGreaterThan(c.velX * 0.6);
+  });
+
+  it('no longer halves lateral control while arching (softened penalty)', () => {
+    const cfg = noWind();
+    const base = { ...createInitialState(cfg, () => 0.5), posX: 0, posY: 0, velX: 0 };
+    const flat = run(base, RIGHT, cfg, 180);
+    const arched = run(base, { ...RIGHT, steerY: 1 }, cfg, 180);
+    expect(arched.velX).toBeGreaterThan(flat.velX * 0.6);
+  });
+});
+
+describe('physics: cloud bonus dive', () => {
+  it('is deterministic for a fixed seed and input sequence', () => {
+    const cfg = BASE_CONFIG;
+    const play = (): GameState => {
+      let s = createCloudDive(cfg, () => 0.42);
+      for (let i = 0; i < 3000; i++) {
+        s = integrate(s, { ...NEUTRAL, steerX: i % 2 ? 1 : -1, steerY: i < 200 ? -1 : 1 }, DT, cfg);
+      }
+      return s;
+    };
+    const a = play();
+    expect(a).toEqual(play());
+    expect(a.phase).toBe(Phase.CloudDone);
+  });
+
+  it('bottoms out safely (CloudDone, never a crash) and tallies every ring', () => {
+    const cfg = noWind(); // no drift → rings sit on the dive line; fall straight through
+    let s = createCloudDive(cfg, () => 0.5);
+    s = run(s, NEUTRAL, cfg, 4000);
+    expect(s.phase).toBe(Phase.CloudDone);
+    expect(s.result).toBeNull(); // a cloud dive never produces a JumpResult
+    expect(s.cloudResult?.ringsPassed).toBe(cfg.cloudRingCount);
+    expect(s.cloudResult?.ringsTotal).toBe(cfg.cloudRingCount);
+    expect(s.cloudResult?.score).toBeGreaterThan(0);
+  });
+
+  it('ignores the deploy key — there is no canopy to open', () => {
+    const cfg = noWind();
+    const s = integrate(
+      createCloudDive(cfg, () => 0.5),
+      DEPLOY,
+      DT,
+      cfg,
+    );
+    expect(s.phase).toBe(Phase.CloudDive);
+  });
+
+  it('pays more for a dead-centre pass than a rim-skim, and zero for a miss', () => {
+    const cfg = BASE_CONFIG;
+    const ringAt = (centered: number, passed = true): CloudRing => ({
+      altitude: 100,
+      x: 0,
+      y: 0,
+      radius: 20,
+      passed,
+      centered,
+    });
+    const withRings = (rings: CloudRing[]): GameState => ({
+      ...createCloudDive(cfg, () => 0.5),
+      rings,
+    });
+    expect(scoreCloudRound(withRings([ringAt(1)]), cfg).score).toBeGreaterThan(
+      scoreCloudRound(withRings([ringAt(0)]), cfg).score,
+    );
+    const missed = scoreCloudRound(withRings([ringAt(0, false)]), cfg);
+    expect(missed.ringsPassed).toBe(0);
+    expect(missed.score).toBe(0);
+  });
+
+  it('shrinks under a fast-mode config', () => {
+    const cfg: GameConfig = { ...noWind(), cloudStartAltitude: 60, cloudRingCount: 2 };
+    let s = createCloudDive(cfg, () => 0.5);
+    expect(s.rings.length).toBe(2);
+    s = run(s, NEUTRAL, cfg, 600);
+    expect(s.phase).toBe(Phase.CloudDone);
   });
 });
