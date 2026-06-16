@@ -13,7 +13,7 @@
   inset: 0;
   // Golden-hour gradient strip (deep dusk → amber), banded + dithered in the
   // sprite itself; tiled horizontally and stretched to the viewport height.
-  background: url('/assets/sprites/sky.png') repeat-x;
+  background: url('assets/sprites/sky.png') repeat-x;
   background-size: auto 100%;
   // One shared timeline for the attract-mode actors (flyby + diver drop).
   --attract-period: 30s;
@@ -25,7 +25,7 @@
   position: absolute;
   left: 12vw;
   bottom: 132px; // sinks behind the hills and the ground strip
-  @include spr.sheet-frame('/assets/sprites/sun.png', 48px, 48px, 1, 0, 2);
+  @include spr.sheet-frame('assets/sprites/sun.png', 48px, 48px, 1, 0, 2);
 }
 
 .scene__hills {
@@ -38,14 +38,14 @@
 .scene__hills--far {
   bottom: 96px; // sits on the ground-strip horizon
   height: 80px;
-  background-image: url('/assets/sprites/hills-far.png');
+  background-image: url('assets/sprites/hills-far.png');
   background-size: 256px 80px;
 }
 
 .scene__hills--near {
   bottom: 88px; // tucks slightly behind the ground strip drawn after it
   height: 96px;
-  background-image: url('/assets/sprites/hills-near.png');
+  background-image: url('assets/sprites/hills-near.png');
   background-size: 256px 96px;
 }
 
@@ -58,7 +58,7 @@
   left: 0;
   right: 0;
   height: 96px;
-  background: url('/assets/sprites/clouds.png') repeat-x;
+  background: url('assets/sprites/clouds.png') repeat-x;
   background-size: 576px 96px;
   animation: cloud-drift linear infinite;
 }
@@ -104,7 +104,7 @@
 }
 
 .scene__bird {
-  @include spr.sheet-frame('/assets/sprites/birds.png', 16px, 8px, 2, 0, 2);
+  @include spr.sheet-frame('assets/sprites/birds.png', 16px, 8px, 2, 0, 2);
   animation: bird-flap 600ms steps(1, end) infinite;
 }
 
@@ -157,7 +157,7 @@
 .scene__plane {
   width: 192px;
   height: 128px;
-  background: url('/assets/sprites/plane.png') no-repeat;
+  background: url('assets/sprites/plane.png') no-repeat;
   background-size: 576px 128px;
   animation: plane-prop 240ms steps(3, end) infinite;
 }
@@ -196,13 +196,13 @@
 
 .scene__diver--fall {
   left: 22vw;
-  @include spr.sheet-frame('/assets/sprites/diver-freefall.png', 32px, 32px, 7, 6, 2);
+  @include spr.sheet-frame('assets/sprites/diver-freefall.png', 32px, 32px, 7, 6, 2);
   animation: diver-fall var(--attract-period) steps(12, end) infinite;
 }
 
 .scene__diver--canopy {
   left: calc(22vw - 32px);
-  @include spr.sheet-frame('/assets/sprites/canopy.png', 64px, 64px, 4, 0, 2);
+  @include spr.sheet-frame('assets/sprites/canopy.png', 64px, 64px, 4, 0, 2);
   animation:
     canopy-drop var(--attract-period) linear infinite,
     canopy-sway 1.8s linear infinite;
@@ -270,7 +270,7 @@
   inset: auto 0 0 0;
   height: 96px;
   // Generated grass tile: mowing stripes, tufts, daisies and dirt patch at 2x.
-  background: url('/assets/sprites/ground.png') repeat 0 0 / 384px 96px var(--grass);
+  background: url('assets/sprites/ground.png') repeat 0 0 / 384px 96px var(--grass);
   box-shadow: inset 0 var(--border-w) 0 0 var(--shadow);
 }
 

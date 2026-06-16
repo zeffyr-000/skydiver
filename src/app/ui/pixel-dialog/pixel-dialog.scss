@@ -4,7 +4,7 @@
   padding: 0;
   border: 0;
   // Parchment with the generated paper-grain tile.
-  background: url('/assets/sprites/paper.png') repeat 0 0 / 96px 96px var(--parchment);
+  background: url('assets/sprites/paper.png') repeat 0 0 / 96px 96px var(--parchment);
   color: var(--ink);
   min-width: 320px;
   @include px.pixel-bevel();
