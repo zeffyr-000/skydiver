@@ -17,10 +17,10 @@
 // terrain.png frames (32x32 source): 0/1 trees, 2 bush, 3 rock, 4 hay,
 // 5 pond, 6 tent, 7/8 spectators, 9 windsock, 10 windsock flutter.
 @mixin terrain($frame, $scale: 2) {
-  @include sheet-frame('/assets/sprites/terrain.png', 32px, 32px, 11, $frame, $scale);
+  @include sheet-frame('assets/sprites/terrain.png', 32px, 32px, 11, $frame, $scale);
 }
 
 // medals.png frames (32x32 source): 0 gold, 1 silver, 2 bronze.
 @mixin medal($frame, $scale: 1) {
-  @include sheet-frame('/assets/sprites/medals.png', 32px, 32px, 3, $frame, $scale);
+  @include sheet-frame('assets/sprites/medals.png', 32px, 32px, 3, $frame, $scale);
 }
