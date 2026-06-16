@@ -6,8 +6,8 @@
   focusMode="roving"
   selectionMode="explicit"
   [wrap]="true"
-  [values]="selected()"
-  (valuesChange)="onSelect($event)"
+  [value]="selected()"
+  (valueChange)="onSelect($event)"
   [attr.aria-label]="ariaLabel() || null"
 >
   @for (item of items(); track item.value) {

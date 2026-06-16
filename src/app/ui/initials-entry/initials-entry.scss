@@ -1,0 +1,69 @@
+@use 'pixel-ui' as px;
+
+.initials {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-4);
+}
+
+.initials__reel {
+  display: flex;
+  gap: var(--sp-3);
+}
+
+.initials__cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-1);
+}
+
+.initials__glyph {
+  width: 56px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-head);
+  font-size: 48px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--ink);
+  background: var(--canvas-cream);
+  cursor: pointer;
+  @include px.pixel-inset();
+}
+
+.initials__cell--active .initials__glyph {
+  color: var(--biplane-red);
+  background: var(--brass);
+  animation: initials-blink 800ms steps(1, end) infinite;
+}
+
+@keyframes initials-blink {
+  50% {
+    color: var(--biplane-red-dark);
+  }
+}
+
+.initials__step {
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: var(--font-body);
+  font-size: 18px;
+  line-height: 1;
+  color: var(--parchment-dark);
+  cursor: pointer;
+  visibility: hidden; // only the focused cell shows its arrows
+
+  &:hover {
+    color: var(--biplane-red);
+  }
+}
+
+.initials__cell--active .initials__step {
+  visibility: visible;
+  color: var(--brass-dark);
+}

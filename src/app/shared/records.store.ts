@@ -31,9 +31,28 @@ export class RecordsStore {
     [...this._records()].sort((a, b) => b.score - a.score).slice(0, MAX_RECORDS),
   );
 
+  /** The current top score, or 0 when the table is empty. */
+  readonly best = computed(() => this.records()[0]?.score ?? 0);
+
   constructor() {
     this.hydrate();
     effect(() => localStorage.setItem(STORAGE_KEY, JSON.stringify(this._records())));
+  }
+
+  /**
+   * Whether `score` would earn a place in the table (so the player should be
+   * prompted for a name). A positive score always qualifies while there's a
+   * free slot; once the table is full it must beat the lowest entry.
+   */
+  qualifies(score: number): boolean {
+    if (score <= 0) {
+      return false;
+    }
+    const list = this.records();
+    if (list.length < MAX_RECORDS) {
+      return true;
+    }
+    return score > list[list.length - 1].score;
   }
 
   add(record: ScoreRecord): void {

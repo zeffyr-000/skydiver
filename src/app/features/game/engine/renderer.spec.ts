@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { configForDifficulty } from './config';
-import { createInitialState } from './physics';
+import { createCloudDive, createInitialState } from './physics';
 import { SkyDiverRenderer } from './renderer';
 import { SHEET_SPECS, type SheetName, type SpriteAtlas } from './sprites';
 import { Phase, type GameState } from './types';
@@ -25,6 +25,7 @@ function fakeCtx(): CanvasRenderingContext2D {
     restore: vi.fn(),
     translate: vi.fn(),
     rotate: vi.fn(),
+    createLinearGradient: vi.fn(() => ({ addColorStop: vi.fn() })),
   } as unknown as CanvasRenderingContext2D;
 }
 
@@ -127,6 +128,34 @@ describe('SkyDiverRenderer', () => {
 
     expect(atExit).toBeGreaterThan(midFall); // close to the camera right after the jump
     expect(midFall).toBe(lowFall); // then the follow-camera never pulls away
+  });
+
+  function cloudDiveState(): GameState {
+    const s = createCloudDive(cfg, () => 0.5);
+    s.posX = 8;
+    s.altitude = cfg.cloudStartAltitude * 0.5; // mid-dive, hoops in view
+    return s;
+  }
+
+  it('paints the cloud bonus dive procedurally (no atlas) without throwing', () => {
+    const ctx = fakeCtx();
+    const renderer = new SkyDiverRenderer(ctx, 320, 240);
+
+    expect(() => renderer.draw(cloudDiveState(), cfg)).not.toThrow();
+    expect(ctx.fillRect).toHaveBeenCalled(); // sky
+    expect(ctx.stroke).toHaveBeenCalled(); // hoops + reticle
+    expect(ctx.drawImage).not.toHaveBeenCalled(); // no atlas → no sprites
+  });
+
+  it('draws the cloud sprite sheet during the cloud dive once the atlas is set', () => {
+    const ctx = fakeCtx();
+    const renderer = new SkyDiverRenderer(ctx, 320, 240);
+    renderer.atlas = stubAtlas();
+
+    expect(() => renderer.draw(cloudDiveState(), cfg)).not.toThrow();
+    const drawImage = ctx.drawImage as ReturnType<typeof vi.fn>;
+    const cloudImg = renderer.atlas.clouds.image;
+    expect(drawImage.mock.calls.some((c) => c[0] === cloudImg)).toBe(true);
   });
 
   it('keeps the diver hidden and shows the plane during the intro', () => {

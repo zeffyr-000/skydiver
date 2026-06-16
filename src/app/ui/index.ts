@@ -5,6 +5,7 @@ export { PixelSlider } from './pixel-slider/pixel-slider';
 export { PixelDialog } from './pixel-dialog/pixel-dialog';
 export { PixelMenuList } from './pixel-menu-list/pixel-menu-list';
 export type { PixelMenuItem } from './pixel-menu-list/pixel-menu-list';
+export { InitialsEntry } from './initials-entry/initials-entry';
 export { ScreenWipe } from './screen-wipe/screen-wipe';
 export { SkyScene } from './sky-scene/sky-scene';
 export type { SkySceneVariant } from './sky-scene/sky-scene';

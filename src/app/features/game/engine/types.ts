@@ -18,6 +18,10 @@ export enum Phase {
   Landed = 'landed',
   /** Touched down too fast (never deployed, deployed too low, or stalled into the ground). */
   Crashed = 'crashed',
+  /** Bonus round: a free fall through a cloud layer, flying through scoring rings (no canopy, no crash). */
+  CloudDive = 'clouds',
+  /** The cloud bonus round reached the bottom: tallied and safe (its terminal state). */
+  CloudDone = 'cloudsDone',
 }
 
 /** One frame of player intent, produced by the input layer. */
@@ -92,6 +96,45 @@ export interface GameConfig {
   archSteerPenalty: number;
   /** Fraction of canopy steering available while the chute is opening (0..1). */
   deploySteerFactor: number;
+  /** Difficulty score multiplier applied to the whole jump (rookie 1, harder > 1). */
+  scoreMultiplier: number;
+
+  // --- Cloud bonus round ("dive through the cloud rings") ---
+  /** Exit altitude for the cloud bonus dive (metres). */
+  cloudStartAltitude: number;
+  /** Terminal descent speed during the cloud dive (m/s) — slower than free fall so rings are catchable. */
+  cloudTerminal: number;
+  /** Number of scoring rings spread down the cloud dive. */
+  cloudRingCount: number;
+  /** Radius of each cloud ring (metres) — smaller is harder. */
+  cloudRingRadius: number;
+  /** Max horizontal offset of a ring's centre from the dive line (metres). */
+  cloudRingSpread: number;
+  /** Points for flying through a ring (scaled by how centred the pass was). */
+  cloudRingPoints: number;
+  /** Flat bonus for clearing every ring in the dive. */
+  cloudClearBonus: number;
+}
+
+/**
+ * Itemised score for a safe, on-target landing. Every field is a point value so
+ * the arcade result screen can tally them line by line. All zero on a miss.
+ */
+export interface ScoreBreakdown {
+  /** Accuracy points from proximity to the centre (the bulk of the score). */
+  proximity: number;
+  /** Bonus for a longer free fall (rewards a bold, late deploy). */
+  freefall: number;
+  /** Bonus for a gentle touchdown (lower descent speed = more points). */
+  softLanding: number;
+  /** Flat bonus for hitting the inner bullseye. */
+  bullseye: number;
+  /** Sum of the above, before the difficulty multiplier. */
+  base: number;
+  /** Difficulty multiplier applied to `base` (mirrors `GameConfig.scoreMultiplier`). */
+  multiplier: number;
+  /** Final awarded points: round(base * multiplier). */
+  total: number;
 }
 
 /** Outcome of a resolved jump. */
@@ -107,6 +150,33 @@ export interface JumpResult {
   /** Whether the diver hit the inner bullseye. */
   bullseye: boolean;
   /** Points awarded for this jump (0 on a crash or a miss). */
+  score: number;
+  /** Itemised score, or null on a crash (nothing to tally). */
+  breakdown: ScoreBreakdown | null;
+}
+
+/** One scoring hoop in the cloud bonus dive, sitting at a fixed altitude. */
+export interface CloudRing {
+  /** Altitude at which the ring must be crossed (metres). */
+  altitude: number;
+  /** Ground-plane centre of the ring (metres, relative to the dive line at 0,0). */
+  x: number;
+  y: number;
+  /** Catch radius (metres). */
+  radius: number;
+  /** null until the diver falls through its altitude, then the pass verdict. */
+  passed: boolean | null;
+  /** How centred the pass was (0 at the rim, 1 dead-centre); 0 until resolved. */
+  centered: number;
+}
+
+/** Outcome of the cloud bonus round — a pure additive bonus, never a crash. */
+export interface CloudResult {
+  /** Rings flown through. */
+  ringsPassed: number;
+  /** Rings in the dive. */
+  ringsTotal: number;
+  /** Bonus points awarded (after the difficulty multiplier). */
   score: number;
 }
 
@@ -156,4 +226,10 @@ export interface GameState {
   groundSeed: number;
   /** Set once the jump resolves. */
   result: JumpResult | null;
+  /** Scoring rings for the cloud bonus dive (empty for ordinary jumps). */
+  rings: CloudRing[];
+  /** Rings flown through so far in the cloud dive. */
+  ringsPassed: number;
+  /** Set once the cloud dive resolves (null for ordinary jumps). */
+  cloudResult: CloudResult | null;
 }

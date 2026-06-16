@@ -60,6 +60,31 @@ describe('RecordsStore', () => {
     expect(makeStore().records()).toEqual([]);
   });
 
+  it('exposes the current best score', () => {
+    const store = makeStore();
+    expect(store.best()).toBe(0);
+    store.add(rec(200));
+    store.add(rec(500));
+    expect(store.best()).toBe(500);
+  });
+
+  it('qualifies any positive score while the table has free slots', () => {
+    const store = makeStore();
+    expect(store.qualifies(10)).toBe(true);
+    expect(store.qualifies(0)).toBe(false);
+    expect(store.qualifies(-5)).toBe(false);
+  });
+
+  it('once full, only qualifies a score that beats the lowest entry', () => {
+    const store = makeStore();
+    for (let i = 1; i <= 10; i++) {
+      store.add(rec(i * 100)); // lowest is 100
+    }
+    expect(store.qualifies(50)).toBe(false);
+    expect(store.qualifies(100)).toBe(false); // ties don't bump
+    expect(store.qualifies(101)).toBe(true);
+  });
+
   it('persists additions back to localStorage', () => {
     const store = makeStore();
     store.add(rec(420));
