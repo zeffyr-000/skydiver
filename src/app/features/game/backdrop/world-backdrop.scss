@@ -1,0 +1,42 @@
+:host {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: var(--shadow);
+  pointer-events: none;
+}
+
+.backdrop__canvas {
+  display: block;
+  image-rendering: pixelated;
+}
+
+// Dip to black between attract jumps (hides the cut and the world rebuild).
+.backdrop__fade {
+  position: absolute;
+  inset: 0;
+  background: var(--shadow);
+  opacity: 0;
+  transition: opacity 200ms steps(4, end);
+
+  &--on {
+    opacity: 1;
+    transition: none;
+  }
+}
+
+// Keeps the menus legible: a vignette on the title, a deeper wash behind panels.
+.backdrop__shade {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 45%, rgba(17, 22, 31, 0.55) 100%);
+
+  &--calm {
+    background:
+      linear-gradient(rgba(17, 22, 31, 0.45), rgba(17, 22, 31, 0.45)),
+      radial-gradient(ellipse at center, transparent 40%, rgba(17, 22, 31, 0.6) 100%);
+  }
+}

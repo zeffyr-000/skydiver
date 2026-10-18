@@ -8,6 +8,7 @@
   [wrap]="true"
   [value]="selected()"
   (valueChange)="onSelect($event)"
+  (focusin)="onFocusIn($event)"
   [attr.aria-label]="ariaLabel() || null"
 >
   @for (item of items(); track item.value) {

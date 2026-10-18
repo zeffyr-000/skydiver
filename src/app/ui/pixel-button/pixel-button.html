@@ -1,8 +1,9 @@
 <button
   [type]="type()"
-  [class]="'pixel-btn pixel-btn--' + variant()"
+  [class]="'pixel-btn pixel-btn--' + variant() + (block() ? ' pixel-btn--block' : '')"
   [disabled]="disabled()"
   [attr.aria-pressed]="ariaPressed()"
+  [attr.aria-label]="ariaLabel()"
   (click)="onClick()"
 >
   <ng-content />

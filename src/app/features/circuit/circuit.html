@@ -1,0 +1,68 @@
+<section class="circuit">
+  <app-world-backdrop mode="calm" />
+
+  <div class="circuit__content">
+    <header class="circuit__head">
+      <a class="circuit__back" href="/" (click)="onBack($event)"
+        >&#9664; {{ 'common.back' | transloco }}</a
+      >
+      <div>
+        <h2>{{ 'circuit.title' | transloco }}</h2>
+        <p class="circuit__subtitle">{{ 'circuit.subtitle' | transloco }}</p>
+      </div>
+      @let counts = progress.medalCounts();
+      <p class="circuit__tally" [attr.aria-label]="'circuit.medals' | transloco">
+        <span class="medal medal--gold" aria-hidden="true"></span>{{ counts.gold }}
+        <span class="medal medal--silver" aria-hidden="true"></span>{{ counts.silver }}
+        <span class="medal medal--bronze" aria-hidden="true"></span>{{ counts.bronze }}
+      </p>
+    </header>
+
+    <div class="circuit__grid">
+      @for (v of venues; track v.venue; let vi = $index) {
+        <app-pixel-panel
+          class="circuit__venue"
+          [style.--i]="vi"
+          [heading]="'circuit.venue.' + v.venue | transloco"
+        >
+          <ul class="circuit__events">
+            @for (e of v.events; track e.id) {
+              @let unlocked = progress.isUnlocked(e.id);
+              @let rec = progress.record(e.id);
+              <li>
+                <app-pixel-button
+                  [block]="true"
+                  [disabled]="!unlocked"
+                  [variant]="unlocked && !rec?.medal ? 'brass' : 'default'"
+                  (pressed)="open(e)"
+                >
+                  <span class="circuit__event-row">
+                    <span class="circuit__event-name">{{
+                      'events.' + e.id + '.name' | transloco
+                    }}</span>
+                    @if (!unlocked) {
+                      <span class="circuit__lock">{{ 'circuit.locked' | transloco }}</span>
+                    } @else if (rec?.medal; as m) {
+                      <span
+                        class="medal medal--{{ m }}"
+                        [attr.aria-label]="'result.medal.' + m | transloco"
+                      ></span>
+                    }
+                  </span>
+                  @if (unlocked) {
+                    <span class="circuit__event-goal">{{
+                      'events.' + e.id + '.goal' | transloco
+                    }}</span>
+                    <span class="circuit__event-best">
+                      {{ 'brief.best' | transloco }} : {{ rec?.best ?? '—' }}
+                    </span>
+                  }
+                </app-pixel-button>
+              </li>
+            }
+          </ul>
+        </app-pixel-panel>
+      }
+    </div>
+  </div>
+</section>

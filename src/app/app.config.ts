@@ -7,10 +7,11 @@ import {
 import { PreloadAllModules, provideRouter, withPreloading } from '@angular/router';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideTransloco } from '@jsverse/transloco';
-import { provideTranslocoMessageformat } from '@jsverse/transloco-messageformat';
 
 import { routes } from './app.routes';
 import { TranslocoStaticLoader } from './transloco.loader';
+import { AudioService } from './shared/audio/audio.service';
+import { UI_SOUNDS } from './ui/ui-sounds';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -27,6 +28,7 @@ export const appConfig: ApplicationConfig = {
       },
       loader: TranslocoStaticLoader,
     }),
-    provideTranslocoMessageformat(),
+    // The kit's controls click and blip through the app's synth.
+    { provide: UI_SOUNDS, useExisting: AudioService },
   ],
 };

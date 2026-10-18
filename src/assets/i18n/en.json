@@ -4,82 +4,171 @@
   },
   "menu": {
     "subtitle": "Aerobatics of the Roaring Twenties",
-    "play": "Play",
+    "circuit": "Grand Tour",
+    "arcade": "Arcade",
+    "daily": "Daily Jump",
     "records": "Records",
     "settings": "Settings",
-    "prompt": "Press Enter"
+    "prompt": "Press Enter",
+    "demo": "Demo"
   },
   "common": {
     "back": "Back"
   },
+  "keys": {
+    "Space": "Space",
+    "Enter": "Enter",
+    "NumpadEnter": "Num Enter",
+    "Escape": "Esc",
+    "ShiftLeft": "L-Shift",
+    "ShiftRight": "R-Shift",
+    "ControlLeft": "L-Ctrl",
+    "ControlRight": "R-Ctrl",
+    "AltLeft": "L-Alt",
+    "AltRight": "R-Alt",
+    "Backspace": "Backspace",
+    "CapsLock": "Caps Lock",
+    "Insert": "Insert",
+    "Delete": "Delete",
+    "Home": "Home",
+    "End": "End",
+    "PageUp": "Page Up",
+    "PageDown": "Page Down"
+  },
   "game": {
-    "title": "Flight Deck",
-    "area": "Drop Zone",
-    "placeholder": "The flight begins here",
     "score": "Score",
     "jumpProgress": "Jump {{current}}/{{total}}",
-    "cloudRound": "Cloud Run",
-    "rings": "Hoops",
-    "pause": "Pause",
+    "canvasLabel": "Skydiving view",
     "paused": "Paused",
     "resume": "Resume",
     "quit": "Quit to Menu",
-    "altitude": "Altitude",
-    "wind": "Wind",
-    "distance": "Distance",
-    "deploy": "Deploy",
-    "flare": "Flare",
+    "keys": {
+      "turn": "Turn",
+      "drive": "Dive / track — brake / arch",
+      "action": "Jump · open the chute · flare",
+      "pause": "Pause / resume"
+    },
     "jumpComplete": "Jump Complete",
     "greatJump": "Great Jump!",
     "poorJump": "Poor Jump…",
+    "missed": "Missed the Target",
     "crashed": "Crashed",
     "crashedMsg": "You hit the ground too hard!",
+    "crashNoPull": "The chute never came out.",
+    "crashLowPull": "Pulled at {{alt}} m — too low to open in time.",
     "bullseye": "Bullseye!",
-    "jumpScore": "Jump Score",
-    "nextJump": "Next Jump",
-    "toClouds": "To the Clouds",
-    "continue": "Continue",
-    "cloudBonus": "Cloud Bonus",
-    "gameOver": "Run Complete",
-    "finalScore": "Final Score",
-    "bestScore": "Best",
-    "playAgain": "Play Again",
-    "missed": "Missed the Target",
-    "missedMsg": "Safe landing, but you drifted off the target — no points.",
     "scoreAccuracy": "Accuracy",
-    "scoreFreefall": "Free Fall",
-    "scoreSoftLanding": "Soft Landing",
-    "scoreBullseye": "Bullseye Bonus",
+    "scoreRings": "Hoops",
+    "scorePull": "Pull",
+    "scoreLanding": "Landing",
+    "scoreSpot": "Exit",
     "scoreMultiplier": "Difficulty Bonus",
-    "landingSpeed": "Touchdown",
+    "jumpScore": "Jump Score",
+    "landing": {
+      "standup": "stand-up",
+      "slide": "slide-in",
+      "tumble": "tumble",
+      "crash": "crash"
+    },
+    "spot": {
+      "green": "green light",
+      "amber": "amber light",
+      "red": "red light"
+    },
+    "nextJump": "Next Jump",
+    "playAgain": "Play Again",
     "newHighScore": "New High Score",
     "enterInitials": "Enter your initials",
     "confirmInitials": "Confirm",
     "recordSaved": "Added to the Hall of Aces!",
-    "hintPlane": "Get ready… SPACE to jump now",
-    "hintFreefall": "←/→ steer · ↑ track ↓ arch · SPACE opens chute",
-    "hintDeploying": "Canopy opening — hold steady",
-    "hintCanopy": "Steer to target · SHIFT to flare",
-    "hintClouds": "Steer through the cloud hoops",
     "phase": {
       "plane": "Jump Run",
       "freefall": "Free Fall",
       "deploying": "Opening",
       "canopy": "Canopy",
       "landed": "Landed",
-      "crashed": "Crashed",
-      "clouds": "Cloud Dive",
-      "cloudsDone": "Cloud Run"
+      "crashed": "Crashed"
+    },
+    "hud": {
+      "alt": "M",
+      "score": "SCORE",
+      "wind": "WIND",
+      "rings": "HOOPS",
+      "spotRed": "RED LIGHT",
+      "spotAmber": "AMBER LIGHT",
+      "spotGreen": "GREEN LIGHT - GO!",
+      "jumpPrompt": "[action]: JUMP",
+      "pullPrompt": "[action]: OPEN CHUTE",
+      "pullZone": "PULL WINDOW",
+      "pullNow": "PULL!",
+      "belowDeck": "BELOW THE DECK!",
+      "flarePrompt": "[action]: FLARE!",
+      "stall": "STALL!",
+      "ringHit": "HOOP!",
+      "ringMiss": "MISSED HOOP",
+      "standup": "STAND-UP!",
+      "slide": "SLIDE-IN",
+      "tumble": "TUMBLE",
+      "crash": "CRASH!",
+      "bullseye": "BULLSEYE!",
+      "splash": "SPLASH!",
+      "hintPlane": "WAIT FOR THE GREEN LIGHT  -  [pause]: PAUSE",
+      "hintFreefall": "[left] [right] TURN   [up] TRACK   [down] ARCH",
+      "hintCanopy": "[left] [right] TURN   [up] DIVE   [down] BRAKES",
+      "tipPlane": "The light turns green over the right exit point: jump then.",
+      "tipFreefall": "Turn toward the gold hoop ([left] [right]) and track ([up]) to fly through it.",
+      "tipPull": "Pull ([action]) in the altimeter’s amber band — never in the red!",
+      "tipCanopy": "Fly toward the target. Facing the wind slows you down; [down] brakes.",
+      "tipFlare": "Your shadow is right below: [action] just above the grass to flare and stand it up."
     }
   },
   "settings": {
     "title": "Settings",
-    "volume": "Volume",
+    "music": "Music",
+    "sfx": "Sound effects",
+    "motion": "Motion",
+    "motionOptions": {
+      "system": "Auto",
+      "reduced": "Reduced",
+      "full": "Full"
+    },
+    "motionHint": {
+      "system": "Follows your system’s setting.",
+      "reduced": "No shake, speed lines, blinking or wipes.",
+      "full": "Every effect, whatever the system says."
+    },
     "difficulty": "Difficulty",
     "language": "Language",
     "difficultyRookie": "Rookie",
     "difficultyAce": "Ace",
-    "difficultyBarnstormer": "Barnstormer"
+    "difficultyBarnstormer": "Barnstormer",
+    "game": "Game",
+    "difficultyHint": {
+      "rookie": "Arcade, gentle: light wind, a wide target and big hoops. Score ×1.",
+      "ace": "Arcade, the real thing: honest wind, a fair target. Score ×1.5.",
+      "barnstormer": "Arcade, rough: strong gusts, a small target, tight hoops, a narrow green light. Score ×2."
+    },
+    "controls": "Controls",
+    "controlsHint": "Click a key, then press the new one (Esc cancels).",
+    "bindings": {
+      "left": "Turn left",
+      "right": "Turn right",
+      "up": "Track / dive",
+      "down": "Arch / brakes",
+      "action": "Jump · chute · flare"
+    },
+    "keySlot": "{{control}}, key {{slot}}: {{key}}",
+    "pressKey": "...",
+    "capturing": "Press a key for “{{control}}” — Esc cancels.",
+    "resetKeys": "Default keys",
+    "gamepad": "Gamepad",
+    "gamepadHint": "Stick or d-pad: fly · A: jump, open, flare · B: back · Start: pause",
+    "progress": "Progress",
+    "resetProgress": "Reset progress",
+    "resetConfirm": "Erase every Grand Tour medal and daily-jump best? Arcade boards are kept.",
+    "resetYes": "Erase",
+    "resetNo": "Cancel",
+    "resetDone": "Progress erased"
   },
   "records": {
     "title": "Hall of Aces",
@@ -90,6 +179,105 @@
     "empty": "No flights logged yet.",
     "emptyHint": "Fly a mission to earn your wings.",
     "clear": "Clear Records",
-    "defaultPilot": "Ace"
+    "defaultPilot": "Ace",
+    "tabArcade": "Arcade",
+    "tabCircuit": "Grand Tour",
+    "tabDaily": "Daily Jump",
+    "event": "Event",
+    "medal": "Medal",
+    "best": "Best",
+    "emptyDaily": "No daily jump yet."
+  },
+  "circuit": {
+    "title": "The Grand Tour",
+    "subtitle": "Ten events, five fields. Any medal opens the next event.",
+    "medals": "Medals won",
+    "locked": "Locked",
+    "venue": {
+      "county": "County Fair",
+      "seaside": "Seaside",
+      "lake": "Mountain Lake",
+      "airfield": "Airfield",
+      "meeting": "Grand Air Meet"
+    }
+  },
+  "events": {
+    "fair-first": {
+      "name": "First Jump",
+      "goal": "Jump on the green light, pull in the amber band, stand it up on the target."
+    },
+    "fair-hoops": {
+      "name": "Fairground Hoops",
+      "goal": "Seven hoops down the free fall — thread them all."
+    },
+    "sea-breeze": {
+      "name": "Sea Breeze",
+      "goal": "A stiff breeze blows out to sea: aim upwind of the target."
+    },
+    "sea-low": {
+      "name": "Low Pull",
+      "goal": "Exit at 1100 m, hard deck at 120 m: pull as low as you dare — never below."
+    },
+    "lake-shore": {
+      "name": "Lakeshore",
+      "goal": "A small target by the water and gusty air: precision first."
+    },
+    "lake-slalom": {
+      "name": "Cloud Slalom",
+      "goal": "Eight tight hoops: track true."
+    },
+    "field-wagon": {
+      "name": "The Float",
+      "goal": "The target is moving! Land on the horse-drawn float."
+    },
+    "field-crosswind": {
+      "name": "Crosswind",
+      "goal": "Strong wind: crab your approach and flare into the wind."
+    },
+    "meet-show": {
+      "name": "Exhibition",
+      "goal": "Six hoops and a packed grandstand: put on a show."
+    },
+    "meet-grand-prix": {
+      "name": "Grand Prix",
+      "goal": "Wind, hoops and a moving float: the meet’s final."
+    }
+  },
+  "brief": {
+    "daily": "Daily Jump",
+    "arcade": "Arcade",
+    "dailyGoal": "The same jump for everyone today — beat your best.",
+    "arcadeGoal": "Three jumps at three fields: the run scores their sum.",
+    "mapLabel": "Map of the drop zone",
+    "legendRun": "Jump run",
+    "legendSpot": "Green light",
+    "legendHoop": "Hoops",
+    "legendTarget": "Target",
+    "wind": "Wind",
+    "target": "Target",
+    "movingTarget": "moving float",
+    "hoops": "Hoops",
+    "exit": "Exit",
+    "deck": "Hard deck",
+    "medals": "Medals",
+    "best": "Best",
+    "dailyBest": "Today’s best",
+    "keys": "[left] [right] turn · [up] track / dive · [down] arch / brakes · [action]: jump, pull, flare",
+    "jump": "Jump!"
+  },
+  "result": {
+    "medal": {
+      "bronze": "Bronze medal",
+      "silver": "Silver medal",
+      "gold": "Gold medal"
+    },
+    "noMedal": "No medal",
+    "newBest": "New best!",
+    "unlocked": "Next event unlocked!",
+    "runTotal": "Run total",
+    "retry": "Retry",
+    "nextEvent": "Next Event",
+    "toCircuit": "Grand Tour",
+    "menu": "Menu"
   }
 }

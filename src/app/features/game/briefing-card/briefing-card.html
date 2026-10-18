@@ -1,0 +1,114 @@
+@let p = plan();
+<div class="brief">
+  <header class="brief__head">
+    <p class="brief__kicker">
+      @switch (p.mode) {
+        @case ('circuit') {
+          {{ 'circuit.venue.' + config().venue | transloco }}
+        }
+        @case ('daily') {
+          {{ 'brief.daily' | transloco }} · {{ p.day }}
+        }
+        @default {
+          {{ 'brief.arcade' | transloco }} ·
+          {{ 'game.jumpProgress' | transloco: { current: jumpIndex() + 1, total: p.jumps.length } }}
+        }
+      }
+    </p>
+    <h2 class="brief__title">
+      @if (p.event; as e) {
+        {{ 'events.' + e.id + '.name' | transloco }}
+      } @else {
+        {{ 'circuit.venue.' + config().venue | transloco }}
+      }
+    </h2>
+    <p class="brief__goal">
+      @if (p.event; as e) {
+        {{ 'events.' + e.id + '.goal' | transloco }}
+      } @else if (p.mode === 'daily') {
+        {{ 'brief.dailyGoal' | transloco }}
+      } @else {
+        {{ 'brief.arcadeGoal' | transloco }}
+      }
+    </p>
+  </header>
+
+  <div class="brief__body">
+    <figure class="brief__map">
+      <canvas
+        #map
+        width="176"
+        height="176"
+        role="img"
+        [attr.aria-label]="'brief.mapLabel' | transloco"
+      ></canvas>
+      <figcaption class="brief__legend">
+        <span class="brief__key brief__key--run">{{ 'brief.legendRun' | transloco }}</span>
+        <span class="brief__key brief__key--spot">{{ 'brief.legendSpot' | transloco }}</span>
+        <span class="brief__key brief__key--ring">{{ 'brief.legendHoop' | transloco }}</span>
+        <span class="brief__key brief__key--target">{{ 'brief.legendTarget' | transloco }}</span>
+      </figcaption>
+    </figure>
+
+    <div class="brief__side">
+      <dl class="brief__conditions">
+        <div>
+          <dt>{{ 'brief.wind' | transloco }}</dt>
+          <dd>{{ wind() }} m/s</dd>
+        </div>
+        <div>
+          <dt>{{ 'brief.target' | transloco }}</dt>
+          <dd>
+            @if (moving()) {
+              {{ 'brief.movingTarget' | transloco }}
+            } @else {
+              Ø {{ config().targetRadius * 2 }} m
+            }
+          </dd>
+        </div>
+        <div>
+          <dt>{{ 'brief.hoops' | transloco }}</dt>
+          <dd>{{ state().rings.length }}</dd>
+        </div>
+        <div>
+          <dt>{{ 'brief.exit' | transloco }}</dt>
+          <dd>{{ config().exitAltitude }} m</dd>
+        </div>
+        <div>
+          <dt>{{ 'brief.deck' | transloco }}</dt>
+          <dd>{{ config().hardDeck }} m</dd>
+        </div>
+      </dl>
+
+      @if (p.event; as e) {
+        <div class="brief__medals">
+          <p class="brief__label">{{ 'brief.medals' | transloco }}</p>
+          <ul>
+            <li><span class="medal medal--gold" aria-hidden="true"></span>{{ e.medals[2] }}</li>
+            <li><span class="medal medal--silver" aria-hidden="true"></span>{{ e.medals[1] }}</li>
+            <li><span class="medal medal--bronze" aria-hidden="true"></span>{{ e.medals[0] }}</li>
+          </ul>
+          @if (record(); as rec) {
+            <p class="brief__best">
+              {{ 'brief.best' | transloco }} : {{ rec.best }}
+              @if (rec.medal) {
+                <span class="medal medal--small medal--{{ rec.medal }}" aria-hidden="true"></span>
+              }
+            </p>
+          }
+        </div>
+      } @else if (p.mode === 'daily') {
+        <p class="brief__best">{{ 'brief.dailyBest' | transloco }} : {{ dailyBest() }}</p>
+      }
+    </div>
+  </div>
+
+  <p class="brief__keys">{{ 'brief.keys' | transloco | keys }}</p>
+
+  <div class="brief__actions">
+    <app-pixel-button variant="brass" (pressed)="fly.emit()">
+      {{ 'brief.jump' | transloco }}
+    </app-pixel-button>
+    <app-pixel-button (pressed)="back.emit()">{{ 'common.back' | transloco }}</app-pixel-button>
+  </div>
+</div>

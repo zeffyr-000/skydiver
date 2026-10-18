@@ -11,9 +11,22 @@
   display: flex;
   flex-direction: column;
   gap: var(--sp-6);
-  padding: var(--sp-8);
-  max-width: 720px;
+  padding: var(--sp-6) var(--sp-8) var(--sp-8);
+  max-width: 1200px;
   margin: 0 auto;
+}
+
+.settings__columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-6);
+  align-items: start;
+}
+
+.settings__side {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-6);
 }
 
 .settings__head {
@@ -24,7 +37,7 @@
 
 .settings__back {
   font-family: var(--font-head);
-  font-size: 18px;
+  font-size: var(--fs-head);
   font-weight: 700;
   text-transform: uppercase;
   color: var(--ink-light);
@@ -51,16 +64,114 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--sp-6);
-  padding: var(--sp-3) 0;
+  padding: var(--sp-4) 0;
 
   & + & {
     box-shadow: inset 0 2px 0 0 var(--parchment-dark);
   }
+
+  &--stack {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--sp-3);
+
+    .settings__control {
+      justify-content: flex-start;
+    }
+  }
+}
+
+.settings__hint {
+  flex-basis: 100%;
+  margin: 0;
+  font-size: var(--fs-body);
+  line-height: 1.3;
+  color: var(--biplane-red-dark);
+}
+
+.settings__bindings {
+  display: grid;
+  grid-template-columns: 1fr auto auto; // one grid: the key caps line up in columns
+  column-gap: var(--sp-2);
+  align-items: stretch;
+}
+
+.settings__binding {
+  display: contents;
+
+  > * {
+    display: flex;
+    align-items: center;
+    padding: var(--sp-1) 0;
+    box-shadow: inset 0 -2px 0 0 var(--parchment-dark);
+  }
+}
+
+.settings__binding-label {
+  color: var(--ink);
+}
+
+// Key caps share a minimum width so short names don't make tiny buttons.
+.settings__keyname {
+  display: inline-block;
+  min-width: 64px;
+  text-align: center;
+  text-transform: none;
+}
+
+.settings__capture {
+  min-height: 2.6em; // two lines: the hint and the capture prompt swap without a jump
+  margin: var(--sp-3) 0 0;
+  font-size: var(--fs-body);
+  line-height: 1.3;
+  color: var(--biplane-red-dark);
+
+  &--on {
+    color: var(--biplane-red);
+  }
+}
+
+.settings__pad {
+  margin: var(--sp-4) 0 0;
+  font-size: var(--fs-body);
+  line-height: 1.3;
+  color: var(--ink);
+
+  .settings__label {
+    display: block;
+    margin-bottom: var(--sp-1);
+  }
+}
+
+.settings__reset {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  margin-top: var(--sp-4);
+}
+
+.settings__done {
+  font-family: var(--font-head);
+  font-size: var(--fs-head);
+  font-weight: 700;
+  color: var(--grass-dark);
+}
+
+.settings__confirm {
+  margin: 0 0 var(--sp-6);
+  max-width: 420px;
+  color: var(--ink);
+}
+
+.settings__confirm-actions {
+  display: flex;
+  gap: var(--sp-4);
+  justify-content: flex-end;
 }
 
 .settings__label {
   font-family: var(--font-head);
-  font-size: 18px;
+  font-size: var(--fs-head);
   font-weight: 700;
   text-transform: uppercase;
   color: var(--ink);
@@ -75,18 +186,18 @@
 }
 
 .settings__value {
-  font-size: 24px;
+  font-size: var(--fs-body);
   color: var(--ink);
   min-width: 48px;
   text-align: right;
 }
 
-.settings__difficulties {
+.settings__options {
   flex-wrap: wrap;
 }
 
 // Reserved caret slot so toggling the active option never shifts the row.
-.settings__difficulty {
+.settings__option {
   position: relative;
   padding-left: 18px;
 
@@ -97,7 +208,7 @@
     top: 50%;
     transform: translateY(-50%);
     font-family: var(--font-head);
-    font-size: 16px;
+    font-size: var(--fs-head);
     color: var(--biplane-red);
     visibility: hidden;
   }

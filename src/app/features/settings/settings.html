@@ -1,5 +1,5 @@
 <section class="settings">
-  <app-sky-scene />
+  <app-world-backdrop mode="calm" />
 
   <div class="settings__content">
     <header class="settings__head">
@@ -9,57 +9,177 @@
       <h2>{{ 'settings.title' | transloco }}</h2>
     </header>
 
-    <app-pixel-panel class="settings__panel">
-      <div class="settings__row">
-        <span class="settings__label">{{ 'settings.volume' | transloco }}</span>
-        <div class="settings__control">
-          <app-pixel-slider
-            [(value)]="settings.volume"
-            [ariaLabel]="'settings.volume' | transloco"
-          />
-          <span class="settings__value">{{ settings.volume() }}</span>
-        </div>
-      </div>
-
-      <div class="settings__row">
-        <span class="settings__label">{{ 'settings.difficulty' | transloco }}</span>
-        <div class="settings__control settings__difficulties">
-          @for (option of difficulties; track option.value) {
-            <span
-              class="settings__difficulty"
-              [class.settings__difficulty--active]="settings.difficulty() === option.value"
-            >
-              <app-pixel-button
-                [variant]="settings.difficulty() === option.value ? 'brass' : 'default'"
-                [ariaPressed]="settings.difficulty() === option.value"
-                (pressed)="settings.difficulty.set(option.value)"
+    <div class="settings__columns">
+      <app-pixel-panel class="settings__panel" [heading]="'settings.game' | transloco">
+        <div class="settings__row settings__row--stack">
+          <span class="settings__label">{{ 'settings.difficulty' | transloco }}</span>
+          <div class="settings__control settings__options">
+            @for (option of difficulties; track option.value) {
+              <span
+                class="settings__option"
+                [class.settings__option--active]="settings.difficulty() === option.value"
               >
-                {{ option.labelKey | transloco }}
-              </app-pixel-button>
-            </span>
-          }
+                <app-pixel-button
+                  [variant]="settings.difficulty() === option.value ? 'brass' : 'default'"
+                  [ariaPressed]="settings.difficulty() === option.value"
+                  (pressed)="settings.difficulty.set(option.value)"
+                >
+                  {{ option.labelKey | transloco }}
+                </app-pixel-button>
+              </span>
+            }
+          </div>
+          <p class="settings__hint">
+            {{ 'settings.difficultyHint.' + settings.difficulty() | transloco }}
+          </p>
         </div>
-      </div>
 
-      <div class="settings__row">
-        <span class="settings__label">{{ 'settings.language' | transloco }}</span>
-        <div class="settings__control settings__difficulties">
-          @for (option of languages; track option.value) {
-            <span
-              class="settings__difficulty"
-              [class.settings__difficulty--active]="settings.language() === option.value"
-            >
-              <app-pixel-button
-                [variant]="settings.language() === option.value ? 'brass' : 'default'"
-                [ariaPressed]="settings.language() === option.value"
-                (pressed)="settings.language.set(option.value)"
+        <div class="settings__row">
+          <span class="settings__label">{{ 'settings.language' | transloco }}</span>
+          <div class="settings__control settings__options">
+            @for (option of languages; track option.value) {
+              <span
+                class="settings__option"
+                [class.settings__option--active]="settings.language() === option.value"
               >
-                {{ option.label }}
-              </app-pixel-button>
-            </span>
-          }
+                <app-pixel-button
+                  [variant]="settings.language() === option.value ? 'brass' : 'default'"
+                  [ariaPressed]="settings.language() === option.value"
+                  (pressed)="settings.language.set(option.value)"
+                >
+                  {{ option.label }}
+                </app-pixel-button>
+              </span>
+            }
+          </div>
         </div>
+
+        <div class="settings__row settings__row--stack">
+          <span class="settings__label">{{ 'settings.motion' | transloco }}</span>
+          <div class="settings__control settings__options">
+            @for (option of motions; track option.value) {
+              <span
+                class="settings__option"
+                [class.settings__option--active]="settings.motion() === option.value"
+              >
+                <app-pixel-button
+                  [variant]="settings.motion() === option.value ? 'brass' : 'default'"
+                  [ariaPressed]="settings.motion() === option.value"
+                  (pressed)="settings.motion.set(option.value)"
+                >
+                  {{ option.labelKey | transloco }}
+                </app-pixel-button>
+              </span>
+            }
+          </div>
+          <p class="settings__hint">
+            {{ 'settings.motionHint.' + settings.motion() | transloco }}
+          </p>
+        </div>
+
+        <div class="settings__row">
+          <span class="settings__label">{{ 'settings.music' | transloco }}</span>
+          <div class="settings__control">
+            <app-pixel-slider
+              [(value)]="settings.musicVolume"
+              [ariaLabel]="'settings.music' | transloco"
+            />
+            <span class="settings__value">{{ settings.musicVolume() }}</span>
+          </div>
+        </div>
+
+        <div class="settings__row">
+          <span class="settings__label">{{ 'settings.sfx' | transloco }}</span>
+          <div class="settings__control">
+            <app-pixel-slider
+              [value]="settings.sfxVolume()"
+              (valueChange)="setSfx($event)"
+              [ariaLabel]="'settings.sfx' | transloco"
+            />
+            <span class="settings__value">{{ settings.sfxVolume() }}</span>
+          </div>
+        </div>
+      </app-pixel-panel>
+
+      <div class="settings__side">
+        <app-pixel-panel class="settings__panel" [heading]="'settings.controls' | transloco">
+          <div class="settings__bindings">
+            @for (action of controlActions; track action) {
+              <div class="settings__binding">
+                <span class="settings__binding-label">{{
+                  'settings.bindings.' + action | transloco
+                }}</span>
+                @for (slot of slots; track slot) {
+                  <app-pixel-button
+                    [variant]="isCapturing(action, slot) ? 'primary' : 'default'"
+                    [ariaPressed]="isCapturing(action, slot)"
+                    [ariaLabel]="
+                      'settings.keySlot'
+                        | transloco
+                          : {
+                              control: ('settings.bindings.' + action | transloco),
+                              slot: slot + 1,
+                              key: keyLabel(action, slot),
+                            }
+                    "
+                    (pressed)="toggleCapture(action, slot)"
+                  >
+                    <span class="settings__keyname">{{
+                      isCapturing(action, slot)
+                        ? ('settings.pressKey' | transloco)
+                        : keyLabel(action, slot)
+                    }}</span>
+                  </app-pixel-button>
+                }
+              </div>
+            }
+          </div>
+          <p class="settings__capture" [class.settings__capture--on]="capturing()" role="status">
+            @if (capturing(); as c) {
+              {{
+                'settings.capturing'
+                  | transloco: { control: ('settings.bindings.' + c.action | transloco) }
+              }}
+            } @else {
+              {{ 'settings.controlsHint' | transloco }}
+            }
+          </p>
+          <div class="settings__reset">
+            <app-pixel-button (pressed)="resetKeys()">
+              {{ 'settings.resetKeys' | transloco }}
+            </app-pixel-button>
+          </div>
+          <p class="settings__pad">
+            <span class="settings__label">{{ 'settings.gamepad' | transloco }}</span>
+            {{ 'settings.gamepadHint' | transloco }}
+          </p>
+        </app-pixel-panel>
+
+        <app-pixel-panel class="settings__panel" [heading]="'settings.progress' | transloco">
+          <div class="settings__reset">
+            <app-pixel-button (pressed)="confirmReset.set(true)">
+              {{ 'settings.resetProgress' | transloco }}
+            </app-pixel-button>
+            @if (resetDone()) {
+              <span class="settings__done" role="status">{{
+                'settings.resetDone' | transloco
+              }}</span>
+            }
+          </div>
+        </app-pixel-panel>
       </div>
-    </app-pixel-panel>
+    </div>
   </div>
 </section>
+
+<app-pixel-dialog [(open)]="confirmReset" [heading]="'settings.resetProgress' | transloco">
+  <p class="settings__confirm">{{ 'settings.resetConfirm' | transloco }}</p>
+  <div class="settings__confirm-actions">
+    <app-pixel-button variant="primary" (pressed)="resetProgress()">
+      {{ 'settings.resetYes' | transloco }}
+    </app-pixel-button>
+    <app-pixel-button (pressed)="confirmReset.set(false)">
+      {{ 'settings.resetNo' | transloco }}
+    </app-pixel-button>
+  </div>
+</app-pixel-dialog>

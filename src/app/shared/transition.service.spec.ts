@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
+import { SettingsStore } from './settings.store';
 import { TransitionService, WIPE_TOTAL_MS } from './transition.service';
 
 @Component({ template: '', changeDetection: ChangeDetectionStrategy.OnPush })
@@ -78,12 +79,9 @@ describe('TransitionService', () => {
     expect(service.phase()).toBe('idle');
   });
 
-  it('navigates instantly when the user prefers reduced motion', async () => {
+  it('navigates instantly when motion is reduced', async () => {
     await initialNavigation();
-    vi.stubGlobal(
-      'matchMedia',
-      vi.fn().mockReturnValue({ matches: true } as Partial<MediaQueryList>),
-    );
+    TestBed.inject(SettingsStore).motion.set('reduced');
     const navigateByUrl = vi.spyOn(router, 'navigateByUrl');
 
     service.navigate('/settings');

@@ -4,9 +4,13 @@
   display: inline-block;
 }
 
+:host(.pixel-btn-host--block) {
+  display: block;
+}
+
 .pixel-btn {
   font-family: var(--font-head);
-  font-size: 20px;
+  font-size: var(--fs-head);
   font-weight: 700;
   text-transform: uppercase;
   color: var(--ink);
@@ -30,6 +34,12 @@
   &:active:not(:disabled) {
     @include px.pixel-inset();
     transform: translate(2px, 2px);
+  }
+
+  &--block {
+    width: calc(100% - 2 * var(--border-w));
+    text-align: left;
+    text-transform: none;
   }
 
   &:disabled {

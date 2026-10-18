@@ -1,64 +1,97 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
+
+/** Every jump opens on its briefing card; this flies it. */
+async function jump(page: Page): Promise<void> {
+  const go = page.getByRole('button', { name: 'Jump!' });
+  await expect(go).toBeVisible({ timeout: 15000 });
+  await go.click();
+}
 
 test.describe('Sky Diver game', () => {
-  test('mounts the canvas and a jump resolves', async ({ page }) => {
-    // `fast=1` shrinks the jump so it completes in a few seconds.
-    await page.goto('/game?fast=1');
-
+  test('fills the window with a whole-number-scaled canvas', async ({ page }) => {
+    await page.goto('/game');
     const canvas = page.locator('canvas.game__canvas');
     await expect(canvas).toBeVisible();
-    const box = await canvas.boundingBox();
-    expect(box?.width ?? 0).toBeGreaterThan(0);
-    expect(box?.height ?? 0).toBeGreaterThan(0);
 
-    // Open the chute, then wait for the jump to resolve into a result dialog.
-    await page.keyboard.press('Space');
-    await expect(page.getByText('Next Jump')).toBeVisible({ timeout: 15000 });
+    const { width, height, cssW, cssH } = await canvas.evaluate((c: HTMLCanvasElement) => ({
+      width: c.width,
+      height: c.height,
+      cssW: c.getBoundingClientRect().width,
+      cssH: c.getBoundingClientRect().height,
+    }));
+    const viewport = page.viewportSize()!;
+    // Pixel-perfect: CSS size is an exact multiple of the internal resolution…
+    expect(cssW / width).toBe(Math.round(cssW / width));
+    expect(cssH / height).toBe(cssW / width);
+    // …and it takes most of the window, not a box in a panel.
+    expect(cssW).toBeGreaterThan(viewport.width * 0.7);
   });
 
-  test('a run is three jumps then the cloud bonus round', async ({ page }) => {
-    // `fast=1` shrinks every segment (jumps and the cloud dive) to a few seconds.
-    await page.goto('/game?fast=1');
-    await expect(page.locator('canvas.game__canvas')).toBeVisible();
-
-    // Jumps 1 and 2 each end on a recap with a "Next Jump" button.
-    for (let i = 0; i < 2; i++) {
-      const next = page.getByRole('button', { name: 'Next Jump' });
-      await expect(next).toBeVisible({ timeout: 15000 });
-      await next.click();
-    }
-
-    // The third jump leads into the cloud round instead.
-    const toClouds = page.getByRole('button', { name: 'To the Clouds' });
-    await expect(toClouds).toBeVisible({ timeout: 15000 });
-    await toClouds.click();
-
-    // The cloud bonus dive resolves into its own recap…
-    const cont = page.getByRole('button', { name: 'Continue' });
-    await expect(cont).toBeVisible({ timeout: 15000 });
-    await cont.click();
-
-    // …and the run is then complete.
-    await expect(page.getByText('Run Complete')).toBeVisible({ timeout: 15000 });
-  });
-
-  test('starts on the jump run and Space skips to free fall', async ({ page }) => {
+  test('briefs the jump, then Space jumps from the plane into free fall', async ({ page }) => {
     await page.goto('/game');
-    await expect(page.locator('canvas.game__canvas')).toBeVisible();
+    await expect(page.getByRole('img', { name: 'Map of the drop zone' })).toBeVisible();
+    await jump(page);
 
-    // The plane-approach intro plays first…
     await expect(page.locator('.game__phase')).toHaveText(/jump run/i);
-
-    // …and a key press skips straight to the jump.
     await page.keyboard.press('Space');
     await expect(page.locator('.game__phase')).toHaveText(/free fall/i);
   });
 
-  test('Escape opens the pause dialog', async ({ page }) => {
-    await page.goto('/game');
-    await expect(page.locator('canvas.game__canvas')).toBeVisible();
+  test('a jump resolves into a result card', async ({ page }) => {
+    // `fast=1` starts in free fall from low altitude: never pulling ends it quickly.
+    await page.goto('/game?fast=1');
+    await jump(page);
+    await expect(page.getByRole('button', { name: 'Next Jump' })).toBeVisible({ timeout: 15000 });
+    await expect(page.getByText('Jump Score')).toBeVisible();
+  });
 
+  test('an arcade run is three jumps, then the run total', async ({ page }) => {
+    await page.goto('/game?mode=arcade&fast=1');
+    for (let i = 0; i < 2; i++) {
+      await jump(page);
+      const next = page.getByRole('button', { name: 'Next Jump' });
+      await expect(next).toBeVisible({ timeout: 15000 });
+      await next.click();
+    }
+    await jump(page);
+    await expect(page.getByText('Run total')).toBeVisible({ timeout: 15000 });
+    await expect(page.getByRole('button', { name: 'Play Again' })).toBeVisible();
+  });
+
+  test('a circuit event is briefed with its medals and judged against them', async ({ page }) => {
+    await page.goto('/game?mode=circuit&event=fair-first&fast=1');
+    await expect(page.getByRole('heading', { name: 'First Jump' })).toBeVisible();
+    await expect(page.getByText('Medals', { exact: true })).toBeVisible();
+    await jump(page);
+    await expect(page.getByText(/medal/i).first()).toBeVisible({ timeout: 15000 });
+    await expect(page.getByRole('button', { name: 'Retry' })).toBeVisible();
+    await page.getByRole('button', { name: 'Retry' }).click();
+    await expect(page.getByRole('button', { name: 'Jump!' })).toBeVisible();
+  });
+
+  test('the daily jump is briefed as the day’s jump', async ({ page }) => {
+    await page.goto('/game?mode=daily&fast=1');
+    await expect(page.getByText(/Daily Jump/).first()).toBeVisible();
+    await jump(page);
+    await expect(page.getByRole('button', { name: 'Retry' })).toBeVisible({ timeout: 15000 });
+  });
+
+  test('Escape opens the pause dialog with the controls while flying', async ({ page }) => {
+    await page.goto('/game');
+    await jump(page);
     await page.keyboard.press('Escape');
     await expect(page.getByText('Paused')).toBeVisible();
+    await expect(page.getByText('Jump · open the chute · flare')).toBeVisible();
+    await expect(page.locator('.game__keys')).toContainText('Space');
+  });
+
+  test('the Grand Tour opens only its first event', async ({ page }) => {
+    await page.goto('/circuit');
+    const first = page.getByRole('button', { name: /First Jump/ });
+    await expect(first).toBeEnabled();
+    await expect(page.getByRole('button', { name: /Fairground Hoops/ })).toBeDisabled();
+    await first.click();
+    await expect(page).toHaveURL(/mode=circuit&event=fair-first/);
+    await expect(page.getByRole('heading', { name: 'First Jump' })).toBeVisible();
   });
 });
