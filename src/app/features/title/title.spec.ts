@@ -10,7 +10,13 @@ class StubLoader implements TranslocoLoader {
   getTranslation() {
     return of<Translation>({
       app: { title: 'Skydiver' },
-      menu: { play: 'Play', records: 'Records', settings: 'Settings' },
+      menu: {
+        circuit: 'Grand Tour',
+        arcade: 'Arcade',
+        daily: 'Daily Jump',
+        records: 'Records',
+        settings: 'Settings',
+      },
     });
   }
 }
@@ -43,8 +49,20 @@ describe('Title', () => {
     const menuItems = (
       fixture.componentInstance as unknown as { menuItems: () => PixelMenuItem[] }
     ).menuItems();
-    expect(menuItems.map((i) => i.label)).toEqual(['Play', 'Records', 'Settings']);
-    expect(menuItems.map((i) => i.value)).toEqual(['/game', '/records', '/settings']);
+    expect(menuItems.map((i) => i.label)).toEqual([
+      'Grand Tour',
+      'Arcade',
+      'Daily Jump',
+      'Records',
+      'Settings',
+    ]);
+    expect(menuItems.map((i) => i.value)).toEqual([
+      '/circuit',
+      '/game?mode=arcade',
+      '/game?mode=daily',
+      '/records',
+      '/settings',
+    ]);
   });
 
   it('splits the translated title into per-letter logo spans', async () => {

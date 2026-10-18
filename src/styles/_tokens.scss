@@ -42,12 +42,15 @@
   --radius: 0; // never round in pixel art
 
   // --- Type scale ---
-  --fs-body: 18px;
-  --fs-h3: 24px;
+  // Bitmap faces are only crisp at whole multiples of their pixel grid:
+  // Silkscreen (8px grid) → 16 / 24 / 32 / 48; Departure Mono (11px) → 22.
+  --fs-head: 16px; // labels, buttons, UI chrome
+  --fs-h3: 24px; // menu items, card titles
   --fs-h2: 32px;
   --fs-h1: 48px;
-  --font-head: 'Pixelify Sans', sans-serif;
-  --font-body: 'VT323', monospace;
+  --fs-body: 22px; // running text
+  --font-head: 'Silkscreen', monospace;
+  --font-body: 'Departure Mono', monospace;
 
   // --- z-index ---
   --z-overlay: 1000;

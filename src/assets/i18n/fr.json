@@ -4,82 +4,171 @@
   },
   "menu": {
     "subtitle": "Acrobaties des Années folles",
-    "play": "Jouer",
+    "circuit": "Grand Circuit",
+    "arcade": "Arcade",
+    "daily": "Saut du jour",
     "records": "Records",
     "settings": "Réglages",
-    "prompt": "Appuyez sur Entrée"
+    "prompt": "Appuyez sur Entrée",
+    "demo": "Démo"
   },
   "common": {
     "back": "Retour"
   },
+  "keys": {
+    "Space": "Espace",
+    "Enter": "Entrée",
+    "NumpadEnter": "Entrée pavé",
+    "Escape": "Échap",
+    "ShiftLeft": "Maj G",
+    "ShiftRight": "Maj D",
+    "ControlLeft": "Ctrl G",
+    "ControlRight": "Ctrl D",
+    "AltLeft": "Alt",
+    "AltRight": "Alt Gr",
+    "Backspace": "Retour arr.",
+    "CapsLock": "Verr. maj",
+    "Insert": "Inser",
+    "Delete": "Suppr",
+    "Home": "Début",
+    "End": "Fin",
+    "PageUp": "Page préc.",
+    "PageDown": "Page suiv."
+  },
   "game": {
-    "title": "Poste de pilotage",
-    "area": "Zone de saut",
-    "placeholder": "Le vol commence ici",
     "score": "Score",
     "jumpProgress": "Saut {{current}}/{{total}}",
-    "cloudRound": "Manche Nuages",
-    "rings": "Anneaux",
-    "pause": "Pause",
+    "canvasLabel": "Vue du saut",
     "paused": "En pause",
     "resume": "Reprendre",
     "quit": "Quitter vers le menu",
-    "altitude": "Altitude",
-    "wind": "Vent",
-    "distance": "Distance",
-    "deploy": "Ouvrir",
-    "flare": "Freiner",
+    "keys": {
+      "turn": "Tourner",
+      "drive": "Plonger / accélérer — cambrer / freiner",
+      "action": "Sauter · ouvrir · arrondir",
+      "pause": "Pause / reprendre"
+    },
     "jumpComplete": "Saut terminé",
     "greatJump": "Beau saut !",
     "poorJump": "Saut médiocre…",
+    "missed": "Cible manquée",
     "crashed": "Écrasé",
     "crashedMsg": "Vous avez heurté le sol trop fort !",
+    "crashNoPull": "La voile n'est jamais sortie.",
+    "crashLowPull": "Ouverture à {{alt}} m — trop bas pour s'ouvrir à temps.",
     "bullseye": "En plein dans le mille !",
-    "jumpScore": "Score du saut",
-    "nextJump": "Saut suivant",
-    "toClouds": "Vers les nuages",
-    "continue": "Continuer",
-    "cloudBonus": "Bonus Nuages",
-    "gameOver": "Partie terminée",
-    "finalScore": "Score final",
-    "bestScore": "Meilleur",
-    "playAgain": "Rejouer",
-    "missed": "Cible manquée",
-    "missedMsg": "Atterrissage sain, mais hors de la cible — aucun point.",
     "scoreAccuracy": "Précision",
-    "scoreFreefall": "Chute libre",
-    "scoreSoftLanding": "Atterrissage doux",
-    "scoreBullseye": "Bonus plein centre",
+    "scoreRings": "Anneaux",
+    "scorePull": "Ouverture",
+    "scoreLanding": "Posé",
+    "scoreSpot": "Largage",
     "scoreMultiplier": "Bonus difficulté",
-    "landingSpeed": "Toucher",
+    "jumpScore": "Score du saut",
+    "landing": {
+      "standup": "debout",
+      "slide": "glissade",
+      "tumble": "roulé-boulé",
+      "crash": "crash"
+    },
+    "spot": {
+      "green": "feu vert",
+      "amber": "feu orange",
+      "red": "feu rouge"
+    },
+    "nextJump": "Saut suivant",
+    "playAgain": "Rejouer",
     "newHighScore": "Nouveau record",
     "enterInitials": "Entrez vos initiales",
     "confirmInitials": "Valider",
     "recordSaved": "Ajouté au Panthéon des As !",
-    "hintPlane": "Préparez-vous… ESPACE pour sauter",
-    "hintFreefall": "←/→ diriger · ↑ filer ↓ cambrer · ESPACE ouvre la voile",
-    "hintDeploying": "Ouverture de la voile — restez stable",
-    "hintCanopy": "Visez la cible · MAJ pour freiner",
-    "hintClouds": "Franchissez les anneaux de nuages",
     "phase": {
       "plane": "Largage",
       "freefall": "Chute libre",
       "deploying": "Ouverture",
       "canopy": "Sous voile",
       "landed": "Posé",
-      "crashed": "Écrasé",
-      "clouds": "Plongée Nuages",
-      "cloudsDone": "Manche Nuages"
+      "crashed": "Écrasé"
+    },
+    "hud": {
+      "alt": "M",
+      "score": "SCORE",
+      "wind": "VENT",
+      "rings": "ANNEAUX",
+      "spotRed": "FEU ROUGE",
+      "spotAmber": "FEU ORANGE",
+      "spotGreen": "FEU VERT - SAUTEZ !",
+      "jumpPrompt": "[action] : SAUTER",
+      "pullPrompt": "[action] : OUVRIR",
+      "pullZone": "ZONE D'OUVERTURE",
+      "pullNow": "OUVREZ !",
+      "belowDeck": "SOUS LE PLANCHER !",
+      "flarePrompt": "[action] : ARRONDIR !",
+      "stall": "DÉCROCHAGE !",
+      "ringHit": "ANNEAU !",
+      "ringMiss": "ANNEAU RATÉ",
+      "standup": "POSÉ DEBOUT !",
+      "slide": "GLISSADE",
+      "tumble": "ROULÉ-BOULÉ",
+      "crash": "CRASH !",
+      "bullseye": "PLEIN CENTRE !",
+      "splash": "PLOUF !",
+      "hintPlane": "ATTENDEZ LE FEU VERT  -  [pause] : PAUSE",
+      "hintFreefall": "[left] [right] TOURNER   [up] PLONGER   [down] CAMBRER",
+      "hintCanopy": "[left] [right] TOURNER   [up] ACCÉLÉRER   [down] FREINER",
+      "tipPlane": "Le feu passe au vert au-dessus du bon point de largage : sautez à ce moment-là.",
+      "tipFreefall": "Tournez vers l’anneau doré ([left] [right]) et plongez ([up]) pour le traverser.",
+      "tipPull": "Ouvrez ([action]) dans la zone orange de l’altimètre, jamais dans la rouge !",
+      "tipCanopy": "Volez vers la cible. Face au vent vous ralentissez ; [down] pour freiner.",
+      "tipFlare": "Votre ombre est juste dessous : [action] au ras de l’herbe pour arrondir et vous poser debout."
     }
   },
   "settings": {
     "title": "Réglages",
-    "volume": "Volume",
+    "music": "Musique",
+    "sfx": "Effets sonores",
+    "motion": "Animations",
+    "motionOptions": {
+      "system": "Auto",
+      "reduced": "Réduites",
+      "full": "Complètes"
+    },
+    "motionHint": {
+      "system": "Suit le réglage du système.",
+      "reduced": "Ni secousses, ni lignes de vitesse, ni clignotements.",
+      "full": "Tous les effets, quoi qu’en dise le système."
+    },
     "difficulty": "Difficulté",
     "language": "Langue",
     "difficultyRookie": "Débutant",
     "difficultyAce": "As",
-    "difficultyBarnstormer": "Casse-cou"
+    "difficultyBarnstormer": "Casse-cou",
+    "game": "Jeu",
+    "difficultyHint": {
+      "rookie": "Arcade, en douceur : vent léger, grande cible, grands anneaux. Score ×1.",
+      "ace": "Arcade, le vrai saut : vent franc, cible honnête. Score ×1,5.",
+      "barnstormer": "Arcade, à la dure : fortes rafales, petite cible, anneaux serrés, feu vert bref. Score ×2."
+    },
+    "controls": "Commandes",
+    "controlsHint": "Cliquez une touche, puis appuyez sur la nouvelle (Échap annule).",
+    "bindings": {
+      "left": "Tourner à gauche",
+      "right": "Tourner à droite",
+      "up": "Plonger / accélérer",
+      "down": "Cambrer / freiner",
+      "action": "Sauter · ouvrir · arrondir"
+    },
+    "keySlot": "{{control}}, touche {{slot}} : {{key}}",
+    "pressKey": "...",
+    "capturing": "Appuyez sur une touche pour « {{control}} » — Échap annule.",
+    "resetKeys": "Touches par défaut",
+    "gamepad": "Manette",
+    "gamepadHint": "Stick ou croix : piloter · A : sauter, ouvrir, arrondir · B : retour · Start : pause",
+    "progress": "Progression",
+    "resetProgress": "Effacer la progression",
+    "resetConfirm": "Effacer toutes les médailles du Grand Circuit et les meilleurs sauts du jour ? Les tableaux Arcade sont conservés.",
+    "resetYes": "Effacer",
+    "resetNo": "Annuler",
+    "resetDone": "Progression effacée"
   },
   "records": {
     "title": "Panthéon des As",
@@ -90,6 +179,105 @@
     "empty": "Aucun vol enregistré pour l'instant.",
     "emptyHint": "Effectuez une mission pour gagner vos ailes.",
     "clear": "Effacer les records",
-    "defaultPilot": "As"
+    "defaultPilot": "As",
+    "tabArcade": "Arcade",
+    "tabCircuit": "Circuit",
+    "tabDaily": "Saut du jour",
+    "event": "Épreuve",
+    "medal": "Médaille",
+    "best": "Meilleur",
+    "emptyDaily": "Aucun saut du jour pour l’instant."
+  },
+  "circuit": {
+    "title": "Le Grand Circuit",
+    "subtitle": "Dix épreuves, cinq terrains. Une médaille ouvre l’épreuve suivante.",
+    "medals": "Médailles gagnées",
+    "locked": "Verrouillée",
+    "venue": {
+      "county": "Foire du comté",
+      "seaside": "Bord de mer",
+      "lake": "Lac de montagne",
+      "airfield": "Aérodrome",
+      "meeting": "Grand Meeting"
+    }
+  },
+  "events": {
+    "fair-first": {
+      "name": "Premier saut",
+      "goal": "Sautez au feu vert, ouvrez dans la zone orange, posez-vous debout sur la cible."
+    },
+    "fair-hoops": {
+      "name": "Les anneaux de la foire",
+      "goal": "Sept anneaux en chute libre : enfilez-les tous."
+    },
+    "sea-breeze": {
+      "name": "Brise de mer",
+      "goal": "Un vent soutenu souffle vers le large : visez au vent de la cible."
+    },
+    "sea-low": {
+      "name": "Ouverture basse",
+      "goal": "Largage à 1100 m, plancher à 120 m : ouvrez au plus bas sans jamais le franchir."
+    },
+    "lake-shore": {
+      "name": "Rive du lac",
+      "goal": "Une petite cible au bord de l’eau et des rafales : la précision avant tout."
+    },
+    "lake-slalom": {
+      "name": "Slalom des nuages",
+      "goal": "Huit anneaux serrés : plongez juste."
+    },
+    "field-wagon": {
+      "name": "Le char",
+      "goal": "La cible roule ! Posez-vous sur le char tiré par le cheval."
+    },
+    "field-crosswind": {
+      "name": "Vent de travers",
+      "goal": "Vent fort : approchez en crabe et arrondissez face au vent."
+    },
+    "meet-show": {
+      "name": "Démonstration",
+      "goal": "Six anneaux et la tribune comble : faites le spectacle."
+    },
+    "meet-grand-prix": {
+      "name": "Grand Prix",
+      "goal": "Vent, anneaux et cible mobile : la finale du Meeting."
+    }
+  },
+  "brief": {
+    "daily": "Saut du jour",
+    "arcade": "Arcade",
+    "dailyGoal": "Le même saut pour tout le monde aujourd’hui : battez votre record.",
+    "arcadeGoal": "Trois sauts sur trois terrains : la partie compte leur somme.",
+    "mapLabel": "Carte de la zone de saut",
+    "legendRun": "Trajet de l’avion",
+    "legendSpot": "Feu vert",
+    "legendHoop": "Anneaux",
+    "legendTarget": "Cible",
+    "wind": "Vent",
+    "target": "Cible",
+    "movingTarget": "char mobile",
+    "hoops": "Anneaux",
+    "exit": "Largage",
+    "deck": "Plancher",
+    "medals": "Médailles",
+    "best": "Meilleur",
+    "dailyBest": "Meilleur du jour",
+    "keys": "[left] [right] tourner · [up] plonger / accélérer · [down] cambrer / freiner · [action] : sauter, ouvrir, arrondir",
+    "jump": "Sauter !"
+  },
+  "result": {
+    "medal": {
+      "bronze": "Médaille de bronze",
+      "silver": "Médaille d’argent",
+      "gold": "Médaille d’or"
+    },
+    "noMedal": "Pas de médaille",
+    "newBest": "Nouveau record !",
+    "unlocked": "Épreuve suivante débloquée !",
+    "runTotal": "Total de la partie",
+    "retry": "Réessayer",
+    "nextEvent": "Épreuve suivante",
+    "toCircuit": "Circuit",
+    "menu": "Menu"
   }
 }

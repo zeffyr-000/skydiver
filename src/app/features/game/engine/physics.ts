@@ -1,40 +1,45 @@
 import type {
-  CloudResult,
-  CloudRing,
   GameConfig,
   GameState,
   InputState,
   JumpResult,
+  LandingQuality,
+  Ring,
   ScoreBreakdown,
+  SpotLight,
 } from './types';
 import { Phase } from './types';
 
-// --- Scoring weights (points). Proximity is the bulk; the others are seasoning. ---
+// --- Scoring weights (points). Accuracy is the bulk; every phase adds its share. ---
 /** Max accuracy points, awarded anywhere inside the bullseye. */
-const PROXIMITY_MAX = 1000;
-/** Accuracy floor at the very edge of the target (before it drops to 0 outside). */
-const PROXIMITY_MIN = 100;
-/** Points per second of free fall — rewards bold, late deploys. */
-const FREEFALL_POINTS_PER_SEC = 15;
-/** Caps the free-fall bonus so a sky-high exit can't dwarf accuracy. */
-const FREEFALL_BONUS_CAP = 450;
-/** Max bonus for a feather-soft touchdown (descent speed → 0). */
-const SOFT_LANDING_MAX = 250;
-/** Flat bonus for landing inside the inner bullseye. */
-const BULLSEYE_BONUS = 500;
+const ACCURACY_MAX = 1000;
+/** Accuracy at the very edge of the target (0 outside it). */
+const ACCURACY_MIN = 100;
+/** Points for a hoop flown dead centre (half at the rim). */
+const RING_POINTS = 150;
+/** Bonus for flying every hoop of the jump. */
+const RING_SWEEP_BONUS = 300;
+/** Pull bonus at the hard deck (falls off linearly to 0 at the pull ceiling). */
+const PULL_MAX = 300;
+const LANDING_POINTS: Record<LandingQuality, number> = {
+  standup: 400,
+  slide: 180,
+  tumble: 40,
+  crash: 0,
+};
+const SPOT_POINTS: Record<SpotLight, number> = { green: 150, amber: 50, red: 0 };
 
-// Gust wander frequencies (rad/s). Two different primes keep the wind from
-// tracing a simple circle, and being a pure function of `elapsed` keeps the
-// whole simulation deterministic for tests.
+// Gust wander frequencies (rad/s): two different primes keep the wind from
+// tracing a circle, and being a pure function of `elapsed` keeps it deterministic.
 const GUST_FREQ_X = 0.7;
 const GUST_FREQ_Y = 0.5;
 
-// In the cloud dive, pitch nudges the descent speed by ±this (m/s) around
-// `cloudTerminal`: arching buys a little more time to line up a ring, tracking
-// rushes it. Mild on purpose — lateral steering, not speed, is the skill here.
-const CLOUD_PITCH_TERMINAL = 10;
+/** Seconds for a flare to bite fully. */
+const FLARE_RISE = 0.25;
+/** 1/s rate at which canopy trim follows the stick. */
+const TRIM_RATE = 4;
 
-function clamp(v: number, lo: number, hi: number): number {
+export function clamp(v: number, lo: number, hi: number): number {
   return Math.min(hi, Math.max(lo, v));
 }
 
@@ -42,411 +47,471 @@ function lerp(a: number, b: number, t: number): number {
   return a + (b - a) * t;
 }
 
-/** Build a fresh jump. `rng` is injectable so tests can seed it. */
-export function createInitialState(cfg: GameConfig, rng: () => number = Math.random): GameState {
-  const windDir = rng() * Math.PI * 2;
-
-  const spreadDir = rng() * Math.PI * 2;
-  const spreadMag = (0.4 + 0.6 * rng()) * cfg.startSpread;
-
-  // New draws are APPENDED after the three above: fixed-seed tests must keep
-  // producing the same wind direction and spawn position as before.
-  const planeDir = rng() * Math.PI * 2;
-  const groundSeed = Math.floor(rng() * 0xffffffff) >>> 0;
-  // Per-jump weather: 40%–140% of the difficulty's base wind and gusts, so
-  // the same setting deals calm mornings and rough days.
-  const windScale = 0.4 + rng();
-  const windBaseX = Math.cos(windDir) * cfg.windBase * windScale;
-  const windBaseY = Math.sin(windDir) * cfg.windBase * windScale;
-
-  return {
-    phase: cfg.introDuration > 0 ? Phase.PlaneApproach : Phase.Freefall,
-    altitude: cfg.startAltitude,
-    descentSpeed: 0,
-    posX: Math.cos(spreadDir) * spreadMag,
-    posY: Math.sin(spreadDir) * spreadMag,
-    velX: 0,
-    velY: 0,
-    windBaseX,
-    windBaseY,
-    windGustScale: windScale,
-    windX: windBaseX,
-    windY: windBaseY,
-    flareAmount: 0,
-    stalled: false,
-    stallTimer: 0,
-    elapsed: 0,
-    freefallTime: 0,
-    pitch: 0,
-    introTimer: Math.max(0, cfg.introDuration),
-    deployTimer: 0,
-    outroTimer: 0,
-    planeDirX: Math.cos(planeDir),
-    planeDirY: Math.sin(planeDir),
-    groundSeed,
-    result: null,
-    rings: [],
-    ringsPassed: 0,
-    cloudResult: null,
-  };
+/** Unit forward vector for a heading (clockwise from north, +y is south). */
+export function forwardOf(heading: number): { x: number; y: number } {
+  return { x: Math.sin(heading), y: -Math.cos(heading) };
 }
 
 /**
- * Build the cloud bonus dive: a free fall through a slalom of scoring hoops, no
- * canopy and no crash — purely additive points. Its own rng draws keep it
- * independent of `createInitialState` (whose draw order is frozen by a test).
+ * Seconds into the run at which a moving target passes the drop-zone centre —
+ * roughly when a jump lands, so the spot and the hoops still lead to it.
  */
-export function createCloudDive(cfg: GameConfig, rng: () => number = Math.random): GameState {
+export const TARGET_PASS_TIME = 52;
+
+/** Where the target is at `elapsed` (the origin, unless it's a moving wagon). */
+export function targetAt(cfg: GameConfig, elapsed: number): { x: number; y: number } {
+  if (!cfg.targetSpeed) {
+    return { x: 0, y: 0 };
+  }
+  const f = forwardOf(cfg.targetHeading);
+  const d = cfg.targetSpeed * (elapsed - TARGET_PASS_TIME);
+  return { x: f.x * d, y: f.y * d };
+}
+
+function wrapAngle(a: number): number {
+  const t = Math.PI * 2;
+  return ((((a + Math.PI) % t) + t) % t) - Math.PI;
+}
+
+/**
+ * Build a fresh jump. `rng` is injectable so tests can seed it.
+ *
+ * Draw order is a contract guarded by a fixed-seed spec — only ever APPEND new
+ * draws: windDir, windScale, planeHeading, lateral, groundSeed, then the hoops.
+ */
+export function createJump(cfg: GameConfig, rng: () => number = Math.random): GameState {
   const windDir = rng() * Math.PI * 2;
-  const windScale = 0.4 + rng();
-  const windBaseX = Math.cos(windDir) * cfg.windBase * windScale;
-  const windBaseY = Math.sin(windDir) * cfg.windBase * windScale;
+  const windScale = 0.5 + 0.8 * rng();
+  const planeHeading = rng() * Math.PI * 2;
+  const lateral = (rng() * 2 - 1) * cfg.planeLateral;
   const groundSeed = Math.floor(rng() * 0xffffffff) >>> 0;
 
-  // Hoops descend as a catchable random walk: each one steps from the last by at
-  // most `cloudRingSpread / count` and stays within `cloudRingSpread` of the
-  // dive line — small enough to reach before the next altitude band arrives.
-  const count = Math.max(1, Math.floor(cfg.cloudRingCount));
-  const top = cfg.cloudStartAltitude * 0.85;
-  const bottom = cfg.cloudStartAltitude * 0.12;
-  const stepMax = cfg.cloudRingSpread / count;
-  const rings: CloudRing[] = [];
-  let x = 0;
-  let y = 0;
+  const windBaseX = Math.cos(windDir) * cfg.windBase * windScale;
+  const windBaseY = Math.sin(windDir) * cfg.windBase * windScale;
+
+  // The ideal exit sits upwind of the target (where a passive body would
+  // drift onto it), shifted sideways by the run's offset: the line never
+  // passes perfectly, so free fall always has positioning work to do.
+  const f = forwardOf(planeHeading);
+  const spotX = -windBaseX * cfg.spotUpwindTime + Math.cos(planeHeading) * lateral;
+  const spotY = -windBaseY * cfg.spotUpwindTime + Math.sin(planeHeading) * lateral;
+  const lead = cfg.planeSpeed * cfg.spotLeadTime;
+  const planeStartX = spotX - f.x * lead;
+  const planeStartY = spotY - f.y * lead;
+
+  const rings = layRings(cfg, rng, spotX, spotY, f, windBaseX, windBaseY);
+
+  const s: GameState = {
+    phase: Phase.Plane,
+    elapsed: 0,
+    planeTime: 0,
+    planeStartX,
+    planeStartY,
+    planeHeading,
+    spotX,
+    spotY,
+    spot: 'red',
+    altitude: cfg.exitAltitude,
+    descentSpeed: 0,
+    posX: planeStartX,
+    posY: planeStartY,
+    velX: f.x * cfg.planeSpeed,
+    velY: f.y * cfg.planeSpeed,
+    heading: planeHeading,
+    turnRate: 0,
+    pitch: 0,
+    trim: 0,
+    windBaseX,
+    windBaseY,
+    windScale,
+    windX: windBaseX,
+    windY: windBaseY,
+    freefallTime: 0,
+    deployTimer: 0,
+    pullAltitude: null,
+    canopyTime: 0,
+    flareTime: 0,
+    outroTimer: 0,
+    rings,
+    ringsPassed: 0,
+    groundSeed,
+    result: null,
+  };
+  // A run with no lead time starts at the exit (e2e `?fast=1`).
+  return cfg.spotLeadTime + cfg.spotOvertime <= 0 ? exitPlane(s, cfg) : s;
+}
+
+/**
+ * Hoops descend the free-fall column from the exit toward the target: each one
+ * follows the passive drift of the previous plus a step toward the target and
+ * some jitter, capped to what a half-hearted track can cover between them —
+ * so they're always catchable from a good exit and lead you home.
+ */
+function layRings(
+  cfg: GameConfig,
+  rng: () => number,
+  spotX: number,
+  spotY: number,
+  f: { x: number; y: number },
+  windX: number,
+  windY: number,
+): Ring[] {
+  const count = Math.max(0, Math.floor(cfg.ringCount));
+  if (count === 0) {
+    return [];
+  }
+  const top = cfg.exitAltitude - 130;
+  const bottom = Math.max(cfg.pullCeiling + 40, cfg.hardDeck + 200);
+  const gapAlt = count > 1 ? (top - bottom) / (count - 1) : 0;
+  const gapTime = gapAlt / cfg.freefallTerminal;
+  const maxStep = cfg.trackSpeed * gapTime * 0.5;
+
+  // First hoop: where a passive diver lands after the exit throw (~4 s in).
+  const throwCarry = cfg.planeSpeed / cfg.freefallDrag;
+  let x = spotX + f.x * throwCarry * 0.8 + windX * 4;
+  let y = spotY + f.y * throwCarry * 0.8 + windY * 4;
+  const rings: Ring[] = [];
   for (let i = 0; i < count; i++) {
     if (i > 0) {
-      x += (rng() * 2 - 1) * stepMax;
-      y += (rng() * 2 - 1) * stepMax;
-      const mag = Math.hypot(x, y);
-      if (mag > cfg.cloudRingSpread) {
-        x *= cfg.cloudRingSpread / mag;
-        y *= cfg.cloudRingSpread / mag;
+      x += windX * gapTime;
+      y += windY * gapTime;
+      const toT = Math.hypot(x, y);
+      const step = Math.min(toT, maxStep * 0.7);
+      let dx = toT > 0 ? (-x / toT) * step : 0;
+      let dy = toT > 0 ? (-y / toT) * step : 0;
+      const jitter = (rng() * 2 - 1) * cfg.ringJitter;
+      const jAng = rng() * Math.PI * 2;
+      dx += Math.cos(jAng) * jitter;
+      dy += Math.sin(jAng) * jitter;
+      const len = Math.hypot(dx, dy);
+      if (len > maxStep) {
+        dx *= maxStep / len;
+        dy *= maxStep / len;
       }
+      x += dx;
+      y += dy;
     }
-    const t = count === 1 ? 0 : i / (count - 1);
     rings.push({
-      altitude: top + (bottom - top) * t,
+      altitude: top - gapAlt * i,
       x,
       y,
-      radius: cfg.cloudRingRadius,
+      radius: cfg.ringRadius,
       passed: null,
       centered: 0,
     });
   }
+  return rings;
+}
 
+/** Where the plane is along its run at time `t` (seconds into it). */
+export function planePosition(s: GameState, cfg: GameConfig, t: number): { x: number; y: number } {
+  const f = forwardOf(s.planeHeading);
   return {
-    phase: Phase.CloudDive,
-    altitude: cfg.cloudStartAltitude,
-    descentSpeed: 0,
-    posX: 0,
-    posY: 0,
-    velX: 0,
-    velY: 0,
-    windBaseX,
-    windBaseY,
-    windGustScale: windScale,
-    windX: windBaseX,
-    windY: windBaseY,
-    flareAmount: 0,
-    stalled: false,
-    stallTimer: 0,
-    elapsed: 0,
-    freefallTime: 0,
-    pitch: 0,
-    introTimer: 0,
-    deployTimer: 0,
-    outroTimer: 0,
-    planeDirX: 1,
-    planeDirY: 0,
-    groundSeed,
-    result: null,
-    rings,
-    ringsPassed: 0,
-    cloudResult: null,
+    x: s.planeStartX + f.x * cfg.planeSpeed * t,
+    y: s.planeStartY + f.y * cfg.planeSpeed * t,
   };
+}
+
+/** The spotting light for the plane's current position (green = ideal exit). */
+export function spotLightAt(s: GameState, cfg: GameConfig): SpotLight {
+  const f = forwardOf(s.planeHeading);
+  const along = (s.posX - s.spotX) * f.x + (s.posY - s.spotY) * f.y;
+  const d = Math.abs(along);
+  if (d <= cfg.spotWindow) {
+    return 'green';
+  }
+  return d <= cfg.spotWindow * 2.5 ? 'amber' : 'red';
+}
+
+function exitPlane(s: GameState, cfg: GameConfig): GameState {
+  return { ...s, phase: Phase.Freefall, spot: spotLightAt(s, cfg) };
 }
 
 /**
  * Advance the simulation by `dt` seconds. Pure: returns a new state, never
- * mutates the input. Order: intro → deploy/opening → pitch → flare/stall →
- * vertical → wind → horizontal (with inertia) → landing → outro.
+ * mutates the input.
  */
 export function integrate(s: GameState, input: InputState, dt: number, cfg: GameConfig): GameState {
-  // --- Resolved: only the outro timer ticks, everything else is frozen ---
-  if (s.phase === Phase.Landed || s.phase === Phase.Crashed || s.phase === Phase.CloudDone) {
+  // --- Resolved: only the outro timer ticks (skippable) ---
+  if (s.phase === Phase.Landed || s.phase === Phase.Crashed) {
     if (s.outroTimer <= 0) {
       return s;
     }
-    const n: GameState = { ...s };
-    n.elapsed += dt;
-    n.outroTimer = input.skipPressed ? 0 : Math.max(0, n.outroTimer - dt);
-    return n;
+    return {
+      ...s,
+      elapsed: s.elapsed + dt,
+      outroTimer: input.action ? 0 : Math.max(0, s.outroTimer - dt),
+    };
   }
 
-  const n: GameState = { ...s };
-  n.elapsed += dt;
+  let n: GameState = { ...s, elapsed: s.elapsed + dt };
+  n.windX = n.windBaseX + Math.sin(n.elapsed * GUST_FREQ_X) * cfg.windGust * n.windScale;
+  n.windY = n.windBaseY + Math.cos(n.elapsed * GUST_FREQ_Y) * cfg.windGust * n.windScale;
 
-  // --- Intro: riding the plane; no physics until the diver exits ---
-  if (n.phase === Phase.PlaneApproach) {
-    n.introTimer -= dt;
-    if (input.skipPressed || input.deployPressed) {
-      n.introTimer = 0;
-      // Jump the clock to the scripted exit time so the plane's path (a pure
-      // function of `elapsed`) and the gust phase stay continuous.
-      n.elapsed = cfg.introDuration;
-    }
-    if (n.introTimer <= 0) {
-      n.introTimer = 0;
-      n.phase = Phase.Freefall;
-    }
-    return n;
+  // --- Jump run: ride the ship until the player (or the pilot) says go ---
+  if (n.phase === Phase.Plane) {
+    n.planeTime += dt;
+    const p = planePosition(n, cfg, n.planeTime);
+    n.posX = p.x;
+    n.posY = p.y;
+    const forced = n.planeTime >= cfg.spotLeadTime + cfg.spotOvertime;
+    return input.action || forced ? exitPlane(n, cfg) : n;
   }
 
-  // --- Deploy (edge-triggered) → opening countdown ---
-  if (n.phase === Phase.Freefall) {
-    n.freefallTime += dt;
-    if (input.deployPressed) {
+  // --- Pull (free fall) / flare (canopy) on the context key ---
+  if (input.action) {
+    if (n.phase === Phase.Freefall) {
       n.phase = Phase.Deploying;
       n.deployTimer = cfg.deployDuration;
+      n.pullAltitude = n.altitude;
+    } else if (n.phase === Phase.Canopy && n.flareTime <= 0) {
+      n.flareTime = 1e-6;
     }
   }
-  if (n.phase === Phase.Deploying) {
+
+  // --- Turning (all airborne phases) ---
+  const turnMax =
+    n.phase === Phase.Freefall
+      ? cfg.freefallTurnRate
+      : n.phase === Phase.Deploying
+        ? cfg.canopyTurnRate * 0.4
+        : cfg.canopyTurnRate;
+  n.turnRate +=
+    (clamp(input.turn, -1, 1) * turnMax - n.turnRate) * Math.min(1, dt * cfg.turnResponse);
+  n.heading = wrapAngle(n.heading + n.turnRate * dt);
+
+  let terminal: number;
+  let forwardAir: number;
+  let dragRate: number;
+  /** Explicit 1/s rate for descent under canopy; free fall/opening use gravity. */
+  let vzRate = 0;
+
+  if (n.phase === Phase.Freefall) {
+    n.freefallTime += dt;
+    n.pitch += (clamp(input.drive, -1, 1) - n.pitch) * Math.min(1, dt * cfg.pitchRate);
+    terminal =
+      cfg.freefallTerminal +
+      (n.pitch > 0 ? n.pitch * cfg.trackTerminalBoost : n.pitch * cfg.archTerminalDrop);
+    forwardAir = n.pitch > 0 ? n.pitch * cfg.trackSpeed : n.pitch * cfg.archBackslide;
+    dragRate = cfg.freefallDrag;
+  } else if (n.phase === Phase.Deploying) {
     n.deployTimer = Math.max(0, n.deployTimer - dt);
+    const openP = 1 - n.deployTimer / Math.max(cfg.deployDuration, 1e-9);
+    n.pitch += (0 - n.pitch) * Math.min(1, dt * cfg.pitchRate);
+    // Snivel: barely brakes at line stretch, bites hard as the canopy inflates.
+    terminal = lerp(cfg.freefallTerminal, cfg.canopyDescent, openP * openP);
+    forwardAir = cfg.canopyAirspeed * openP;
+    dragRate = 1.5;
     if (n.deployTimer <= 0) {
       n.phase = Phase.Canopy;
     }
-  }
+  } else {
+    n.canopyTime += dt;
+    n.trim += (clamp(input.drive, -1, 1) - n.trim) * Math.min(1, dt * TRIM_RATE);
+    const t = n.trim;
+    forwardAir =
+      t >= 0
+        ? lerp(cfg.canopyAirspeed, cfg.riserAirspeed, t)
+        : lerp(cfg.canopyAirspeed, cfg.brakeAirspeed, -t);
+    terminal =
+      t >= 0
+        ? lerp(cfg.canopyDescent, cfg.riserDescent, t)
+        : lerp(cfg.canopyDescent, cfg.brakeDescent, -t);
+    terminal += (Math.abs(n.turnRate) / cfg.canopyTurnRate) * cfg.spiralDescent;
+    dragRate = cfg.canopyResponse;
+    vzRate = 2.5;
 
-  const inFreefall = n.phase === Phase.Freefall;
-  const deploying = n.phase === Phase.Deploying;
-  const underCanopy = n.phase === Phase.Canopy;
-  const cloudDiving = n.phase === Phase.CloudDive;
-  // Belly-to-earth with no canopy out: ordinary free fall OR the cloud dive.
-  // Both use the pitch model and free-fall steering, so they share a flag.
-  const bellyFall = inFreefall || cloudDiving;
-  // Opening progress: 0 just after the pull → 1 fully inflated.
-  const openP = deploying ? 1 - n.deployTimer / Math.max(cfg.deployDuration, 1e-9) : 0;
-
-  // --- Pitch: follows the stick in free fall, relaxes to neutral elsewhere ---
-  const pitchTarget = bellyFall ? clamp(-input.steerY, -1, 1) : 0;
-  n.pitch += (pitchTarget - n.pitch) * Math.min(1, dt * cfg.pitchRate);
-
-  // --- Flare smoothing + stall (canopy only) ---
-  if (underCanopy) {
-    n.flareAmount += (input.flare - n.flareAmount) * Math.min(1, dt * 6);
-    if (!n.stalled && n.flareAmount > cfg.stallThreshold) {
-      n.stalled = true;
-      n.stallTimer = cfg.stallDuration;
-    }
-    if (n.stalled) {
-      n.stallTimer -= dt;
-      if (n.stallTimer <= 0) {
-        n.stalled = false;
-        n.flareAmount = 0;
+    if (n.flareTime > 0) {
+      n.flareTime += dt;
+      if (n.flareTime < cfg.flareDuration) {
+        // Flaring: the wing trades its forward speed for lift.
+        const eff = Math.min(1, n.flareTime / FLARE_RISE);
+        forwardAir = lerp(forwardAir, cfg.flareAirspeed, eff);
+        terminal = lerp(terminal, cfg.flareDescent, eff);
+        vzRate = 7;
+        dragRate = 5;
+      } else if (n.flareTime < cfg.flareDuration + cfg.stallDuration) {
+        // Out of energy: the canopy stalls and the diver drops.
+        forwardAir = 1;
+        terminal = cfg.stallDescent;
+        vzRate = 3;
+        dragRate = 3;
+      } else {
+        n.flareTime = 0; // re-inflated, ready to flare again
       }
     }
   }
 
-  // --- Vertical: ease descent speed toward the phase terminal velocity ---
-  let terminal: number;
-  if (inFreefall) {
-    // Tracking dives faster, arching flattens out and buys time.
-    terminal =
-      cfg.freefallTerminal +
-      (n.pitch > 0 ? n.pitch * cfg.trackTerminalBoost : n.pitch * cfg.archTerminalDrop);
-  } else if (cloudDiving) {
-    // Slower than free fall (rings stay catchable); pitch nudges it mildly.
-    terminal = cfg.cloudTerminal + n.pitch * CLOUD_PITCH_TERMINAL;
-  } else if (deploying) {
-    // Snivel: barely brakes at line stretch, bites hard as the canopy inflates.
-    terminal = lerp(cfg.freefallTerminal, cfg.canopyTerminal, openP * openP);
-  } else if (n.stalled) {
-    terminal = cfg.freefallTerminal * 0.6; // canopy collapsed → falling again
-  } else {
-    terminal = Math.max(1, cfg.canopyTerminal - n.flareAmount * cfg.flareSlowdown);
-  }
-  const approach = Math.min(1, (cfg.gravity / Math.max(terminal, 1)) * dt);
+  // --- Vertical: ease descent speed toward the phase's terminal ---
+  const approach =
+    vzRate > 0 ? Math.min(1, vzRate * dt) : Math.min(1, (cfg.gravity / Math.max(terminal, 1)) * dt);
   n.descentSpeed += (terminal - n.descentSpeed) * approach;
+  const prevAltitude = n.altitude;
   n.altitude = Math.max(0, n.altitude - n.descentSpeed * dt);
 
-  // --- Wind: deterministic gust around the steady base vector, both scaled
-  // by the jump's weather draw ---
-  n.windX = n.windBaseX + Math.sin(n.elapsed * GUST_FREQ_X) * cfg.windGust * n.windGustScale;
-  n.windY = n.windBaseY + Math.cos(n.elapsed * GUST_FREQ_Y) * cfg.windGust * n.windGustScale;
-  // Effective air velocity: the canopy catches much more wind than a falling
-  // body, and an opening canopy catches progressively more.
-  const windFactor = underCanopy
-    ? cfg.windCanopyFactor
-    : deploying
-      ? lerp(cfg.windFreefallFactor, cfg.windCanopyFactor, openP)
-      : cfg.windFreefallFactor;
-  const airX = n.windX * windFactor;
-  const airY = n.windY * windFactor;
-
-  // --- Horizontal: drag acts on velocity RELATIVE TO THE AIR ---
-  // With no input the diver relaxes toward the air's velocity (drifts with the
-  // wind). Steering builds relative velocity that bleeds off when released →
-  // momentum/inertia, never an instant stop.
-  let relX = n.velX - airX;
-  let relY = n.velY - airY;
-  if (!n.stalled) {
-    if (bellyFall) {
-      // Up/down is pitch, not direct Y drive: tracking pushes hard toward -Y,
-      // arching backslides weakly toward +Y and costs lateral authority.
-      const lateral = cfg.steerAccelFreefall * (1 - Math.max(0, -n.pitch) * cfg.archSteerPenalty);
-      relX += input.steerX * lateral * dt;
-      relY += -n.pitch * (n.pitch > 0 ? cfg.trackAccel : cfg.backslideAccel) * dt;
-    } else {
-      const steerAccel = cfg.steerAccelCanopy * (deploying ? cfg.deploySteerFactor : 1);
-      relX += input.steerX * steerAccel * dt;
-      relY += input.steerY * steerAccel * dt;
-    }
-  }
-  const drag = Math.pow(cfg.damping, dt);
-  relX *= drag;
-  relY *= drag;
-  n.velX = airX + relX;
-  n.velY = airY + relY;
+  // --- Horizontal: velocity relative to the air eases toward the body's drive ---
+  // The diver moves with the air mass; heading/pitch/trim only set the
+  // air-relative part. That's what makes the wind matter: into it you crawl,
+  // downwind you fly.
+  const f = forwardOf(n.heading);
+  let relX = n.velX - n.windX;
+  let relY = n.velY - n.windY;
+  const k = Math.min(1, dt * dragRate);
+  relX += (f.x * forwardAir - relX) * k;
+  relY += (f.y * forwardAir - relY) * k;
+  n.velX = n.windX + relX;
+  n.velY = n.windY + relY;
   n.posX += n.velX * dt;
   n.posY += n.velY * dt;
 
-  // --- Cloud dive: resolve any ring whose altitude we just dropped through,
-  // then bottom out safely (never a crash) ---
-  if (cloudDiving) {
-    if (n.rings.length > 0) {
-      let passed = n.ringsPassed;
-      // Fresh array + objects so the pure-function contract holds (no mutating
-      // the caller's state). Unresolved rings keep their reference (immutable).
-      n.rings = n.rings.map((ring) => {
-        if (ring.passed === null && n.altitude <= ring.altitude) {
-          const dist = Math.hypot(n.posX - ring.x, n.posY - ring.y);
-          const hit = dist <= ring.radius;
-          if (hit) {
-            passed += 1;
-          }
-          return { ...ring, passed: hit, centered: hit ? clamp(1 - dist / ring.radius, 0, 1) : 0 };
-        }
-        return ring;
-      });
-      n.ringsPassed = passed;
-    }
-    if (n.altitude <= 0) {
-      n.phase = Phase.CloudDone;
-      n.cloudResult = scoreCloudRound(n, cfg);
-      n.outroTimer = Math.max(0, cfg.outroDuration);
-    }
-    return n;
-  }
+  n = resolveRings(n, prevAltitude, s.phase === Phase.Freefall);
 
-  // --- Landing ---
+  // --- Touchdown ---
   if (n.altitude <= 0) {
-    // A Deploying touchdown isn't special-cased: the canopy simply hasn't bled
-    // enough speed yet, so the safe-landing check crashes it naturally.
-    const crashed = n.phase === Phase.Freefall || n.descentSpeed > cfg.safeLandingSpeed;
-    n.phase = crashed ? Phase.Crashed : Phase.Landed;
-    n.result = resolveLanding(n, cfg, crashed);
+    const groundSpeed = Math.hypot(n.velX, n.velY);
+    const landing = judgeLanding(n.phase, n.descentSpeed, groundSpeed, cfg);
+    n.phase = landing === 'crash' ? Phase.Crashed : Phase.Landed;
+    n.result = resolveJump(n, cfg, landing, groundSpeed);
     n.outroTimer = Math.max(0, cfg.outroDuration);
     n.deployTimer = 0;
+    n.flareTime = 0;
   }
-
   return n;
 }
 
+/** Resolve every hoop whose altitude was crossed this step (only free fall can score). */
+function resolveRings(n: GameState, prevAltitude: number, inFreefall: boolean): GameState {
+  if (n.rings.length === 0 || !n.rings.some((r) => r.passed === null && n.altitude <= r.altitude)) {
+    return n;
+  }
+  let passed = n.ringsPassed;
+  const rings = n.rings.map((ring) => {
+    if (ring.passed !== null || n.altitude > ring.altitude || prevAltitude < ring.altitude) {
+      return ring;
+    }
+    const dist = Math.hypot(n.posX - ring.x, n.posY - ring.y);
+    const hit = inFreefall && dist <= ring.radius;
+    if (hit) {
+      passed += 1;
+    }
+    return { ...ring, passed: hit, centered: hit ? clamp(1 - dist / ring.radius, 0, 1) : 0 };
+  });
+  return { ...n, rings, ringsPassed: passed };
+}
+
+/** Grade a touchdown from the phase it happened in and how fast it was. */
+export function judgeLanding(
+  phase: Phase,
+  descent: number,
+  groundSpeed: number,
+  cfg: GameConfig,
+): LandingQuality {
+  if (phase === Phase.Freefall || descent > cfg.crashSpeed) {
+    return 'crash';
+  }
+  if (descent <= cfg.standupDescent && groundSpeed <= cfg.standupGroundSpeed) {
+    return 'standup';
+  }
+  return descent <= cfg.slideDescent ? 'slide' : 'tumble';
+}
+
 /** Resolve a touchdown into a scored result. */
-export function resolveLanding(s: GameState, cfg: GameConfig, crashed: boolean): JumpResult {
-  const landedDistance = Math.hypot(s.posX, s.posY);
-  const bullseye = !crashed && landedDistance <= cfg.bullseyeRadius;
-  const breakdown = crashed ? null : scoreJump(landedDistance, s.freefallTime, s.descentSpeed, cfg);
+export function resolveJump(
+  s: GameState,
+  cfg: GameConfig,
+  landing: LandingQuality,
+  groundSpeed: number,
+): JumpResult {
+  const t = targetAt(cfg, s.elapsed);
+  const landedDistance = Math.hypot(s.posX - t.x, s.posY - t.y);
+  const crashed = landing === 'crash';
+  const breakdown = crashed
+    ? null
+    : scoreJump(
+        {
+          landedDistance,
+          landing,
+          pullAltitude: s.pullAltitude,
+          rings: s.rings,
+          spot: s.spot,
+        },
+        cfg,
+      );
   return {
     landedDistance,
-    freefallTime: s.freefallTime,
     landingSpeed: s.descentSpeed,
+    groundSpeed,
+    landing,
     crashed,
-    bullseye,
+    bullseye: !crashed && landedDistance <= cfg.bullseyeRadius,
+    pullAltitude: s.pullAltitude,
+    ringsPassed: s.ringsPassed,
+    ringsTotal: s.rings.length,
+    spot: s.spot,
+    freefallTime: s.freefallTime,
     score: breakdown?.total ?? 0,
     breakdown,
   };
 }
 
-/** All-zero breakdown for a miss (safe landing outside the target). */
-function missBreakdown(cfg: GameConfig): ScoreBreakdown {
-  return {
-    proximity: 0,
-    freefall: 0,
-    softLanding: 0,
-    bullseye: 0,
-    base: 0,
-    multiplier: cfg.scoreMultiplier,
-    total: 0,
-  };
+/** Accuracy points for a touchdown `distance` metres from the centre. */
+export function accuracyPoints(distance: number, cfg: GameConfig): number {
+  if (distance > cfg.targetRadius) {
+    return 0;
+  }
+  if (distance <= cfg.bullseyeRadius) {
+    return ACCURACY_MAX;
+  }
+  const t = (distance - cfg.bullseyeRadius) / (cfg.targetRadius - cfg.bullseyeRadius);
+  return Math.round(ACCURACY_MIN + (ACCURACY_MAX - ACCURACY_MIN) * (1 - t));
 }
 
-/**
- * Itemise a safe landing into its scoring parts so the result screen can tally
- * them. Proximity to the centre (max {@link PROXIMITY_MAX}) is the bulk, plus a
- * bonus for a longer free fall (a later, bolder deploy), a bonus for a gentle
- * touchdown, and a flat bullseye bonus — the whole sum then scaled by the
- * difficulty multiplier. A landing outside the target scores nothing.
- */
+/** Pull bonus: peaks at the hard deck, nothing above the ceiling or below the deck. */
+export function pullPoints(pullAltitude: number | null, cfg: GameConfig): number {
+  if (pullAltitude === null || pullAltitude < cfg.hardDeck || pullAltitude >= cfg.pullCeiling) {
+    return 0;
+  }
+  return Math.round(
+    (PULL_MAX * (cfg.pullCeiling - pullAltitude)) / (cfg.pullCeiling - cfg.hardDeck),
+  );
+}
+
+/** Itemise a safe touchdown into the result card's lines. */
 export function scoreJump(
-  distance: number,
-  freefallTime: number,
-  landingSpeed: number,
+  j: {
+    landedDistance: number;
+    landing: LandingQuality;
+    pullAltitude: number | null;
+    rings: Ring[];
+    spot: SpotLight;
+  },
   cfg: GameConfig,
 ): ScoreBreakdown {
-  if (distance > cfg.targetRadius) {
-    return missBreakdown(cfg);
-  }
-  const inBullseye = distance <= cfg.bullseyeRadius;
-
-  let proximity: number;
-  if (inBullseye) {
-    proximity = PROXIMITY_MAX;
-  } else {
-    const t = (distance - cfg.bullseyeRadius) / (cfg.targetRadius - cfg.bullseyeRadius); // 0..1
-    proximity = Math.round(PROXIMITY_MIN + (PROXIMITY_MAX - PROXIMITY_MIN) * (1 - t));
-  }
-
-  const freefall = Math.min(FREEFALL_BONUS_CAP, Math.round(freefallTime * FREEFALL_POINTS_PER_SEC));
-  // Reward a soft touchdown: full bonus at a standstill, none at the crash limit.
-  const softness = clamp(1 - landingSpeed / cfg.safeLandingSpeed, 0, 1);
-  const softLanding = Math.round(SOFT_LANDING_MAX * softness);
-  const bullseye = inBullseye ? BULLSEYE_BONUS : 0;
-
-  const base = proximity + freefall + softLanding + bullseye;
-  const total = Math.round(base * cfg.scoreMultiplier);
-  return {
-    proximity,
-    freefall,
-    softLanding,
-    bullseye,
-    base,
-    multiplier: cfg.scoreMultiplier,
-    total,
-  };
-}
-
-/**
- * Tally the cloud bonus dive: each ring flown through pays `cloudRingPoints`
- * scaled by how centred the pass was (half for a rim-skim, full dead-centre),
- * plus a flat bonus for clearing them all — the whole sum then scaled by the
- * difficulty multiplier, like a jump.
- */
-export function scoreCloudRound(s: GameState, cfg: GameConfig): CloudResult {
-  let base = 0;
+  const accuracy = accuracyPoints(j.landedDistance, cfg);
+  let rings = 0;
   let passed = 0;
-  for (const ring of s.rings) {
+  for (const ring of j.rings) {
     if (ring.passed) {
-      base += cfg.cloudRingPoints * (0.5 + 0.5 * ring.centered);
+      rings += RING_POINTS * (0.5 + 0.5 * ring.centered);
       passed += 1;
     }
   }
-  if (s.rings.length > 0 && passed === s.rings.length) {
-    base += cfg.cloudClearBonus;
+  if (j.rings.length > 0 && passed === j.rings.length) {
+    rings += RING_SWEEP_BONUS;
   }
+  rings = Math.round(rings);
+  const pull = pullPoints(j.pullAltitude, cfg);
+  const landing = LANDING_POINTS[j.landing];
+  const spot = SPOT_POINTS[j.spot];
+  const base = accuracy + rings + pull + landing + spot;
   return {
-    ringsPassed: passed,
-    ringsTotal: s.rings.length,
-    score: Math.round(base * cfg.scoreMultiplier),
+    accuracy,
+    rings,
+    pull,
+    landing,
+    spot,
+    base,
+    multiplier: cfg.scoreMultiplier,
+    total: Math.round(base * cfg.scoreMultiplier),
   };
 }

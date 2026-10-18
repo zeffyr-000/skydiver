@@ -7,5 +7,6 @@ export { PixelMenuList } from './pixel-menu-list/pixel-menu-list';
 export type { PixelMenuItem } from './pixel-menu-list/pixel-menu-list';
 export { InitialsEntry } from './initials-entry/initials-entry';
 export { ScreenWipe } from './screen-wipe/screen-wipe';
-export { SkyScene } from './sky-scene/sky-scene';
-export type { SkySceneVariant } from './sky-scene/sky-scene';
+export { CountUp } from './count-up/count-up';
+export { UI_SOUNDS } from './ui-sounds';
+export type { UiSounds } from './ui-sounds';

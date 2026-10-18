@@ -19,6 +19,8 @@ export class PixelDialog {
   /** Two-way bound open state. */
   readonly open = model(false);
   readonly heading = input('');
+  /** Roomier layout for content-rich cards (briefing, results). */
+  readonly wide = input(false);
   /** Emitted whenever the dialog closes (ESC, backdrop, or programmatic). */
   readonly closed = output<void>();
 
@@ -32,10 +34,19 @@ export class PixelDialog {
       }
       if (this.open()) {
         if (!el.open) {
-          el.showModal();
+          // jsdom (unit tests) has no modal dialogs: fall back to the attribute.
+          if (typeof el.showModal === 'function') {
+            el.showModal();
+          } else {
+            el.setAttribute('open', '');
+          }
         }
       } else if (el.open) {
-        el.close();
+        if (typeof el.close === 'function') {
+          el.close();
+        } else {
+          el.removeAttribute('open');
+        }
       }
     });
   }

@@ -9,6 +9,11 @@
   min-width: 320px;
   @include px.pixel-bevel();
 
+  &--wide {
+    width: min(880px, calc(100vw - 48px));
+    max-height: calc(100vh - 48px);
+  }
+
   // No blur — pixel art keeps everything hard-edged.
   &::backdrop {
     background: rgba(17, 22, 31, 0.7);
@@ -17,7 +22,7 @@
 
 .pixel-dialog__bar {
   font-family: var(--font-head);
-  font-size: 20px;
+  font-size: var(--fs-head);
   font-weight: 700;
   text-transform: uppercase;
   color: var(--ink-light);

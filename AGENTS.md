@@ -7,12 +7,12 @@ working on this codebase. Read it in full before making any change.
 
 | Tool | Version | Notes |
 |------|---------|-------|
-| Angular | 21 | Zoneless, standalone components, no NgModules |
-| `@angular/aria` | 21 | Headless accessible primitives (listbox, dialog semantics). **Not Angular Material.** |
-| `@angular/cdk` | 21 | Low-level utilities |
+| Angular | 22 | Zoneless, standalone components, no NgModules |
+| `@angular/aria` | 22 | Headless accessible primitives (listbox, dialog semantics). **Not Angular Material.** |
+| `@angular/cdk` | 22 | Low-level utilities |
 | In-house pixel-art UI kit | — | `src/app/ui/pixel-*` — use these, not third-party components |
 | @jsverse/transloco | ~8.3 | i18n — all user-facing strings go through Transloco |
-| TypeScript | ~5.9 | Strict mode — all flags enabled |
+| TypeScript | ~6.0 | Strict mode — all flags enabled |
 | Vitest | ~4 | Unit test runner (via `@angular/build:unit-test`) |
 | Playwright | ~1.60 | E2E tests in `e2e/` |
 | ESLint + angular-eslint | 10 / 21 | Enforced via `ng lint` |
@@ -44,12 +44,18 @@ src/app/
 ├── features/                                  # Routed screens (lazy-loaded)
 │   ├── title/                                  #   menu
 │   ├── game/                                   #   game screen
-│   │   └── engine/                              #     pure engine: types, config,
-│   │                                            #     physics, loop, input, renderer
+│   │   └── engine/                              #     pure engine: types, config, physics,
+│   │                                            #     camera, ground(-texture) + loop, input,
+│   │                                            #     sprites, raster, font, renderer (Mode 7),
+│   │                                            #     baked-sprites (generated), events,
+│   │                                            #     autopilot, sound-cues, bindings, gamepad
+│   ├── circuit/                                 #   the Grand Tour (event select)
 │   ├── settings/
 │   └── records/
 ├── ui/                                        # Pixel-art UI kit + index.ts barrel
-└── shared/                                    # Signal stores (settings, records)
+└── shared/                                    # Signal stores (settings, records, progress),
+                                               # transition & motion services, audio/ (Web
+                                               # Audio synth), controls/ (key labels, gamepad nav)
 
 src/assets/i18n/en.json                        # Translations (imported, not fetched)
 src/styles/                                    # Global SCSS: tokens, mixins, reset, type
@@ -63,7 +69,7 @@ components go in `src/app/ui/`. Cross-feature state goes in a store under `src/a
 ### 1. Standalone components — no NgModules
 
 ```typescript
-// CORRECT (standalone is implicit in Angular 21)
+// CORRECT (standalone is implicit in Angular 22)
 @Component({
   imports: [TranslocoPipe, PixelButton],
   ...
@@ -120,6 +126,12 @@ label = this.transloco.translate('menu.play');
 Add every new key to **both** [src/assets/i18n/en.json](src/assets/i18n/en.json) and
 [src/assets/i18n/fr.json](src/assets/i18n/fr.json) — the two files must stay key-for-key in sync.
 
+Never write a key's name into a string ("Space", "←", "Esc"): players rebind keys and use
+gamepads. Use the key tokens `[action]`, `[left]`, `[right]`, `[up]`, `[down]`, `[pause]`,
+`[back]` and fill them — `| keys` in templates, `ControlsService.fill()` in code (the canvas HUD
+gets them filled by the `Game` component). Interpolation is plain `{{param}}`: there is no ICU /
+MessageFormat.
+
 ### 6. Use the pixel-art UI kit, not raw HTML controls
 
 Compose screens from `src/app/ui` (`PixelButton`, `PixelPanel`, `PixelSlider`, `PixelDialog`,
@@ -143,11 +155,50 @@ Non-null assertions (`!`) are allowed only with a comment explaining why they're
 
 ### 9. Keep the game engine pure
 
-Code under `src/app/features/game/engine/` (`types`, `config`, `physics`) must not import
-Angular, touch the DOM, or read the clock. `integrate()` is a pure function returning a new
-state. This is what keeps the simulation deterministic and unit-testable — see
-[physics.spec.ts](src/app/features/game/engine/physics.spec.ts). The `loop`, `input` and
-`renderer` are the only engine files allowed DOM/`rAF`/`performance` access.
+Code under `src/app/features/game/engine/` (`types`, `config`, `physics`, `ground`,
+`ground-texture`, `camera`) must not import Angular, touch the DOM, or read the clock.
+`integrate()` is a pure function returning a new state. This is what keeps the simulation
+deterministic and unit-testable — see
+[physics.spec.ts](src/app/features/game/engine/physics.spec.ts). Only `loop`, `input`,
+`sprites`, `raster`, `font` and `renderer` may touch the DOM/canvas/`rAF`/`performance` — and
+the renderer still draws a pure function of `(state, config)` (no wall clock).
+
+The game canvas is 640×360 ([viewport.ts](src/app/features/game/viewport.ts), scaled by whole
+numbers) and the voxel sprites are baked for that density (`DENSITY` in `tools/bake-voxels.mjs`):
+change one, change the other. The sky, sun and hills are painted in code (`engine/horizon.ts`),
+not sprites; HUD text on the canvas is Departure Mono only.
+
+In-game sprites are voxel pre-renders: change a model in `tools/bake-voxels.mjs`, run
+`node tools/bake-voxels.mjs`, and commit the PNGs together with the regenerated
+`engine/baked-sprites.ts` (never edited by hand) — see
+[docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md#voxel-baked-sprites).
+
+Game content (the Grand Tour's events, the daily jump, arcade runs) lives in `engine/events.ts`
+as pure data. Changing an event's conditions means re-checking its medal thresholds:
+[events.spec.ts](src/app/features/game/engine/events.spec.ts) flies every event with the
+scripted pilots and must stay green.
+
+Gameplay tuning lives in `engine/config.ts`. Any retune must keep
+[balance.spec.ts](src/app/features/game/engine/balance.spec.ts) green: scripted pilots prove
+that skill still pays (it exists because the old tuning let a do-nothing bot hit 100% bullseyes).
+
+### 10. Motion and gamepads are first-class
+
+Respect the player's Motion setting, not just the OS: CSS animations are cut by the global
+`:root[data-motion='reduced']` rule (never add a component-level
+`@media (prefers-reduced-motion)`), kit TS uses `reducedMotion()` from `src/app/ui/motion.ts`, app
+code injects `MotionService`, the canvas reads `renderer.reducedMotion`. Every screen must be
+usable with a gamepad: real focusable controls (the kit's), so `GamepadNavService` can move focus
+spatially, press with A and back out with B.
+
+### 11. Sound is derived, never sprinkled
+
+What the game sounds like is decided by the pure
+[`sound-cues.ts`](src/app/features/game/engine/sound-cues.ts) (`cuesBetween(prev, next)`,
+`ambienceFor(state)`) — add a cue there (with a spec), not as an ad-hoc `play()` inside physics
+or a component. Sounds are synthesized in [`synth.ts`](src/app/shared/audio/synth.ts) (no audio
+files); call them through `AudioService`. UI kit components use the optional `UI_SOUNDS` token,
+never `AudioService` directly, so the kit stays audio-agnostic.
 
 ## Component Template
 

@@ -1,22 +1,32 @@
 // Self-hosted pixel fonts. `font-display: block` avoids a wrong-metric fallback flash.
-// Pixelify Sans (OFL) is a variable font: one file covers weights 400–700.
+// Silkscreen (OFL): a true 8px-grid bitmap face — crisp only at multiples of 8px.
+// Used by the game HUD (rasterised into the canvas) and, later, the menus.
 @font-face {
-  font-family: 'Pixelify Sans';
-  src: url('assets/fonts/pixelify-sans.woff2') format('woff2');
-  font-weight: 400 700;
-  font-style: normal;
-  font-display: block;
-}
-
-@font-face {
-  font-family: 'VT323';
-  src: url('assets/fonts/vt323.woff2') format('woff2');
+  font-family: 'Silkscreen';
+  src: url('assets/fonts/silkscreen.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
   font-display: block;
 }
 
-// Headings use the 16-bit display face, bold for the chunky menu look.
+@font-face {
+  font-family: 'Silkscreen';
+  src: url('assets/fonts/silkscreen-bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: block;
+}
+
+// Departure Mono (OFL): an 11px-grid face with readable lowercase, for longer text.
+@font-face {
+  font-family: 'Departure Mono';
+  src: url('assets/fonts/departure-mono.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+
+// Headings use the bitmap display face, bold for the chunky menu look.
 h1,
 h2,
 h3 {
@@ -24,7 +34,6 @@ h3 {
   font-weight: 700;
   line-height: 1.2;
   text-transform: uppercase;
-  letter-spacing: 1px;
   margin: 0;
   color: var(--ink-light);
 }

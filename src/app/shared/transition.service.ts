@@ -1,5 +1,7 @@
 import { DOCUMENT } from '@angular/common';
 import { Injectable, Signal, inject, signal } from '@angular/core';
+import { AudioService } from './audio/audio.service';
+import { MotionService } from './motion.service';
 import {
   NavigationCancel,
   NavigationEnd,
@@ -29,6 +31,8 @@ export type WipePhase = 'idle' | 'covering' | 'revealing';
 export class TransitionService {
   private readonly router = inject(Router);
   private readonly document = inject(DOCUMENT);
+  private readonly audio = inject(AudioService);
+  private readonly motion = inject(MotionService);
 
   private readonly _phase = signal<WipePhase>('idle');
   readonly phase: Signal<WipePhase> = this._phase.asReadonly();
@@ -65,6 +69,7 @@ export class TransitionService {
       return;
     }
     this._phase.set('covering');
+    this.audio.play('wipe');
     this.coverTimer = setTimeout(() => {
       this.coverTimer = undefined;
       void this.router.navigateByUrl(url);
@@ -91,10 +96,6 @@ export class TransitionService {
   }
 
   private prefersReducedMotion(): boolean {
-    // matchMedia is absent in some test environments — treat that as "no preference".
-    return (
-      typeof window.matchMedia === 'function' &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    );
+    return this.motion.reduced();
   }
 }

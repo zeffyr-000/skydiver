@@ -1,0 +1,138 @@
+@use 'sprites' as spr;
+
+.circuit {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+.circuit__content {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-6);
+  padding: var(--sp-8);
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+.circuit__head {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-6);
+
+  > div {
+    flex: 1;
+  }
+}
+
+.circuit__back {
+  font-family: var(--font-head);
+  font-size: var(--fs-head);
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--ink-light);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--brass);
+  }
+}
+
+.circuit__subtitle {
+  margin: var(--sp-1) 0 0;
+  font-size: var(--fs-body);
+  color: var(--ink-light);
+  text-shadow: 2px 2px 0 var(--shadow);
+}
+
+.circuit__tally {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin: 0;
+  font-family: var(--font-head);
+  font-size: var(--fs-h3);
+  font-weight: 700;
+  color: var(--ink-light);
+  text-shadow: 2px 2px 0 var(--shadow);
+}
+
+.circuit__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: var(--sp-6);
+}
+
+.circuit__venue {
+  animation: venue-drop 280ms steps(4, end) backwards;
+  animation-delay: calc(var(--i) * 80ms);
+}
+
+@keyframes venue-drop {
+  from {
+    transform: translateY(-24px);
+    visibility: hidden;
+  }
+}
+
+.circuit__events {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+.circuit__event-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+}
+
+.circuit__event-name {
+  text-transform: uppercase;
+}
+
+.circuit__event-goal {
+  display: block;
+  margin-top: var(--sp-1);
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.circuit__event-best {
+  display: block;
+  margin-top: var(--sp-1);
+  font-family: var(--font-body);
+  font-family: var(--font-head);
+  font-size: var(--fs-head);
+  font-weight: 400;
+  color: var(--biplane-red-dark);
+}
+
+.circuit__lock {
+  font-family: var(--font-head);
+  font-size: var(--fs-head);
+  color: var(--biplane-red-dark);
+}
+
+.medal {
+  display: inline-block;
+  flex: none;
+}
+.medal--gold {
+  @include spr.medal(0, 1);
+}
+.medal--silver {
+  @include spr.medal(1, 1);
+}
+.medal--bronze {
+  @include spr.medal(2, 1);
+}

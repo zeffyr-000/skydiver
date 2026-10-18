@@ -16,7 +16,7 @@
 
 .pixel-panel__bar {
   font-family: var(--font-head);
-  font-size: 20px;
+  font-size: var(--fs-head);
   font-weight: 700;
   text-transform: uppercase;
   color: var(--ink-light);

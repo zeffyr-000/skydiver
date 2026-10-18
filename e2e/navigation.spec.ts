@@ -11,7 +11,7 @@ test.describe('Screen navigation', () => {
     await expect(page.locator('.wipe')).toBeVisible();
 
     await expect(page).toHaveURL(/settings/);
-    await expect(page.locator('.settings__panel')).toBeVisible();
+    await expect(page.locator('.settings__panel').first()).toBeVisible();
     // Input is ignored mid-wipe (by design); wait for the reveal to finish.
     await expect(page.locator('.wipe')).toHaveCount(0);
 
@@ -33,5 +33,24 @@ test.describe('Screen navigation', () => {
 
     await expect(page).toHaveURL(/records/);
     await expect(wipe).toHaveCount(0); // detached once the reveal finishes
+  });
+
+  test('the title runs the attract demo behind a focused menu; Enter opens the Grand Tour', async ({
+    page,
+  }) => {
+    await page.goto('/');
+    await expect(page.locator('app-world-backdrop canvas')).toBeVisible();
+    await expect(page.getByRole('option', { name: 'Grand Tour' })).toBeFocused({ timeout: 5000 });
+    await page.keyboard.press('Enter');
+    await expect(page).toHaveURL(/circuit/);
+    await expect(page.getByRole('button', { name: /First Jump/ })).toBeVisible();
+  });
+
+  test('progress can be reset from Settings, after a confirmation', async ({ page }) => {
+    await page.goto('/settings');
+    await page.getByRole('button', { name: 'Reset progress' }).click();
+    await expect(page.getByText(/Erase every Grand Tour medal/)).toBeVisible();
+    await page.getByRole('button', { name: 'Erase', exact: true }).click();
+    await expect(page.getByText('Progress erased')).toBeVisible();
   });
 });

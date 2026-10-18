@@ -2,35 +2,50 @@
 
 A browser skydiving game set in the roaring-twenties era of barnstorming aerobatics —
 free-fall, pop the canopy, ride the wind and stick the landing on the bullseye.
-Built with Angular 21, a hand-rolled retro pixel-art UI, and Transloco.
+Built with Angular 22, a hand-rolled retro pixel-art UI, and Transloco.
 
 ## ✨ Features
 
 - 🎮 **Plays in the browser** — no install, no backend, runs fully client-side
-- 🕹️ **Custom skydiving engine** — deterministic physics (free fall, canopy, wind drift, flare/stall, scored landings)
+- 🕹️ **Custom skydiving engine** — deterministic physics (spotting, free-fall hoops, late pulls, a flyable canopy in real wind, timed flares) with a Mode 7 chase camera
+- 🏅 **The Grand Tour** — ten events over five venues (county fair, seaside, mountain lake, airfield, Grand Air Meet) with bronze/silver/gold medals, a coached first event and a moving target to land on
+- 📅 **Daily jump** — the same conditions for everyone each day, no backend; plus a three-jump **Arcade** with boards per difficulty
+- 🕹️ **Attract mode** — the title screen plays live demo jumps flown by the autopilot, and every menu sits over the living game world
+- 🌄 **HD pixel art, 16-bit "pre-rendered" look** — a 640×360 canvas scaled by whole numbers; every plane, canopy, diver, barn and balloon is baked from a voxel model at the angles the camera needs, over a golden-hour Mode 7 countryside of hedged fields, copses and a procedurally painted sunset
+- 🔊 **Synthesized sound** — a ragtime menu theme, an airy flight theme, wind that roars with your speed, the biplane's engine and every effect generated live with the Web Audio API (no audio files); separate Music / Effects volumes
 - 🎨 **Retro pixel-art UI** — a small in-house component kit built on Angular Aria primitives (no Material)
-- 🏆 **Local high scores & difficulty** — Rookie / Ace / Barnstormer, persisted in `localStorage`
-- 🌐 **i18n-ready** via Transloco (English today, more languages drop-in)
-- ♿ **Keyboard-first & accessible** — Angular Aria listbox/dialog semantics
+- 🏆 **Local medals, bests & boards** — persisted in `localStorage`; Rookie / Ace / Barnstormer arcade difficulty
+- 🌐 **English & French** via Transloco (more languages drop-in)
+- 🎮 **Keyboard or gamepad** — every key can be rebound (by physical position, so WASD is ZQSD on AZERTY and the prompts say so); a standard gamepad flies the jumps and drives every menu
+- ♿ **Accessible** — Angular Aria listbox/dialog semantics, keyboard-first, and a **Reduced motion** setting (Auto follows the OS) that calms both the menus and the canvas
 - ⚡ **Zoneless** change detection, standalone components, `OnPush` everywhere
 
 ## 🎯 How to Play
 
-| Action | Keys |
-|--------|------|
-| Steer left / right | `← →` or `A D` |
-| Free fall: lean forward (**track** — dive faster, surge ahead) | `↑` or `W` |
-| Free fall: arch back (**flatten** — fall slower, weaker steering) | `↓` or `S` |
-| Canopy: steer up / down | `↑ ↓` or `W S` |
-| Open the parachute | `Space` |
-| Skip the plane intro / outro | `Space` or `Enter` |
-| Flare (slow the canopy near the ground) | `Shift` |
-| Pause | `Esc` |
+| Action | Keys (default) | Gamepad |
+|--------|----------------|---------|
+| Turn left / right | `← →` or `A D` (`Q D` on AZERTY) | stick / d-pad ← → |
+| Free fall: track (dive faster, glide forward) / arch (slow down) | `↑` / `↓` or `W S` (`Z S`) | stick / d-pad ↑ ↓ |
+| Canopy: front risers (faster, steeper) / brakes (slower, softer) | `↑` / `↓` or `W S` (`Z S`) | stick / d-pad ↑ ↓ |
+| Jump · open the chute · flare | `Space` or `Enter` | A |
+| Pause (shows the controls) | `Esc` | Start |
 
-The biplane crosses the drop zone and your diver bails out. Track or arch to manage the fall,
-deploy in time (the canopy takes a moment to open!), fight the wind drift, and flare for a
-gentle touchdown. Land inside the rings to score — the bullseye is worth the most. A crash
-(never deploying, deploying too low, or stalling into the ground) costs a life. You get three.
+Every key can be changed in **Settings → Controls** (two per control; Escape stays pause/back).
+A gamepad in the standard layout (Xbox, PlayStation, Switch Pro…) also drives the menus: d-pad or
+stick to move, A to choose, B to go back. Browsers only start sound after a key press or a click,
+so a pad-only player hears nothing until they touch the keyboard or mouse once.
+
+Ride the biplane along its jump run and leap on the **green light** — the ideal exit is upwind of
+the target. In free fall, turn and track through the **hoops**, then pull as late as you dare:
+the pull bonus peaks at the hard deck (red on the altimeter) and a pull below it won't open in
+time. Under canopy the wind really counts — fly an approach, land into the wind, and **flare**
+a few metres up for a stand-up landing. Each jump scores accuracy, hoops, pull altitude, landing
+quality and exit timing. Each jump opens on a briefing with a map of the drop zone (the run line,
+the green-light window, the hoops, the wind).
+
+Modes: the **Grand Tour** (ten events; any medal opens the next), the **Daily Jump** (one jump,
+the same for everyone today) and **Arcade** (three jumps at three venues, at the Settings
+difficulty).
 
 ## 🚀 Tech Stack
 
@@ -38,16 +53,16 @@ gentle touchdown. Land inside the rings to score — the bullseye is worth the m
 
 | Package | Version | Purpose |
 |---------|---------|---------|
-| [Angular](https://angular.dev) | 21 | Framework (zoneless, standalone, signals) |
-| [TypeScript](https://www.typescriptlang.org) | ~5.9 | Language (strict) |
+| [Angular](https://angular.dev) | 22 | Framework (zoneless, standalone, signals) |
+| [TypeScript](https://www.typescriptlang.org) | ~6.0 | Language (strict) |
 | [RxJS](https://rxjs.dev) | ~7.8 | Reactive primitives (used sparingly) |
 
 ### UI & Styling
 
 | Package | Version | Purpose |
 |---------|---------|---------|
-| [Angular Aria](https://angular.dev) (`@angular/aria`) | 21 | Headless accessible primitives (listbox, etc.) |
-| [Angular CDK](https://material.angular.dev/cdk) | 21 | Low-level utilities |
+| [Angular Aria](https://angular.dev) (`@angular/aria`) | 22 | Headless accessible primitives (listbox, etc.) |
+| [Angular CDK](https://material.angular.dev/cdk) | 22 | Low-level utilities |
 | In-house pixel-art UI kit | — | `src/app/ui/pixel-*` components + SCSS design tokens |
 | SCSS | — | Stylesheet preprocessor |
 
@@ -60,7 +75,6 @@ gentle touchdown. Land inside the rings to score — the bullseye is worth the m
 | Package | Version | Purpose |
 |---------|---------|---------|
 | [@jsverse/transloco](https://jsverse.github.io/transloco/) | ~8.3 | i18n runtime |
-| [@jsverse/transloco-messageformat](https://jsverse.github.io/transloco/) | ~8.3 | ICU plural/select support |
 
 ### Testing & Quality
 
@@ -79,6 +93,7 @@ gentle touchdown. Land inside the rings to score — the bullseye is worth the m
 - **`inject()`** — functional DI, no constructor injection
 - **Signals for state** — `signal` / `computed` / `effect`; no NgRx
 - **Pure game engine** — physics is framework-agnostic and unit-tested in isolation
+- **Sound as data** — the pure `sound-cues.ts` diffs consecutive game states into cues, a small Web Audio synth plays them (and the chiptune scores in `music.ts`)
 - **Strict TypeScript** — all strict flags on; `any` is banned by lint
 
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the full picture.
@@ -95,17 +110,26 @@ skydiver/
 │   │   ├── transloco.loader.ts             # Static (bundled) translation loader
 │   │   ├── features/                       # Routed screens
 │   │   │   ├── title/                       #   main menu
+│   │   │   ├── circuit/                     #   the Grand Tour's event list
 │   │   │   ├── game/                         #   the game screen + engine
-│   │   │   │   └── engine/                    #     types, config, physics,
-│   │   │   │                                  #     loop, input, renderer
-│   │   │   ├── settings/                     #   volume / difficulty / language
-│   │   │   └── records/                      #   high-score table
+│   │   │   │   └── engine/                    #     types, config, physics, camera,
+│   │   │   │                                  #     ground(-texture), loop, input,
+│   │   │   │                                  #     raster, font, renderer (Mode 7),
+│   │   │   │                                  #     events, autopilot, sound-cues,
+│   │   │   │                                  #     bindings, gamepad
+│   │   │   ├── settings/                     #   difficulty, language, motion, volumes, key remapping
+│   │   │   └── records/                      #   medals, daily bests, arcade boards
 │   │   ├── ui/                              # Pixel-art UI kit (pixel-button,
 │   │   │   │                                #   -panel, -slider, -dialog, -menu-list)
 │   │   │   └── index.ts                      #   barrel export
-│   │   └── shared/                          # Signal stores
+│   │   └── shared/                          # Signal stores + services
 │   │       ├── settings.store.ts
-│   │       └── records.store.ts
+│   │       ├── records.store.ts
+│   │       ├── progress.store.ts
+│   │       ├── transition.service.ts
+│   │       ├── motion.service.ts               #   Reduced motion → <html data-motion>
+│   │       ├── controls/                       #   key labels, [token] filling, gamepad menu nav
+│   │       └── audio/                         #   Web Audio synth, chiptune scores, AudioService
 │   ├── styles/                             # Global SCSS
 │   │   ├── _tokens.scss                      #   design tokens (palette, spacing, type)
 │   │   ├── _pixel-ui.scss                    #   bevel mixins
@@ -114,6 +138,9 @@ skydiver/
 │   ├── styles.scss                         # Global entry
 │   └── assets/i18n/en.json                 # Translations (statically imported)
 ├── public/                                 # Static assets (fonts, favicon)
+├── tools/                                  # Asset generators (pure Node):
+│   ├── bake-voxels.mjs                       #   voxel models → in-game sprites
+│   └── generate-sprites.mjs                  #   menu pixel art (logo, medals, paper, rivets)
 ├── e2e/                                    # Playwright E2E tests
 ├── docs/                                   # Documentation (see below)
 ├── .github/workflows/                      # CI
@@ -175,6 +202,7 @@ saved choice on startup.
 To add a language:
 
 1. Add `src/assets/i18n/<lang>.json` (copy `en.json`, translate every key)
+   (keep the `[action]`, `[left]`… key tokens as they are — they're replaced by the player's keys)
 2. Import it and add it to the map in [transloco.loader.ts](src/app/transloco.loader.ts)
 3. Add the code to the `Language` union in [settings.store.ts](src/app/shared/settings.store.ts)
    and to `availableLangs` in [app.config.ts](src/app/app.config.ts)

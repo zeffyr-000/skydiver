@@ -1,19 +1,42 @@
+@use 'pixel-ui' as px;
 @use 'sprites' as spr;
 
 .title {
   position: relative;
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: var(--sp-8);
   overflow: hidden;
+}
+
+// Logo on top; the menu plate off to the left so the demo's diver, framed at
+// the centre of the screen, stays in view.
+.title__layout {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-rows: auto 1fr auto;
+  gap: var(--sp-6);
+  padding: var(--sp-8) var(--sp-8) 96px;
+}
+
+.title__head {
+  grid-column: 1 / -1;
+}
+
+.title__plate {
+  align-self: center;
+  justify-self: start;
+}
+
+.title__prompt {
+  grid-column: 1;
+  justify-self: start;
+  padding-left: var(--sp-6);
 }
 
 .title__head {
   text-align: center;
-  z-index: 1;
 }
 
 // The logotype is a generated sprite sheet (logo.png, one letter per frame);
@@ -22,12 +45,13 @@
   font-size: 0;
   display: flex;
   justify-content: center;
-  gap: var(--sp-1);
+  gap: var(--sp-2);
+  filter: drop-shadow(4px 4px 0 var(--shadow));
 }
 
 .title__logo-ch {
-  @include spr.sheet-frame('assets/sprites/logo.png', 24px, 26px, 8, 0, 2);
-  background-position-x: calc(var(--i) * -48px);
+  @include spr.sheet-frame('assets/sprites/logo.png', 24px, 26px, 8, 0, 3);
+  background-position-x: calc(var(--i) * -72px);
   animation:
     logo-drop 360ms steps(4, end) backwards,
     logo-shine 6s steps(1, end) infinite;
@@ -37,7 +61,7 @@
 // Letters slam in left-to-right, falling in four hard jumps.
 @keyframes logo-drop {
   from {
-    transform: translateY(-60px);
+    transform: translateY(-80px);
     visibility: hidden;
   }
 }
@@ -64,8 +88,12 @@
 
 .title__subtitle {
   margin: var(--sp-4) 0 0;
-  font-size: 22px;
-  color: var(--ink-light);
+  font-family: var(--font-head);
+  font-size: var(--fs-head);
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--brass);
+  text-shadow: 2px 2px 0 var(--shadow);
   animation: title-pop 200ms steps(2, end) backwards;
   animation-delay: 700ms;
 }
@@ -77,17 +105,24 @@
   }
 }
 
-.title__menu {
-  z-index: 1;
+// The menu sits on a dark brass-trimmed plate so it reads over the demo.
+.title__plate {
+  min-width: 340px;
+  padding: var(--sp-4) var(--sp-8);
+  background: rgba(17, 22, 31, 0.82);
+  @include px.pixel-bevel(var(--border-w), var(--brass), var(--brass-dark));
+  animation: title-pop 240ms steps(3, end) backwards;
+  animation-delay: 850ms;
 }
 
 .title__prompt {
-  z-index: 1;
+  margin: 0;
   font-family: var(--font-head);
-  font-size: 18px;
+  font-size: var(--fs-head);
   font-weight: 700;
   text-transform: uppercase;
   color: var(--ink-light);
+  text-shadow: 2px 2px 0 var(--shadow);
   animation: title-blink 1s steps(2, start) infinite;
 }
 
@@ -95,4 +130,49 @@
   to {
     opacity: 0;
   }
+}
+
+.title__footer {
+  position: absolute;
+  z-index: 1;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--sp-4) var(--sp-6);
+  font-family: var(--font-head);
+  font-size: var(--fs-head);
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--ink-light);
+  text-shadow: 2px 2px 0 var(--shadow);
+
+  p {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+  }
+}
+
+.title__demo-tag {
+  padding: 0 var(--sp-2);
+  background: var(--biplane-red);
+  text-shadow: none;
+  animation: title-blink 1.6s steps(2, start) infinite;
+}
+
+.medal {
+  display: inline-block;
+}
+.medal--gold {
+  @include spr.medal(0, 1);
+}
+.medal--silver {
+  @include spr.medal(1, 1);
+}
+.medal--bronze {
+  @include spr.medal(2, 1);
 }

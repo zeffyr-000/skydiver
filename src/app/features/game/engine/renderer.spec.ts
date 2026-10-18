@@ -1,46 +1,78 @@
 import { describe, expect, it, vi } from 'vitest';
 import { configForDifficulty } from './config';
-import { createCloudDive, createInitialState } from './physics';
+import { createJump } from './physics';
 import { SkyDiverRenderer } from './renderer';
-import { SHEET_SPECS, type SheetName, type SpriteAtlas } from './sprites';
+import { BAKED_SPECS, type BakedName } from './baked-sprites';
+import type { BakedAtlas } from './sprites';
 import { Phase, type GameState } from './types';
+
+const W = 192;
+const H = 108;
 
 /** Minimal stub of the 2D context — just the calls the renderer makes. */
 function fakeCtx(): CanvasRenderingContext2D {
   return {
     fillStyle: '',
-    strokeStyle: '',
-    lineWidth: 0,
+    globalAlpha: 1,
     imageSmoothingEnabled: true,
     fillRect: vi.fn(),
-    beginPath: vi.fn(),
-    moveTo: vi.fn(),
-    lineTo: vi.fn(),
-    stroke: vi.fn(),
-    arc: vi.fn(),
-    ellipse: vi.fn(),
-    fill: vi.fn(),
     drawImage: vi.fn(),
+    putImageData: vi.fn(),
     save: vi.fn(),
     restore: vi.fn(),
     translate: vi.fn(),
     rotate: vi.fn(),
-    createLinearGradient: vi.fn(() => ({ addColorStop: vi.fn() })),
   } as unknown as CanvasRenderingContext2D;
 }
 
-/** Atlas stub: real specs, fake images (drawImage is mocked anyway). */
-function stubAtlas(): SpriteAtlas {
+/** Baked-sheet stub: real specs, fake images. */
+function stubBaked(): BakedAtlas {
   return Object.fromEntries(
-    (Object.keys(SHEET_SPECS) as SheetName[]).map((name) => [
+    (Object.keys(BAKED_SPECS) as BakedName[]).map((name) => [
       name,
-      { image: {} as CanvasImageSource, ...SHEET_SPECS[name] },
+      { image: { name } as unknown as CanvasImageSource, ...BAKED_SPECS[name] },
     ]),
-  ) as SpriteAtlas;
+  ) as BakedAtlas;
 }
 
-const ALL_PHASES = [
-  Phase.PlaneApproach,
+function renderer(ctx = fakeCtx()): SkyDiverRenderer {
+  const r = new SkyDiverRenderer(ctx, W, H);
+  r.textureLevels = [
+    [1, 128],
+    [8, 128],
+  ];
+  return r;
+}
+
+const cfg = configForDifficulty('ace');
+
+function stateFor(phase: Phase, altitude = 400): GameState {
+  const s: GameState = { ...createJump(cfg, () => 0.5), phase, altitude };
+  if (phase !== Phase.Plane) {
+    s.freefallTime = 5;
+  }
+  if (phase === Phase.Deploying || phase === Phase.Canopy) {
+    s.pullAltitude = altitude + 50;
+    s.deployTimer = phase === Phase.Deploying ? cfg.deployDuration / 2 : 0;
+    s.canopyTime = phase === Phase.Canopy ? 5 : 0;
+  }
+  if (phase === Phase.Landed || phase === Phase.Crashed) {
+    s.altitude = 0;
+    s.pullAltitude = phase === Phase.Landed ? 200 : null;
+    s.outroTimer = cfg.outroDuration / 2;
+  }
+  return s;
+}
+
+/** The world ImageData handed to putImageData by the last draw. */
+function worldPixels(ctx: CanvasRenderingContext2D): Uint32Array {
+  const calls = (ctx.putImageData as ReturnType<typeof vi.fn>).mock.calls;
+  const img = calls.at(-1)![0] as ImageData;
+  return new Uint32Array(img.data.buffer);
+}
+
+const ALL = [
+  Phase.Plane,
   Phase.Freefall,
   Phase.Deploying,
   Phase.Canopy,
@@ -49,127 +81,90 @@ const ALL_PHASES = [
 ];
 
 describe('SkyDiverRenderer', () => {
-  const cfg = configForDifficulty('ace');
-
-  function stateFor(phase: Phase): GameState {
-    const s: GameState = { ...createInitialState(cfg, () => 0.5), phase };
-    if (phase === Phase.Deploying) {
-      s.deployTimer = cfg.deployDuration / 2;
-    }
-    if (phase === Phase.Landed || phase === Phase.Crashed) {
-      s.altitude = 0;
-      s.outroTimer = cfg.outroDuration / 2;
-    }
-    return s;
-  }
-
-  it('paints every phase without an atlas (procedural fallback) without throwing', () => {
-    for (const phase of ALL_PHASES) {
+  it('paints every phase without sprites or fonts', () => {
+    for (const phase of ALL) {
       const ctx = fakeCtx();
-      const renderer = new SkyDiverRenderer(ctx, 320, 240);
-
-      expect(() => renderer.draw(stateFor(phase), cfg)).not.toThrow();
-      expect(ctx.fillRect).toHaveBeenCalled(); // background + terrain
-      expect(ctx.stroke).toHaveBeenCalled(); // grid / rings
-      expect(ctx.drawImage).not.toHaveBeenCalled(); // no atlas → no sprites
+      const r = renderer(ctx);
+      expect(() => r.draw(stateFor(phase), cfg)).not.toThrow();
+      expect(ctx.putImageData).toHaveBeenCalled();
+      expect(worldPixels(ctx).every((p) => p !== 0)).toBe(true); // every pixel painted
+      expect(ctx.drawImage).not.toHaveBeenCalled(); // no sheets, no layers under jsdom
     }
   });
 
-  it('draws sprites for every phase once the atlas is set', () => {
-    for (const phase of ALL_PHASES) {
+  it('draws sprites for every phase once the sheets are set', () => {
+    for (const phase of ALL) {
       const ctx = fakeCtx();
-      const renderer = new SkyDiverRenderer(ctx, 320, 240);
-      renderer.atlas = stubAtlas();
-
-      expect(() => renderer.draw(stateFor(phase), cfg)).not.toThrow();
-      // Terrain decorations always render through the atlas; phase sprites too.
+      const r = renderer(ctx);
+      r.baked = stubBaked();
+      expect(() => r.draw(stateFor(phase), cfg)).not.toThrow();
       expect(ctx.drawImage).toHaveBeenCalled();
     }
   });
 
-  it('animates the outro: the landed frame advances as the timer runs down', () => {
+  it('keeps the diver aboard during the jump run and shows the plane', () => {
     const ctx = fakeCtx();
-    const renderer = new SkyDiverRenderer(ctx, 320, 240);
-    renderer.atlas = stubAtlas();
-    const drawImage = ctx.drawImage as ReturnType<typeof vi.fn>;
-
-    const early = stateFor(Phase.Landed);
-    early.outroTimer = cfg.outroDuration * 0.9; // just touched down
-    renderer.draw(early, cfg);
-    const lastCallEarly = drawImage.mock.calls.at(-1)!;
-
-    drawImage.mockClear();
-    const late = stateFor(Phase.Landed);
-    late.outroTimer = cfg.outroDuration * 0.1; // nearly done
-    renderer.draw(late, cfg);
-    const lastCallLate = drawImage.mock.calls.at(-1)!;
-
-    // Frame index = source-x / frame-width: it must move forward over the outro.
-    expect(lastCallLate[1]).toBeGreaterThan(lastCallEarly[1]);
+    const r = renderer(ctx);
+    r.baked = stubBaked();
+    r.draw(stateFor(Phase.Plane, cfg.exitAltitude), cfg);
+    const images = (ctx.drawImage as ReturnType<typeof vi.fn>).mock.calls.map((c) => c[0]);
+    expect(images).toContain(r.baked!.plane.image);
+    expect(images).not.toContain(r.baked!['diver-fall'].image);
   });
 
-  it('shows the exit close-up, then keeps the diver a constant size for the fall', () => {
+  it('flies the canopy sheet under canopy', () => {
     const ctx = fakeCtx();
-    const renderer = new SkyDiverRenderer(ctx, 320, 240);
-    renderer.atlas = stubAtlas();
+    const r = renderer(ctx);
+    r.baked = stubBaked();
+    r.draw(stateFor(Phase.Canopy, 60), cfg);
+    const images = (ctx.drawImage as ReturnType<typeof vi.fn>).mock.calls.map((c) => c[0]);
+    expect(images).toContain(r.baked!.canopy.image);
+  });
+
+  it('shows sky at the top of the frame near the ground, none looking down the column', () => {
+    const low = fakeCtx();
+    renderer(low).draw(stateFor(Phase.Canopy, 6), cfg);
+    const high = fakeCtx();
+    renderer(high).draw(stateFor(Phase.Freefall, 800), cfg);
+    // Same top-left pixel: sky (dark dusk blue) vs hazed ground.
+    expect(worldPixels(low)[0]).not.toBe(worldPixels(high)[0]);
+  });
+
+  it('animates the landing outro forward as the timer runs down', () => {
+    const ctx = fakeCtx();
+    const r = renderer(ctx);
+    r.baked = stubBaked();
     const drawImage = ctx.drawImage as ReturnType<typeof vi.fn>;
-    const diverImage = renderer.atlas['diver-freefall'].image;
-    const widthAtAltitude = (altitude: number): number => {
+    const landSheet = r.baked!['diver-land'].image;
+    const frameX = (outroTimer: number): number => {
       drawImage.mockClear();
-      const s = stateFor(Phase.Freefall);
-      s.altitude = altitude;
-      renderer.draw(s, cfg);
-      return drawImage.mock.calls.find((c) => c[0] === diverImage)![7]; // destination width
+      r.draw({ ...stateFor(Phase.Landed), outroTimer }, cfg);
+      return drawImage.mock.calls.find((c) => c[0] === landSheet)![1]; // source x
     };
-
-    const atExit = widthAtAltitude(cfg.startAltitude);
-    const midFall = widthAtAltitude(cfg.startAltitude * 0.5);
-    const lowFall = widthAtAltitude(cfg.startAltitude * 0.1);
-
-    expect(atExit).toBeGreaterThan(midFall); // close to the camera right after the jump
-    expect(midFall).toBe(lowFall); // then the follow-camera never pulls away
+    expect(frameX(cfg.outroDuration * 0.1)).toBeGreaterThan(frameX(cfg.outroDuration * 0.9));
   });
 
-  function cloudDiveState(): GameState {
-    const s = createCloudDive(cfg, () => 0.5);
-    s.posX = 8;
-    s.altitude = cfg.cloudStartAltitude * 0.5; // mid-dive, hoops in view
-    return s;
-  }
-
-  it('paints the cloud bonus dive procedurally (no atlas) without throwing', () => {
-    const ctx = fakeCtx();
-    const renderer = new SkyDiverRenderer(ctx, 320, 240);
-
-    expect(() => renderer.draw(cloudDiveState(), cfg)).not.toThrow();
-    expect(ctx.fillRect).toHaveBeenCalled(); // sky
-    expect(ctx.stroke).toHaveBeenCalled(); // hoops + reticle
-    expect(ctx.drawImage).not.toHaveBeenCalled(); // no atlas → no sprites
+  it('is deterministic: the same state paints the same pixels', () => {
+    const a = fakeCtx();
+    const b = fakeCtx();
+    renderer(a).draw(stateFor(Phase.Canopy, 30), cfg);
+    renderer(b).draw(stateFor(Phase.Canopy, 30), cfg);
+    expect(worldPixels(a)).toEqual(worldPixels(b));
   });
 
-  it('draws the cloud sprite sheet during the cloud dive once the atlas is set', () => {
+  it('skips a frame identical to the last one (paused, briefed, held scenes)', () => {
     const ctx = fakeCtx();
-    const renderer = new SkyDiverRenderer(ctx, 320, 240);
-    renderer.atlas = stubAtlas();
-
-    expect(() => renderer.draw(cloudDiveState(), cfg)).not.toThrow();
-    const drawImage = ctx.drawImage as ReturnType<typeof vi.fn>;
-    const cloudImg = renderer.atlas.clouds.image;
-    expect(drawImage.mock.calls.some((c) => c[0] === cloudImg)).toBe(true);
-  });
-
-  it('keeps the diver hidden and shows the plane during the intro', () => {
-    const ctx = fakeCtx();
-    const renderer = new SkyDiverRenderer(ctx, 320, 240);
-    renderer.atlas = stubAtlas();
-    const drawImage = ctx.drawImage as ReturnType<typeof vi.fn>;
-
-    renderer.draw(stateFor(Phase.PlaneApproach), cfg);
-    const planeSheet = renderer.atlas.plane;
-    const drewPlane = drawImage.mock.calls.some((c) => c[0] === planeSheet.image);
-    const diverSheet = renderer.atlas['diver-freefall'];
-    const drewDiver = drawImage.mock.calls.some((c) => c[0] === diverSheet.image);
-    expect(drewPlane).toBe(true);
-    expect(drewDiver).toBe(false);
+    const r = renderer(ctx);
+    const put = ctx.putImageData as ReturnType<typeof vi.fn>;
+    const s = stateFor(Phase.Canopy, 30);
+    r.draw(s, cfg);
+    const once = put.mock.calls.length;
+    r.draw(s, cfg);
+    expect(put.mock.calls.length).toBe(once);
+    r.reducedMotion = true; // any input change repaints
+    r.draw(s, cfg);
+    expect(put.mock.calls.length).toBe(once * 2);
+    r.draw({ ...s }, cfg);
+    expect(put.mock.calls.length).toBe(once * 3);
   });
 });

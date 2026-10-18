@@ -1,22 +1,39 @@
 <section class="title">
-  <app-sky-scene variant="full" />
+  <app-world-backdrop mode="attract" (venue)="venue.set($event)" />
 
-  <header class="title__head">
-    <h1 class="title__logo" [attr.aria-label]="'app.title' | transloco">
-      @for (ch of logoChars(); track $index) {
-        <span class="title__logo-ch" [style.--i]="$index" aria-hidden="true">{{ ch }}</span>
-      }
-    </h1>
-    <p class="title__subtitle">{{ 'menu.subtitle' | transloco }}</p>
-  </header>
+  <div class="title__layout">
+    <header class="title__head">
+      <h1 class="title__logo" [attr.aria-label]="'app.title' | transloco">
+        @for (ch of logoChars(); track $index) {
+          <span class="title__logo-ch" [style.--i]="$index" aria-hidden="true">{{ ch }}</span>
+        }
+      </h1>
+      <p class="title__subtitle">{{ 'menu.subtitle' | transloco }}</p>
+    </header>
 
-  <app-pixel-menu-list
-    class="title__menu"
-    [items]="menuItems()"
-    [animateIn]="true"
-    [ariaLabel]="'app.title' | transloco"
-    (activate)="onSelect($event)"
-  />
+    <nav class="title__plate">
+      <app-pixel-menu-list
+        [items]="menuItems()"
+        [animateIn]="true"
+        [autofocus]="true"
+        [ariaLabel]="'app.title' | transloco"
+        (activate)="onSelect($event)"
+      />
+    </nav>
 
-  <p class="title__prompt">{{ 'menu.prompt' | transloco }}</p>
+    <p class="title__prompt">{{ 'menu.prompt' | transloco }}</p>
+  </div>
+
+  <footer class="title__footer">
+    <p class="title__demo">
+      <span class="title__demo-tag">{{ 'menu.demo' | transloco }}</span>
+      {{ 'circuit.venue.' + venue() | transloco }}
+    </p>
+    @let m = medals();
+    <p class="title__medals" [attr.aria-label]="'circuit.medals' | transloco">
+      <span class="medal medal--gold" aria-hidden="true"></span>{{ m.gold }}
+      <span class="medal medal--silver" aria-hidden="true"></span>{{ m.silver }}
+      <span class="medal medal--bronze" aria-hidden="true"></span>{{ m.bronze }}
+    </p>
+  </footer>
 </section>

@@ -1,0 +1,181 @@
+@use 'sprites' as spr;
+
+.brief {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+}
+
+.brief__kicker {
+  margin: 0;
+  font-family: var(--font-head);
+  font-size: var(--fs-head);
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--biplane-red-dark);
+}
+
+.brief__title {
+  margin: var(--sp-1) 0 0;
+  color: var(--ink);
+  font-size: var(--fs-h3);
+}
+
+.brief__goal {
+  margin: var(--sp-2) 0 0;
+  font-size: var(--fs-body);
+  line-height: 1.25;
+  color: var(--ink);
+}
+
+.brief__body {
+  display: flex;
+  gap: var(--sp-6);
+  align-items: flex-start;
+}
+
+.brief__map {
+  margin: 0;
+  flex: none;
+
+  canvas {
+    display: block;
+    width: 352px;
+    height: 352px;
+    image-rendering: pixelated;
+    box-shadow: 0 0 0 var(--border-w) var(--shadow);
+  }
+}
+
+.brief__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-1) var(--sp-3);
+  margin-top: var(--sp-3);
+  font-family: var(--font-head);
+  font-size: var(--fs-head);
+  color: var(--ink);
+}
+
+.brief__key::before {
+  content: '';
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: var(--sp-1);
+  box-shadow: 0 0 0 2px var(--shadow);
+}
+
+.brief__key--run::before {
+  background: var(--biplane-red);
+}
+.brief__key--spot::before {
+  background: #7bd05a;
+}
+.brief__key--ring::before {
+  background: #ffcc33;
+}
+.brief__key--target::before {
+  background: var(--canvas-cream);
+}
+
+.brief__side {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  min-width: 0;
+  flex: 1;
+}
+
+.brief__conditions {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+
+  div {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--sp-4);
+    padding: var(--sp-1) 0;
+    box-shadow: inset 0 -2px 0 0 var(--parchment-dark);
+    font-size: var(--fs-body);
+  }
+
+  dt {
+    font-family: var(--font-head);
+    font-size: var(--fs-head);
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--biplane-red-dark);
+  }
+
+  dd {
+    margin: 0;
+    color: var(--ink);
+  }
+}
+
+.brief__label {
+  margin: 0 0 var(--sp-2);
+  font-family: var(--font-head);
+  font-size: var(--fs-head);
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--biplane-red-dark);
+}
+
+.brief__medals ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    font-size: var(--fs-body);
+    color: var(--ink);
+  }
+}
+
+.brief__best {
+  margin: var(--sp-2) 0 0;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-body);
+  color: var(--ink);
+}
+
+.medal {
+  display: inline-block;
+  flex: none;
+}
+.medal--gold {
+  @include spr.medal(0, 1);
+}
+.medal--silver {
+  @include spr.medal(1, 1);
+}
+.medal--bronze {
+  @include spr.medal(2, 1);
+}
+.medal--small {
+  zoom: 0.75;
+}
+
+.brief__keys {
+  margin: 0;
+  font-family: var(--font-head);
+  font-size: var(--fs-head);
+  color: var(--biplane-red-dark);
+}
+
+.brief__actions {
+  display: flex;
+  gap: var(--sp-4);
+  justify-content: flex-end;
+}

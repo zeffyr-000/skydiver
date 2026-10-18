@@ -1,0 +1,299 @@
+@use 'sprites' as spr;
+
+.res {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+}
+
+.res__kicker {
+  margin: 0;
+  font-family: var(--font-head);
+  font-size: var(--fs-head);
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--biplane-red-dark);
+}
+
+.res__title {
+  margin: var(--sp-1) 0 0;
+  font-size: var(--fs-h2);
+  color: var(--biplane-red);
+  text-shadow: 2px 2px 0 var(--brass);
+  animation: res-pop 320ms steps(4, end) backwards;
+
+  &--bad {
+    color: var(--ink);
+    text-shadow: 2px 2px 0 var(--parchment-dark);
+  }
+}
+
+.res__body {
+  display: flex;
+  gap: var(--sp-6);
+  align-items: flex-start;
+}
+
+.res__tally {
+  flex: 1.3;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.res__banner {
+  margin: 0;
+  font-family: var(--font-head);
+  font-size: var(--fs-h3);
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--biplane-red);
+  animation: res-pop 320ms steps(4, end) backwards;
+}
+
+.res__verdict {
+  margin: 0;
+  font-family: var(--font-head);
+  font-size: var(--fs-head);
+  font-weight: 700;
+  color: var(--biplane-red);
+}
+
+.res__note {
+  margin: 0;
+  font-size: var(--fs-body);
+  color: var(--biplane-red-dark);
+}
+
+.res__rows {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.res__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--sp-6);
+  padding: var(--sp-1) 0;
+  font-size: var(--fs-body);
+  color: var(--ink);
+  box-shadow: inset 0 -2px 0 0 var(--parchment-dark);
+  animation: res-row 200ms steps(3, end) backwards;
+  animation-delay: var(--d);
+
+  dt {
+    margin: 0;
+  }
+
+  dd {
+    margin: 0;
+    font-family: var(--font-head);
+    font-size: var(--fs-h3);
+    font-weight: 700;
+  }
+
+  em {
+    font-style: normal;
+    font-family: var(--font-head);
+    font-size: var(--fs-head);
+    color: var(--biplane-red-dark);
+  }
+}
+
+.res__row--mult dd {
+  color: var(--brass-dark);
+}
+
+.res__total {
+  font-size: var(--fs-head);
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: var(--sp-2);
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--biplane-red);
+  color: var(--ink-light);
+  font-family: var(--font-head);
+  font-weight: 700;
+  text-transform: uppercase;
+  box-shadow: inset 0 calc(-1 * var(--border-w)) 0 0 var(--shadow);
+  animation: res-row 240ms steps(3, end) backwards;
+  animation-delay: var(--d);
+}
+
+.res__total-value {
+  font-size: var(--fs-h2);
+  color: var(--brass);
+}
+
+.res__side {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-2);
+  text-align: center;
+}
+
+// The medal stamps down once the total has landed.
+.res__stamp {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-1);
+  animation: res-stamp 360ms steps(4, end) backwards;
+  animation-delay: var(--d);
+}
+
+.res__medal {
+  display: block;
+}
+.res__medal--gold {
+  @include spr.medal(0, 2);
+}
+.res__medal--silver {
+  @include spr.medal(1, 2);
+}
+.res__medal--bronze {
+  @include spr.medal(2, 2);
+}
+
+.res__medal-name {
+  margin: 0;
+  font-family: var(--font-head);
+  font-size: var(--fs-head);
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--ink);
+
+  &--gold {
+    color: var(--brass-dark);
+  }
+  &--silver {
+    color: #6e6a70;
+  }
+  &--bronze {
+    color: #86603a;
+  }
+}
+
+.res__ladder {
+  list-style: none;
+  margin: var(--sp-2) 0 0;
+  padding: 0;
+  font-family: var(--font-head);
+  font-size: var(--fs-head);
+  color: var(--brass-dark);
+  text-align: left;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+
+    .res__dot {
+      filter: grayscale(1);
+    }
+  }
+}
+
+.res__ladder--hit {
+  color: var(--ink);
+
+  .res__dot {
+    filter: none;
+  }
+}
+
+.res__dot {
+  width: 10px;
+  height: 10px;
+  box-shadow: 0 0 0 2px var(--shadow);
+
+  &--gold {
+    background: var(--brass);
+  }
+  &--silver {
+    background: #b4ae9e;
+  }
+  &--bronze {
+    background: #b08654;
+  }
+}
+
+.res__best {
+  margin: var(--sp-2) 0 0;
+  font-size: var(--fs-body);
+  color: var(--ink);
+}
+
+.res__flash {
+  margin: 0;
+  font-family: var(--font-head);
+  font-size: var(--fs-head);
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--biplane-red);
+  animation: res-flash 900ms steps(1, end) infinite;
+
+  &--green {
+    color: var(--grass-dark);
+    animation: none;
+  }
+}
+
+.res__run-label {
+  margin: 0;
+  font-family: var(--font-head);
+  font-size: var(--fs-head);
+  text-transform: uppercase;
+  color: var(--biplane-red-dark);
+}
+
+.res__run-value {
+  margin: 0;
+  font-family: var(--font-head);
+  font-size: var(--fs-h1);
+  font-weight: 700;
+  line-height: 1;
+  color: var(--biplane-red);
+  text-shadow: 3px 3px 0 var(--brass);
+}
+
+.res__actions {
+  display: flex;
+  gap: var(--sp-4);
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+@keyframes res-row {
+  from {
+    transform: translateX(-10px);
+    visibility: hidden;
+  }
+}
+
+@keyframes res-pop {
+  from {
+    transform: scale(0.6);
+  }
+}
+
+@keyframes res-stamp {
+  0% {
+    transform: scale(2.4) rotate(-12deg);
+    visibility: hidden;
+  }
+  75% {
+    transform: scale(0.9) rotate(3deg);
+  }
+}
+
+@keyframes res-flash {
+  50% {
+    color: var(--brass-dark);
+  }
+}

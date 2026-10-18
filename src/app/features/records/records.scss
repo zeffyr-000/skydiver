@@ -26,7 +26,7 @@
 
 .records__back {
   font-family: var(--font-head);
-  font-size: 18px;
+  font-size: var(--fs-head);
   font-weight: 700;
   text-transform: uppercase;
   color: var(--ink-light);
@@ -35,6 +35,36 @@
   &:hover {
     color: var(--brass);
   }
+}
+
+.records__tabs {
+  display: flex;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+}
+
+.records__subtabs {
+  display: flex;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-4);
+}
+
+.records__summary {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin: 0 0 var(--sp-4);
+  font-family: var(--font-head);
+  font-size: var(--fs-h3);
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.records__venue {
+  display: block;
+  font-family: var(--font-head);
+  font-size: var(--fs-head);
+  color: var(--biplane-red-dark);
 }
 
 .records__panel {
@@ -52,11 +82,11 @@
   width: 100%;
   border-collapse: collapse;
   color: var(--ink);
-  font-size: 22px;
+  font-size: var(--fs-body);
 
   th {
     font-family: var(--font-head);
-    font-size: 16px;
+    font-size: var(--fs-head);
     font-weight: 700;
     text-transform: uppercase;
     text-align: left;
@@ -130,18 +160,18 @@
   text-align: center;
 }
 
-.records__windsock {
-  @include spr.terrain(9);
+.records__medal--empty {
+  filter: grayscale(1) opacity(0.6);
 }
 
 .records__empty-line {
   margin: 0;
-  font-size: 24px;
+  font-size: var(--fs-body);
   color: var(--ink);
 }
 
 .records__empty-hint {
   margin: 0;
-  font-size: 20px;
+  font-size: var(--fs-body);
   color: var(--biplane-red-dark);
 }

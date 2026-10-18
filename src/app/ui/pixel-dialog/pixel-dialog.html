@@ -1,4 +1,4 @@
-<dialog #dialog class="pixel-dialog" (close)="onClose()">
+<dialog #dialog class="pixel-dialog" [class.pixel-dialog--wide]="wide()" (close)="onClose()">
   @if (heading()) {
     <div class="pixel-dialog__bar">{{ heading() }}</div>
   }

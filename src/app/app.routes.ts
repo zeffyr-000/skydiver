@@ -4,6 +4,10 @@ export const routes: Routes = [
   { path: '', loadComponent: () => import('./features/title/title').then((m) => m.Title) },
   { path: 'game', loadComponent: () => import('./features/game/game').then((m) => m.Game) },
   {
+    path: 'circuit',
+    loadComponent: () => import('./features/circuit/circuit').then((m) => m.Circuit),
+  },
+  {
     path: 'settings',
     loadComponent: () => import('./features/settings/settings').then((m) => m.Settings),
   },

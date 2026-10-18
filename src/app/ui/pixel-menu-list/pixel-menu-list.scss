@@ -12,9 +12,9 @@
   align-items: center;
   gap: var(--sp-3);
   font-family: var(--font-head);
-  font-size: 28px;
+  font-size: var(--fs-h3);
   font-weight: 700;
-  text-transform: uppercase; // Pixelify's lowercase c/o collide at UI sizes
+  text-transform: uppercase;
   color: var(--ink-light);
   // Hard pixel shadow keeps labels readable over passing clouds.
   text-shadow: 2px 2px 0 var(--shadow);

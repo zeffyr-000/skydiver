@@ -1,5 +1,5 @@
 <section class="records">
-  <app-sky-scene />
+  <app-world-backdrop mode="calm" />
 
   <div class="records__content">
     <header class="records__head">
@@ -9,51 +9,154 @@
       <h2>{{ 'records.title' | transloco }}</h2>
     </header>
 
-    <app-pixel-panel class="records__panel">
-      @if (store.records().length) {
-        <table class="records__table">
-          <thead>
-            <tr>
-              <th>{{ 'records.rank' | transloco }}</th>
-              <th>{{ 'records.pilot' | transloco }}</th>
-              <th class="records__num">{{ 'records.score' | transloco }}</th>
-              <th>{{ 'records.date' | transloco }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (record of store.records(); track $index) {
-              <tr [style.--i]="$index">
-                <td>
-                  <span class="records__rank">
-                    <span
-                      class="records__medal"
-                      [class.records__medal--gold]="$index === 0"
-                      [class.records__medal--silver]="$index === 1"
-                      [class.records__medal--bronze]="$index === 2"
-                      aria-hidden="true"
-                    ></span>
-                    {{ $index + 1 }}
-                  </span>
-                </td>
-                <td>{{ record.name }}</td>
-                <td class="records__num">{{ record.score }}</td>
-                <td>{{ record.date | date: 'mediumDate' }}</td>
-              </tr>
-            }
-          </tbody>
-        </table>
+    <div class="records__tabs" role="group" [attr.aria-label]="'records.title' | transloco">
+      @for (t of tabs; track t.value) {
+        <app-pixel-button
+          [variant]="tab() === t.value ? 'brass' : 'default'"
+          [ariaPressed]="tab() === t.value"
+          (pressed)="tab.set(t.value)"
+        >
+          {{ t.labelKey | transloco }}
+        </app-pixel-button>
+      }
+    </div>
 
-        <div class="records__actions">
-          <app-pixel-button (pressed)="store.clear()">
-            {{ 'records.clear' | transloco }}
-          </app-pixel-button>
-        </div>
-      } @else {
-        <div class="records__empty">
-          <span class="records__windsock" aria-hidden="true"></span>
-          <p class="records__empty-line">{{ 'records.empty' | transloco }}</p>
-          <p class="records__empty-hint">{{ 'records.emptyHint' | transloco }}</p>
-        </div>
+    <app-pixel-panel class="records__panel">
+      @switch (tab()) {
+        @case ('arcade') {
+          <div class="records__subtabs" role="group">
+            @for (d of difficulties; track d.value) {
+              <app-pixel-button
+                [variant]="difficulty() === d.value ? 'primary' : 'default'"
+                [ariaPressed]="difficulty() === d.value"
+                (pressed)="difficulty.set(d.value)"
+              >
+                {{ d.labelKey | transloco }}
+              </app-pixel-button>
+            }
+          </div>
+          @if (store.board(difficulty()); as board) {
+            @if (board.length) {
+              <table class="records__table">
+                <thead>
+                  <tr>
+                    <th>{{ 'records.rank' | transloco }}</th>
+                    <th>{{ 'records.pilot' | transloco }}</th>
+                    <th class="records__num">{{ 'records.score' | transloco }}</th>
+                    <th>{{ 'records.date' | transloco }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (record of board; track $index) {
+                    <tr [style.--i]="$index">
+                      <td>
+                        <span class="records__rank">
+                          <span
+                            class="records__medal"
+                            [class.records__medal--gold]="$index === 0"
+                            [class.records__medal--silver]="$index === 1"
+                            [class.records__medal--bronze]="$index === 2"
+                            aria-hidden="true"
+                          ></span>
+                          {{ $index + 1 }}
+                        </span>
+                      </td>
+                      <td>{{ record.name }}</td>
+                      <td class="records__num">{{ record.score }}</td>
+                      <td>{{ record.date | date: 'mediumDate' }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+              <div class="records__actions">
+                <app-pixel-button (pressed)="store.clear()">
+                  {{ 'records.clear' | transloco }}
+                </app-pixel-button>
+              </div>
+            } @else {
+              <div class="records__empty">
+                <span
+                  class="records__medal records__medal--gold records__medal--empty"
+                  aria-hidden="true"
+                ></span>
+                <p class="records__empty-line">{{ 'records.empty' | transloco }}</p>
+                <p class="records__empty-hint">{{ 'records.emptyHint' | transloco }}</p>
+              </div>
+            }
+          }
+        }
+        @case ('circuit') {
+          @let counts = progress.medalCounts();
+          <p class="records__summary">
+            <span class="records__medal records__medal--gold" aria-hidden="true"></span>
+            {{ counts.gold }}
+            <span class="records__medal records__medal--silver" aria-hidden="true"></span>
+            {{ counts.silver }}
+            <span class="records__medal records__medal--bronze" aria-hidden="true"></span>
+            {{ counts.bronze }}
+          </p>
+          <table class="records__table">
+            <thead>
+              <tr>
+                <th>{{ 'records.event' | transloco }}</th>
+                <th>{{ 'records.medal' | transloco }}</th>
+                <th class="records__num">{{ 'records.best' | transloco }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (e of events; track e.id) {
+                @let rec = progress.record(e.id);
+                <tr [style.--i]="$index">
+                  <td>
+                    {{ 'events.' + e.id + '.name' | transloco }}
+                    <small class="records__venue">{{
+                      'circuit.venue.' + e.venue | transloco
+                    }}</small>
+                  </td>
+                  <td>
+                    @if (rec?.medal; as m) {
+                      <span
+                        class="records__medal records__medal--{{ m }}"
+                        [attr.aria-label]="'result.medal.' + m | transloco"
+                      ></span>
+                    } @else {
+                      —
+                    }
+                  </td>
+                  <td class="records__num">{{ rec?.best ?? '—' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        }
+        @case ('daily') {
+          @if (progress.daily().length) {
+            <table class="records__table">
+              <thead>
+                <tr>
+                  <th>{{ 'records.date' | transloco }}</th>
+                  <th class="records__num">{{ 'records.best' | transloco }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (d of progress.daily(); track d.day) {
+                  <tr [style.--i]="$index">
+                    <td>{{ d.day }}</td>
+                    <td class="records__num">{{ d.best }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          } @else {
+            <div class="records__empty">
+              <span
+                class="records__medal records__medal--gold records__medal--empty"
+                aria-hidden="true"
+              ></span>
+              <p class="records__empty-line">{{ 'records.emptyDaily' | transloco }}</p>
+            </div>
+          }
+        }
       }
     </app-pixel-panel>
   </div>
