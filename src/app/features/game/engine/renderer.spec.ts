@@ -112,6 +112,16 @@ describe('SkyDiverRenderer', () => {
     expect(images).not.toContain(r.baked!['diver-fall'].image);
   });
 
+  it('flies the Jenny on empty once the jumper has let go of the wing', () => {
+    const ctx = fakeCtx();
+    const r = renderer(ctx);
+    r.baked = stubBaked();
+    r.draw({ ...stateFor(Phase.Freefall, cfg.exitAltitude - 5), freefallTime: 0.3 }, cfg);
+    const images = (ctx.drawImage as ReturnType<typeof vi.fn>).mock.calls.map((c) => c[0]);
+    expect(images).toContain(r.baked!['plane-empty'].image);
+    expect(images).not.toContain(r.baked!.plane.image);
+  });
+
   it('flies the canopy sheet under canopy', () => {
     const ctx = fakeCtx();
     const r = renderer(ctx);

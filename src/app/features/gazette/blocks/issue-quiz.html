@@ -1,0 +1,43 @@
+@let b = base();
+<div class="quiz">
+  <p class="quiz__title">{{ 'gazette.ui.quiz' | transloco }}</p>
+  <ol class="quiz__list">
+    @for (q of issue().quiz; track q.id) {
+      <li class="quiz__item">
+        <p class="quiz__q">{{ b + '.' + q.id + '.q' | transloco }}</p>
+        <div
+          class="quiz__choices"
+          role="group"
+          [attr.aria-label]="b + '.' + q.id + '.q' | transloco"
+        >
+          @for (c of choices; track c) {
+            <app-pixel-button
+              [block]="true"
+              [variant]="variant(q, c)"
+              [ariaPressed]="picks()[q.id] === c"
+              (pressed)="pick(q.id, c)"
+            >
+              {{ b + '.' + q.id + '.' + c | transloco }}
+            </app-pixel-button>
+          }
+        </div>
+        @if (picks()[q.id]; as p) {
+          <p class="quiz__why" appReading>
+            <span class="quiz__mark" [class.quiz__mark--right]="p === q.answer">{{
+              (p === q.answer ? 'gazette.ui.right' : 'gazette.ui.wrong') | transloco
+            }}</span>
+            {{ b + '.' + q.id + '.why' | transloco }}
+          </p>
+        }
+      </li>
+    }
+  </ol>
+  @if (done()) {
+    <p class="quiz__score" appReading>
+      {{ 'gazette.ui.score' | transloco: { n: score(), total: issue().quiz.length } }}
+      <span class="quiz__rank">{{
+        'gazette.ui.rank' | transloco: { rank: ('gazette.ui.ranks.r' + score() | transloco) }
+      }}</span>
+    </p>
+  }
+</div>

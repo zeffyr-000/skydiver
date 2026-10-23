@@ -1,0 +1,1353 @@
+{
+  "masthead": "The Sky Gazette",
+  "motto": "The flying daredevils' paper · 1797–1936",
+  "ui": {
+    "issueNo": "No. {{n}}",
+    "supplementNo": "Supplement",
+    "supplementShort": "Suppl.",
+    "price": "Price: five cents",
+    "strip": "The issues",
+    "read": "Read",
+    "inThisIssue": "In this issue",
+    "aside": "Did you know?",
+    "geek": "For the buffs",
+    "unfold": "Unfold",
+    "fold": "Fold",
+    "myth": "Legend or fact?",
+    "legend": "Legend",
+    "fact": "Fact",
+    "right": "Well spotted!",
+    "wrong": "Missed!",
+    "quiz": "This issue's quiz",
+    "score": "Score: {{n}} out of {{total}}",
+    "rank": "Your rank: {{rank}}",
+    "ranks": {
+      "r0": "Ground crew",
+      "r1": "Student pilot",
+      "r2": "Air-meet pilot",
+      "r3": "Ace of the stick"
+    },
+    "dates": "This issue's dates",
+    "play": "In the game",
+    "playEvent": "Play \"{{name}}\"",
+    "playLocked": "Open the Grand Tour",
+    "playRoute": "Go",
+    "teaser": "In the next issue",
+    "next": "Next issue",
+    "prev": "Previous issue",
+    "restart": "Read again from No. 1",
+    "sources": "Sources",
+    "original": "See the original",
+    "quote": "“{{text}}”",
+    "reconstruction": "Reconstruction"
+  },
+  "drift": {
+    "title": "The jumper's slide rule",
+    "intro": "Set the wind and the opening height: here is where to leave the aeroplane so the wind sets you down on the target.",
+    "wind": "Wind: {{v}} m/s",
+    "alt": "Opening at {{v}} m",
+    "time": "Under canopy: {{s}} s",
+    "drift": "Drift: {{m}} m",
+    "advice": "Exit {{m}} m short of the target, on the side the wind blows from.",
+    "calm": "Calm air: jump straight over the target.",
+    "fair": "Moderate wind: a good exit point will make up for the drift.",
+    "strong": "Mind the water: with this much drift, the slightest error lands you in the river.",
+    "target": "Target",
+    "exit": "Exit",
+    "windLabel": "Wind speed",
+    "altLabel": "Opening height",
+    "note": "Order of magnitude: a 28-foot round canopy comes down at about 6 m/s. The brief free fall is left out."
+  },
+  "figures": {
+    "title": "Figures in flight",
+    "intro": "Pick a figure: the biplane draws it, seen side-on."
+  },
+  "supplement": {
+    "glossary": "The little glossary",
+    "timeline": "The great timeline",
+    "toIssue": "No. {{n}}",
+    "toIssueLabel": "Read No. {{n}}: {{title}}"
+  },
+  "plates": {
+    "souther-field": {
+      "caption": "Souther Field, Americus, Georgia, 1918: the line of training Jennies. Lindbergh would buy his own here five years later.",
+      "credit": "Air Service, U.S. Army — public domain"
+    },
+    "buc-1920": {
+      "caption": "Buc air meet, 9 October 1920: the Maharaja of Kapurthala and aviator Adrienne Bolland.",
+      "credit": "Agence de presse Meurisse — public domain"
+    },
+    "cody-transfer": {
+      "caption": "Florida, 1921: a Mabel Cody Flying Circus pilot holds steady as \"Bugs\" McGowan transfers from the car to the plane.",
+      "credit": "State Library and Archives of Florida — public domain"
+    },
+    "ingle-change": {
+      "caption": "1926: Gladys Ingle prepares to \"change\" from Bon MacDougall's Jenny to Art Goebel's aeroplane.",
+      "credit": "Unknown author — public domain"
+    },
+    "locklear-ladder": {
+      "caption": "Atlantic City, 1919: Locklear clings to one aeroplane, waiting for a second trailing a rope ladder.",
+      "credit": "Western Newspaper Union — public domain"
+    },
+    "boyer-breakaway": {
+      "caption": "1922: Lillian Boyer performs the \"breakaway\", hanging beneath the aeroplane.",
+      "credit": "Library of Congress — public domain"
+    },
+    "balloon-poster": {
+      "caption": "Safford, Arizona, 1900: poster for a \"Grand Balloon Ascension and Parachute Leap\" by Miss Hazel Keyes. Free to all.",
+      "credit": "Unknown author — public domain"
+    },
+    "reichelt": {
+      "caption": "Franz Reichelt in his parachute garment on the day of his attempt.",
+      "credit": "Agence de presse Meurisse — public domain"
+    },
+    "broadwick": {
+      "caption": "Tiny Broadwick ready to drop, 1913.",
+      "credit": "Unknown author — public domain"
+    },
+    "irvin-patent": {
+      "caption": "Leslie Irvin's parachute patent, filed in 1918: the aeroplane, the pack and the harness.",
+      "credit": "U.S. Patent Office — public domain"
+    },
+    "hendon-1930": {
+      "caption": "Hendon air display, 27 June 1930: a parachutist stands on the wing, ready to go.",
+      "credit": "Agence Rol — public domain"
+    },
+    "hilsz": {
+      "caption": "Maryse Hilsz in 1935, by then a record-breaking aviator.",
+      "credit": "Agence de presse Meurisse — public domain"
+    },
+    "pegoud-chateaufort": {
+      "caption": "Châteaufort, 1913: the Blériot fitted with the Bonnet parachute for Pégoud's test.",
+      "credit": "Agence de presse Meurisse — public domain"
+    },
+    "vedrines-roof": {
+      "caption": "\"Védrines's aeroplane over the Galeries Lafayette\", Paris, 1919.",
+      "credit": "Agence Rol — public domain"
+    },
+    "godefroy-arc": {
+      "caption": "7 August 1919: Charles Godefroy's Nieuport passing under the Arc de Triomphe.",
+      "credit": "Jacques Mortane — public domain"
+    },
+    "fronval": {
+      "caption": "Alfred Fronval in front of an aeroplane, 1924.",
+      "credit": "Agence de presse Meurisse — public domain"
+    },
+    "bolland": {
+      "caption": "Adrienne Bolland around 1921.",
+      "credit": "Unknown author — public domain"
+    },
+    "coleman": {
+      "caption": "Bessie Coleman in front of her aeroplane, 1922.",
+      "credit": "Unknown author — public domain"
+    },
+    "doret": {
+      "caption": "Marcel Doret in March 1926.",
+      "credit": "Agence de presse Meurisse — public domain"
+    },
+    "pegoud-ticket": {
+      "caption": "Ticket No. 0582 for \"the experiments of the aviator Pégoud\", Ghent, 3 November 1913: five francs per \"automobile or carriage\".",
+      "credit": "Unknown author — public domain"
+    },
+    "inverted-jenny": {
+      "caption": "The 1918 24-cent stamp, with its upside-down Jenny.",
+      "credit": "U.S. Post Office — public domain"
+    }
+  },
+  "rates": {
+    "card": "The 13 Black Cats · Rates",
+    "note": "Prices as reported by later accounts: no dated rate card from the period has been found, and the figures vary between sources.",
+    "footer": "This rate card became the model for the first union of movie stunt pilots, in 1931.",
+    "rows": {
+      "planeChange": {
+        "label": "Ordinary plane change in mid-air",
+        "price": "$100"
+      },
+      "inverted": {
+        "label": "Upside-down flying",
+        "price": "$100"
+      },
+      "jump": {
+        "label": "Parachute jump, 1,000-foot free fall",
+        "price": "$150"
+      },
+      "wingLoop": {
+        "label": "Loop with performers standing on the wings",
+        "price": "$450"
+      },
+      "upsideChange": {
+        "label": "Change from an upside-down plane to a right-side-up one",
+        "price": "$500"
+      },
+      "explode": {
+        "label": "Blow up the plane in mid-air, pilot to parachute",
+        "price": "$1,500"
+      }
+    }
+  },
+  "handbill": {
+    "note": "A reconstruction based on period handbills. The Grand Tour and its stops are this game's own.",
+    "top": "Come one! Come all!",
+    "headline": "The Grand Tour Flying Circus",
+    "sub": "is in town!",
+    "stops": "County Fair · Seaside · Mountain Lake · Airfield · Grand Air Meet",
+    "acts": {
+      "a1": "Precision parachute leaps!",
+      "a2": "Wing walking!",
+      "a3": "Plane change in mid-air!",
+      "a4": "The death dive from 5,000 feet!"
+    },
+    "price": "Joyrides: $5",
+    "small": "From 2 p.m. at the water-tower meadow · Admission free · Weather permitting"
+  },
+  "timeline": {
+    "garnerin": {
+      "date": "22 Oct 1797",
+      "text": "André-Jacques Garnerin parachutes from a balloon over the Parc Monceau in Paris."
+    },
+    "baldwin": {
+      "date": "27 Jan 1887",
+      "text": "Thomas Baldwin jumps from a tethered balloon over Golden Gate Park: the fairground parachute craze begins."
+    },
+    "broadwickFirst": {
+      "date": "28 Dec 1908",
+      "text": "Tiny Broadwick's first jump, from a hot-air balloon."
+    },
+    "codyWing": {
+      "date": "14 Jan 1911",
+      "text": "In England, S. F. Cody flies with his two stepsons standing on the lower wing."
+    },
+    "law": {
+      "date": "Feb 1912",
+      "text": "Rodman Law parachutes from the torch of the Statue of Liberty."
+    },
+    "reichelt": {
+      "date": "4 Feb 1912",
+      "text": "Franz Reichelt jumps from the Eiffel Tower in his parachute garment and is killed."
+    },
+    "berry": {
+      "date": "1 Mar 1912",
+      "text": "Albert Berry jumps from an aeroplane over Missouri: one of the very first jumps from an aeroplane."
+    },
+    "broadwickPlane": {
+      "date": "21 Jun 1913",
+      "text": "Tiny Broadwick jumps from Glenn L. Martin's aeroplane over Los Angeles."
+    },
+    "pegoudJump": {
+      "date": "19 Aug 1913",
+      "text": "Pégoud parachutes from a sacrificed Blériot at Châteaufort."
+    },
+    "nesterov": {
+      "date": "9 Sep 1913",
+      "text": "Russian pilot Pyotr Nesterov flies the first loop, near Kyiv."
+    },
+    "pegoudLoop": {
+      "date": "21 Sep 1913",
+      "text": "Pégoud loops the loop at Buc, three weeks after his first inverted flight."
+    },
+    "broadwickFreefall": {
+      "date": "1914",
+      "text": "Tiny Broadwick cuts her static line and opens by hand: the first deliberate free fall."
+    },
+    "beacheyDeath": {
+      "date": "14 Mar 1915",
+      "text": "Lincoln Beachey, \"the Man Who Owns the Sky\", is killed in San Francisco Bay."
+    },
+    "stinson": {
+      "date": "1915",
+      "text": "Katherine Stinson becomes the first woman to loop the loop."
+    },
+    "airmail": {
+      "date": "15 May 1918",
+      "text": "First scheduled US airmail service, flown in Jennies."
+    },
+    "locklearFirst": {
+      "date": "Nov 1918",
+      "text": "Ormer Locklear walks the wings in public at Barron Field, Texas."
+    },
+    "vedrines": {
+      "date": "19 Jan 1919",
+      "text": "Védrines lands on the roof of the Galeries Lafayette."
+    },
+    "irvin": {
+      "date": "28 Apr 1919",
+      "text": "Leslie Irvin jumps at McCook Field and opens his own backpack parachute."
+    },
+    "godefroy": {
+      "date": "7 Aug 1919",
+      "text": "Charles Godefroy flies through the Arc de Triomphe."
+    },
+    "potomac": {
+      "date": "3 Mar 1920",
+      "text": "A misjudged wind carries two parachutists into the Potomac's Eastern Branch; Charles Willis drowns."
+    },
+    "fronval962": {
+      "date": "26 May 1920",
+      "text": "Fronval flies 962 loops in a row at Villacoublay."
+    },
+    "locklearDeath": {
+      "date": "2 Aug 1920",
+      "text": "Locklear is killed filming a night scene for The Skywayman."
+    },
+    "buc": {
+      "date": "8 Oct 1920",
+      "text": "President Millerand opens the Buc air meet."
+    },
+    "bolland": {
+      "date": "1 Apr 1921",
+      "text": "Adrienne Bolland crosses the Andes in a Caudron G.3."
+    },
+    "colemanLicence": {
+      "date": "15 Jun 1921",
+      "text": "Bessie Coleman earns her pilot's licence in France."
+    },
+    "gates": {
+      "date": "1921",
+      "text": "Ivan Gates and Clyde Pangborn found the Gates Flying Circus."
+    },
+    "lindberghLincoln": {
+      "date": "Apr 1922",
+      "text": "Lindbergh learns to fly in Lincoln and becomes a wing walker."
+    },
+    "colemanShow": {
+      "date": "3 Sep 1922",
+      "text": "Bessie Coleman's first air show, at Curtiss Field, Long Island."
+    },
+    "harris": {
+      "date": "20 Oct 1922",
+      "text": "Harold Harris saves his life by parachute: the Caterpillar Club is born."
+    },
+    "lindberghJenny": {
+      "date": "May 1923",
+      "text": "Lindbergh buys his Jenny for $500 in Americus and solos for the first time."
+    },
+    "collin": {
+      "date": "13 Nov 1923",
+      "text": "Denyse Collin tests the Ors parachute at Issy-les-Moulineaux."
+    },
+    "gordon": {
+      "date": "Mar 1924",
+      "text": "In Houston, Rosalie Gordon is left hanging from the landing gear of Pangborn's aeroplane."
+    },
+    "hilsz": {
+      "date": "1924",
+      "text": "Maryse Hilsz enters a parachuting contest without ever having flown."
+    },
+    "blackCats": {
+      "date": "1924–1925",
+      "text": "The 13 Black Cats form in Los Angeles."
+    },
+    "vincennes": {
+      "date": "20–22 Jun 1925",
+      "text": "2nd Vincennes Air Festival."
+    },
+    "crane": {
+      "date": "19 Jul 1925",
+      "text": "Joe Crane delays his opening for 2,250 feet."
+    },
+    "tennis": {
+      "date": "1925",
+      "text": "Gladys Roy and Ivan Unger play tennis on the wing of a Jenny."
+    },
+    "colemanDeath": {
+      "date": "30 Apr 1926",
+      "text": "Bessie Coleman is killed in Jacksonville, on the eve of an air show."
+    },
+    "airCommerceAct": {
+      "date": "20 May 1926",
+      "text": "President Coolidge signs the Air Commerce Act."
+    },
+    "licenceOne": {
+      "date": "6 Apr 1927",
+      "text": "Pilot Licence No. 1 goes to William MacCracken."
+    },
+    "lindberghParis": {
+      "date": "20–21 May 1927",
+      "text": "Lindbergh flies non-stop from New York to Paris."
+    },
+    "royDeath": {
+      "date": "15 Aug 1927",
+      "text": "Gladys Roy is killed on the ground by a propeller."
+    },
+    "teterboro": {
+      "date": "Aug 1927",
+      "text": "The Gates Flying Circus at its peak: eleven aeroplanes at Teterboro."
+    },
+    "dubendorf": {
+      "date": "21 Aug 1927",
+      "text": "International aerobatics contest at Dübendorf: Doret third."
+    },
+    "wings": {
+      "date": "1927",
+      "text": "Wings is released — the future first Best Picture."
+    },
+    "fronval1111": {
+      "date": "25 Feb 1928",
+      "text": "Fronval raises the record to 1,111 loops."
+    },
+    "bron": {
+      "date": "1928",
+      "text": "The Bron air meet, \"the greatest in the world\"."
+    },
+    "boyerLast": {
+      "date": "8 Sep 1928",
+      "text": "Lillian Boyer's last stunt, in Bethany, Missouri."
+    },
+    "gatesEnd": {
+      "date": "Spring 1929",
+      "text": "The Gates Flying Circus closes in Florida."
+    },
+    "bastie": {
+      "date": "28 Jul 1929",
+      "text": "Maryse Bastié stays aloft for 26 h 47 min: a women's world endurance record."
+    },
+    "hellsAngels": {
+      "date": "1930",
+      "text": "Howard Hughes's Hell's Angels is released."
+    },
+    "union": {
+      "date": "1931",
+      "text": "First union of movie stunt pilots, modelled on the Black Cats' rate card."
+    },
+    "ban": {
+      "date": "1936",
+      "text": "Wing walking banned below 1,500 feet in the United States."
+    }
+  },
+  "glossary": {
+    "groups": {
+      "trade": "The trade",
+      "chute": "The parachute",
+      "voltige": "Aerobatics",
+      "machine": "The machine"
+    },
+    "terms": {
+      "barnstormer": {
+        "term": "Barnstormer",
+        "def": "An American itinerant flier of the 1920s who toured the countryside, landed in meadows and sold joyrides and stunts."
+      },
+      "flyingCircus": {
+        "term": "Flying circus",
+        "def": "A touring troupe of aeroplanes and performers: pilots, wing walkers, parachutists and mechanics."
+      },
+      "joyride": {
+        "term": "Joyride",
+        "def": "A passenger's first flight. In the United States it sold for one to five dollars; the French call it a \"baptême de l'air\"."
+      },
+      "handbill": {
+        "term": "Handbill",
+        "def": "A printed flyer dropped from the aeroplane over a town to announce the show."
+      },
+      "wingWalking": {
+        "term": "Wing walking",
+        "def": "An act in which a performer moves, dances or plays on the wings of an aeroplane in flight."
+      },
+      "planeChange": {
+        "term": "Plane change",
+        "def": "Crossing from one aeroplane to another in mid-air, often by rope ladder."
+      },
+      "meeting": {
+        "term": "Meeting",
+        "def": "French for a great air festival with races, aerobatics, records and parachute jumps."
+      },
+      "ace": {
+        "term": "Ace",
+        "def": "A fighter pilot with many victories; the word, born in France during the Great War, came to mean any virtuoso of the stick."
+      },
+      "hitTheSilk": {
+        "term": "Hit the silk",
+        "def": "American slang for jumping with a parachute, from the days of silk canopies."
+      },
+      "ripcord": {
+        "term": "Ripcord",
+        "def": "A cable the jumper pulls to release the parachute from its pack."
+      },
+      "staticLine": {
+        "term": "Static line",
+        "def": "A line tying the parachute to the aeroplane that opens it automatically as the jumper drops away."
+      },
+      "pilotChute": {
+        "term": "Pilot chute",
+        "def": "A small parachute that springs out of the pack and drags the main canopy after it."
+      },
+      "canopy": {
+        "term": "Canopy",
+        "def": "The parachute's fabric dome. The round ones of the 1920s could not be steered."
+      },
+      "doubleDrop": {
+        "term": "Double drop",
+        "def": "An act in which a first parachute is opened and cut away before a second is opened."
+      },
+      "delayedOpening": {
+        "term": "Delayed opening",
+        "def": "Deliberate free fall before opening, for the crowd's thrill — or to prove you don't black out."
+      },
+      "spotLanding": {
+        "term": "Spot landing",
+        "def": "A contest in which the parachutist must land as close as possible to a target."
+      },
+      "spot": {
+        "term": "Spot",
+        "def": "The point where you leave the aeroplane, chosen upwind so the drift carries you onto the target."
+      },
+      "caterpillar": {
+        "term": "Caterpillar Club",
+        "def": "The club of airmen saved by a parachute, founded in 1922; its badge is a caterpillar, like the silkworm."
+      },
+      "loop": {
+        "term": "Loop",
+        "def": "A complete circle in the vertical plane: keep pulling the stick until you are back where you started. First flown in 1913, by Nesterov and then Pégoud."
+      },
+      "inverted": {
+        "term": "Inverted flight",
+        "def": "Flying upside down, first achieved by Pégoud on 1 September 1913."
+      },
+      "roll": {
+        "term": "Roll",
+        "def": "A complete rotation of the aeroplane around its longitudinal axis."
+      },
+      "snapRoll": {
+        "term": "Snap roll",
+        "def": "A very fast roll triggered by stalling one wing before the other."
+      },
+      "spin": {
+        "term": "Spin",
+        "def": "A whirling descent with the wings stalled. Long fatal, until pilots learned how to recover."
+      },
+      "fallingLeaf": {
+        "term": "Falling leaf",
+        "def": "A descent in alternating sideslips from one side to the other, like a falling leaf."
+      },
+      "chandelle": {
+        "term": "Chandelle",
+        "def": "A steep climbing turn, gaining height while reversing direction — a French word meaning \"candle\"."
+      },
+      "stallTurn": {
+        "term": "Stall turn",
+        "def": "A vertical climb, a pivot at the top on the rudder, and a vertical descent down the same line."
+      },
+      "immelmann": {
+        "term": "Immelmann",
+        "def": "Half a loop upwards then half a roll: you head back the way you came, higher. Named after the German ace Max Immelmann."
+      },
+      "splitS": {
+        "term": "Split S",
+        "def": "The Immelmann reversed: half a roll, then half a loop downwards; you head back the way you came, lower."
+      },
+      "pullOut": {
+        "term": "Pull-out",
+        "def": "Levelling off at the bottom of a dive as the pilot hauls back on the stick."
+      },
+      "jenny": {
+        "term": "Jenny",
+        "def": "Nickname of the Curtiss JN-4, the American trainer that became the barnstormers' aeroplane."
+      },
+      "canuck": {
+        "term": "Canuck",
+        "def": "The Canadian version of the Jenny, about 1,200 of which were built."
+      },
+      "ox5": {
+        "term": "OX-5",
+        "def": "The Jenny's 90-horsepower Curtiss V8; a surplus engine sold for $75."
+      },
+      "castorOil": {
+        "term": "Castor oil",
+        "def": "Lubricant of rotary engines, spat out by the exhaust over the pilot… and a powerful laxative."
+      },
+      "dope": {
+        "term": "Dope",
+        "def": "Tautening varnish brushed onto the wing fabric to make it stiff and weatherproof."
+      },
+      "contact": {
+        "term": "\"Contact!\"",
+        "def": "The call exchanged between the mechanic swinging the propeller by hand and the pilot switching on the ignition."
+      },
+      "stick": {
+        "term": "Joystick",
+        "def": "The pilot's control column; the French call it the \"broom handle\"."
+      },
+      "rudderBar": {
+        "term": "Rudder bar",
+        "def": "The bar the pilot works with his feet to move the rudder."
+      },
+      "groundLoop": {
+        "term": "Ground loop",
+        "def": "A violent, uncontrolled swerve on the ground, the aeroplane spinning round on itself."
+      },
+      "noseOver": {
+        "term": "Nose-over",
+        "def": "Tipping onto the nose on landing, often in soft ground."
+      },
+      "windsock": {
+        "term": "Windsock",
+        "def": "A cloth cone showing the direction and strength of the wind on an airfield."
+      },
+      "zinc": {
+        "term": "Crate",
+        "def": "Fliers' slang for an aeroplane; the French said \"zinc\" or \"coucou\"."
+      }
+    }
+  },
+  "issues": {
+    "professors": {
+      "headline": "The professors of the air",
+      "standfirst": "Before it was a sport, the parachute was a fairground act. For thirty years, \"professors\" rode up beneath hot-air balloons and threw themselves into the void before picnicking crowds. The story of a trade where a jump paid a thousand dollars… and a career lasted two years.",
+      "teaser": "A French pilot jumps from an aeroplane to test a parachute, watches the empty machine fall… and realises an aeroplane can fly upside down.",
+      "sources": "USPA (\"Visitors from Cloudland\"); Delaware County Historical Society (Muncie); William L. Clements Library; Wikipedia (Tiny Broadwick, Franz Reichelt, Rodman Law); BFI / British Pathé; Air Journal.",
+      "text": {
+        "garnerin": {
+          "head": "A leap over the Parc Monceau",
+          "body": "On 22 October 1797, André-Jacques Garnerin rose into the Paris sky beneath a balloon, sitting in a basket hung from a great canvas umbrella. Over the Parc Monceau he cut the rope. The umbrella opened, swung terribly, and brought him down before a dumbstruck crowd: the parachute was born, and it was already a show.\n\nFor a century jumps remained rare. The parachutes of Garnerin, his wife, his niece Élisa or the Godard brothers were semi-rigid: fabric stretched over a light frame, with the aeronaut riding beneath in a basket. People admired them the way they admired a tightrope walker — from a distance, and without much wish to follow."
+        },
+        "baldwin": {
+          "head": "The tightrope walker of San Francisco",
+          "body": "Everything changed on 27 January 1887. Over Golden Gate Park, a former circus tightrope walker, Thomas Baldwin, jumped from a tethered balloon about 1,000 feet up. No basket, no frame: a plain fabric dome, and a man hanging from a ring in full view of the ground. At last the crowd could see the body fall, then the canopy fill.\n\nOn the Fourth of July Baldwin did it again in his hometown of Quincy, Illinois, and the country went wild. At first he earned $1,000 a jump — a fortune — and toured from London to Australia. By the end of the year he had a dozen imitators. The parachute had become America's newest attraction."
+        },
+        "fair": {
+          "head": "The star turn of the fair",
+          "body": "From 1887 until the Great War, no county fair or Fourth of July went without a \"grand balloon ascension and parachute leap\". The troupes took circus names — the Leroy Sisters, the Flying Allens, the Belmont Sisters, the Baldwin Brothers — and their stars, men and women alike, called themselves \"Professor\".\n\nThe ritual hardly varied. A fire pit was dug and a balloon envelope hung above it to fill with hot air and smoke, while volunteers from the crowd held it down by ropes. At the signal they let go: the balloon shot up with the aeronaut hanging beneath. A few hundred feet up he cut loose, dropped, and his canopy opened. The empty balloon came down in a nearby field, where helpers ran to fetch it.\n\nTo keep the crowds coming, acts had to outdo each other: double drops, successive parachutes, parachuting animals, a descent on a bicycle, a human cannonball, even a firework shell bursting in mid-sky, devised by the New York balloon maker A. Leo Stevens."
+        },
+        "danger": {
+          "head": "A trade with a two-year life expectancy",
+          "body": "The glory came at a price. A spark from the fire could set the envelope alight; an overfilled balloon could burst at altitude; a deflating one could fall onto the parachute. Above all the wind pushed aeronauts into trees, roofs, telegraph wires, steeples — or into water, where tangled rigging drowned several.\n\nThe craze drew all comers. Ten years after Baldwin, beginners were recruited off the street with no training and paid $10 or $20 a jump. Between 1888 and 1910 more than a hundred balloon parachutists were killed, and many more injured. In 1895 the Boston Post reckoned the average career lasted two years."
+        },
+        "doll": {
+          "head": "The doll from the cotton mill",
+          "body": "In 1908, in a North Carolina cotton mill, a 15-year-old worker no bigger than a child — four foot eight, 85 pounds — watched Charles Broadwick and his \"World Famous Aeronauts\" jump. Georgia Thompson left everything behind, joined the troupe, took his name and made her first jump on 28 December 1908. On the posters she became \"the doll girl\", strapped into a \"life preserver\" parachute of Broadwick's design. Soon she was doing double and triple drops.\n\nThey called her Tiny. She would make more than 1,100 jumps — and we'll meet her again in the next issue, inventing free fall."
+        },
+        "reichelt": {
+          "head": "The tailor of the Eiffel Tower",
+          "body": "Paris, 4 February 1912. Franz Reichelt, an Austrian-born tailor, had sewn a coat meant to open into a parachute and save aviators. He had permission to test it from the Eiffel Tower — with a dummy, or so everyone believed. In front of journalists and newsreel cameramen he announced he would jump himself. His friends begged him not to.\n\nThe film of the scene still exists: he hesitates for a long time on the parapet of the first platform, then leaps. The coat does not open. Reichelt is killed instantly. Other tests followed from the tower, some of them fatal, until they were banned there.\n\nAcross the Atlantic, that same month, stuntman Rodman Law jumped from the torch of the Statue of Liberty with a parachute pack made by Leo Stevens — and lived."
+        },
+        "berry": {
+          "head": "The first jump from an aeroplane",
+          "body": "Balloons were slow; the aeroplane was the future. On 1 March 1912, over Jefferson Barracks in Missouri, Albert Berry jumped from a Benoist biplane flown by Tony Jannus. His parachute was stowed in a container under the aeroplane; he fell about 500 feet before the canopy spread.\n\nEverywhere, people were now looking for a parachute you could wear. In Germany the aeronaut Käthe Paulus devised a pack in 1910; in Russia an actor, Gleb Kotelnikov, invented a backpack parachute after watching an aviator die at an air show. The age of the professors was ending; the age of the airmen was beginning."
+        }
+      },
+      "quotes": {
+        "delmont": {
+          "text": "The professor was held suspended over the water in full view of hundreds of spectators.",
+          "who": "Muncie Daily Herald, July 1894 — George Delmont's parachute had caught in the trees along the river. The branch gave way: he dropped into the water, unhurt."
+        }
+      },
+      "asides": {
+        "goats": "Muncie, Indiana, August 1895: aeronaut Ira Fisk hung two goats and a cage of pigeons beneath his balloon, before 2,000 spectators. The pigeons flew off, but the goats' parachute never opened. \"The goats and the balloon floated down to earth together,\" the local paper soberly noted. Fifteen years later, on the same spot, Jimmie Bedwell went up with a lit stick of dynamite and let it explode in mid-air."
+      },
+      "geek": {
+        "balloon": {
+          "title": "The smoke balloon",
+          "body": "No gas, no basket: a canvas envelope filled over a fire with hot air and smoke, deliberately overfilled to climb fast and stay above the field. The scientist Carl Myers called them \"projectiles\". The parachutist hangs beneath, his canopy already spread above him, tied on by a rope he cuts at the chosen height. No free fall: it was thought to be deadly.",
+          "specs": {
+            "height": {
+              "label": "Balloon, inflated",
+              "value": "60 to 65 ft tall"
+            },
+            "release": {
+              "label": "Cut-away height",
+              "value": "1,000 to 3,000 ft"
+            },
+            "fee1887": {
+              "label": "Baldwin's fee (1887)",
+              "value": "$1,000 a jump"
+            },
+            "fee1897": {
+              "label": "A beginner's fee (c. 1897)",
+              "value": "$10 to $20"
+            },
+            "career": {
+              "label": "Average career (1895)",
+              "value": "2 years"
+            }
+          }
+        }
+      },
+      "myths": {
+        "freefall": {
+          "claim": "In the balloon era, people believed a long free fall would kill the parachutist.",
+          "verdict": "True, they really did: aeronauts opened as early as they could. It took Joe Crane, in 1925, to prove otherwise (No. 6)."
+        }
+      },
+      "quiz": {
+        "q1": {
+          "q": "How much did Thomas Baldwin earn per jump at the start of his career?",
+          "a": "$10",
+          "b": "$1,000",
+          "c": "$100,000",
+          "why": "A thousand dollars a jump in 1887 — ten years later, beginners got ten."
+        },
+        "q2": {
+          "q": "Where did Rodman Law jump from in February 1912?",
+          "a": "The Eiffel Tower",
+          "b": "The Brooklyn Bridge",
+          "c": "The Statue of Liberty",
+          "why": "The torch of the Statue of Liberty. The Eiffel Tower was Franz Reichelt, that same month."
+        },
+        "q3": {
+          "q": "How long did a balloon parachutist's career last on average, according to the 1895 Boston Post?",
+          "a": "Two years",
+          "b": "Ten years",
+          "c": "Six weeks",
+          "why": "Two years: more than a hundred of them were killed between 1888 and 1910."
+        }
+      },
+      "play": {
+        "title": "The Professor’s Ascension",
+        "body": "The Grand Tour now has its fairground act: hanging beneath a smoke balloon drifting with the wind, cut loose at the right moment to land on the target. No aeroplane, no throw: just the wind."
+      }
+    },
+    "upside-down": {
+      "headline": "The sky turned upside down",
+      "standfirst": "In 1913 a French test pilot jumps from an aeroplane to try out a parachute. Watching the empty machine tumble down, he has a mad idea: flying upside down. Three weeks later he loops the loop. Aerobatics is born — and so is free fall, invented by a young woman four foot eight tall.",
+      "teaser": "1919, the mad year: an aeroplane on a department-store roof, another under the Arc de Triomphe, thousands of aeroplanes sold off… and the man who first opened his parachute in mid-fall.",
+      "sources": "Encyclopædia Universalis; Wikipedia (Adolphe Pégoud, Lincoln Beachey, Tiny Broadwick, Immelmann turn); Theatrum Belli; Air Journal; USPA; Readex; Merriam-Webster; Alain Pelletier, Haute voltige (ETAI).",
+      "text": {
+        "jump": {
+          "head": "The jump at Châteaufort",
+          "body": "Adolphe Pégoud was a test pilot for Louis Blériot at Buc. At 24 he took a job nobody wanted: trying out for real the parachute invented by Frédéric Bonnet. An old Blériot XI was sacrificed for the occasion — nobody would fly it again.\n\nOn 19 August 1913, over Châteaufort west of Paris, Pégoud climbed out of his cockpit and jumped. The parachute opened: he became the first European to jump from an aeroplane. But it was in the air, hanging beneath his canopy, that he saw the most important thing of his life."
+        },
+        "inverted": {
+          "head": "\"I saw it loop on its own\"",
+          "body": "The abandoned aeroplane did not drop like a stone. It dived, reared up, traced arabesques and even a sort of loop before it crashed. Pégoud told reporters he had seen it \"loop on its own\". If it could do that without a pilot, why not with one?\n\nHe had his Blériot strengthened, strapped himself firmly into his seat and practised on the ground, upside down. On 1 September 1913, at Juvisy, he flew inverted. On 21 September, at Buc, he went further: a complete loop, which he believed was the world's first. It wasn't — the Russian Pyotr Nesterov had looped near Kyiv twelve days earlier — but it was Pégoud the whole of Europe wanted to see.\n\nThey called him \"the king of the sky\". He performed all over Europe, the Tsar invited him to Moscow, and pilots everywhere began to copy him. What had been a stunt became a craft: aerobatics."
+        },
+        "beachey": {
+          "head": "The man who owned the sky",
+          "body": "In America the star was Lincoln Beachey, \"The Man Who Owns the Sky\". Between November 1913 and November 1914 he performed in 126 towns before 15 to 20 million spectators, by various estimates; one aerial carnival in Chicago drew a quarter of a million.\n\nHis favourite act: racing the country's most famous racing driver, Barney Oldfield, for the \"Championship of the Universe\" — aeroplane against car, on a racetrack. Beachey nearly always won. On 14 March 1915, before the crowds of the Panama–Pacific Exposition in San Francisco, his monoplane lost its wings in a dive and plunged into the bay. He was 28.\n\nThat same year Katherine Stinson became the first woman to loop the loop."
+        },
+        "tiny": {
+          "head": "Tiny invents free fall",
+          "body": "Here's Tiny Broadwick again. On 21 June 1913, over Los Angeles, she jumped from Glenn L. Martin's aeroplane: she is often credited as the first woman to parachute from an aeroplane. In 1914 the US Army asked her for demonstrations. Her parachute was tied to the aeroplane by a static line that opened it automatically as she dropped away.\n\nOn the fourth jump the line fouled on the tail. Tiny hung beneath the aeroplane, took out her knife, cut the line — and pulled what was left of it herself to open her canopy in mid-fall. On the next jump she did it on purpose, the line loose in her hand. It was probably the first deliberate free fall from an aeroplane, and proof that an airman could open his own parachute: the idea of the ripcord had just been born."
+        },
+        "war": {
+          "head": "Aerobatics goes to war",
+          "body": "August 1914: the clowns of the sky became soldiers. Aerobatics changed its nature; now it was a way to escape an opponent or slip onto his \"six o'clock\", right behind him. The spin, long a killer, became a figure pilots learned to master; the falling leaf let them lose height while fooling the enemy. Pégoud, one of the first aces, was shot down on 31 August 1915 by a former German pupil. He was 26.\n\nA paradox to finish: for almost the whole war, pilots flew without parachutes. They were mistrusted and thought cumbersome, and commanders feared a pilot would abandon an aeroplane that could have been repaired. Only the observers in tethered balloons jumped routinely. It was only after the Armistice that a US Army team at McCook Field got seriously to work."
+        }
+      },
+      "asides": {
+        "immelmann": "The figure called the \"Immelmann\" — half a loop then half a roll — bears the name of the German ace Max Immelmann. But his Fokker monoplane was flown by wing warping, without ailerons: he probably never flew the figure in its modern form. The name turns up in dictionaries in 1918."
+      },
+      "geek": {
+        "loop": {
+          "title": "A loop, from the cockpit",
+          "body": "Pick up speed in a shallow dive, then pull the stick back, firmly and steadily: the nose rises, the sky fills the windscreen, then the horizon reappears… upside down, above your head. At the top the aeroplane is slow and light: ease the pressure a little to round off the loop, then pull again on the way down, and come out at the height you went in. A botched loop is usually an \"egg-shaped\" one, for lack of speed at the start. The fighter pilots of 1914–18 used it to end up behind a pursuer."
+        }
+      },
+      "myths": {
+        "firstLoop": {
+          "claim": "Adolphe Pégoud flew the first loop in history.",
+          "verdict": "Legend: the Russian Pyotr Nesterov beat him by twelve days, on 9 September 1913. But Pégoud was the first to make a show of it, and he was the one Europe cheered."
+        }
+      },
+      "quiz": {
+        "q1": {
+          "q": "Who flew the first loop?",
+          "a": "Pyotr Nesterov",
+          "b": "Adolphe Pégoud",
+          "c": "Lincoln Beachey",
+          "why": "Nesterov, on 9 September 1913, twelve days before Pégoud."
+        },
+        "q2": {
+          "q": "How did Tiny Broadwick discover free fall?",
+          "a": "By falling out of a hot-air balloon",
+          "b": "Her static line fouled on the aeroplane's tail",
+          "c": "On a bet with Charles Broadwick",
+          "why": "She cut the fouled line and opened her parachute by hand, then did it again on purpose."
+        },
+        "q3": {
+          "q": "Who did Lincoln Beachey race against?",
+          "a": "An express train",
+          "b": "A racehorse",
+          "c": "Racing driver Barney Oldfield",
+          "why": "Aeroplane against car, for the \"Championship of the Universe\" — and Beachey nearly always won."
+        }
+      },
+      "play": {
+        "title": "The fairground hoops",
+        "body": "The Grand Tour's hoops are a game invention, but they ask what aerobatics asked: pick your line, anticipate it and hold it. In free fall, dive to speed up, arch to slow down."
+      }
+    },
+    "nineteen": {
+      "headline": "1919, the mad year",
+      "standfirst": "The war is over and the sky is overflowing: thousands of idle aeroplanes, thousands of demobilised pilots, and a thirst for life that knows no limits. In a single year someone lands on a Paris rooftop, someone flies through the Arc de Triomphe, someone walks on the wings… and a stuntman opens his parachute in mid-fall.",
+      "teaser": "The circus comes to town! How vagabond pilots took a million Americans into the air — and young Lindbergh was one of them.",
+      "sources": "National Geographic; Smithsonian; National Museum of the U.S. Air Force; Encyclopædia Universalis; Air Journal; French Ministry of the Armed Forces; Sortiraparis; Wikipedia (Curtiss JN, Ormer Locklear, Wing walking, Leslie Irvin, Edward L. Hoffman).",
+      "text": {
+        "surplus": {
+          "head": "Aeroplanes for the price of a car",
+          "body": "At the Armistice the US Army owned thousands of Curtiss JN-4 \"Jennies\", the biplanes on which nearly all its pilots had learned to fly. Bought for $5,000 to $6,700 apiece, they were now sold off for a few hundred dollars — often less than $500. A spare engine could be had for $75.\n\nFor young pilots back in civilian life, it was the chance of a lifetime. In the United States there were no rules at all: no pilot's licence, no inspection of aircraft, no minimum height. With a Jenny, a toolbox and some nerve you could make a living in the sky. The Jenny had been carrying the first scheduled airmail since 15 May 1918; now it would carry the dreams of a whole generation."
+        },
+        "vedrines": {
+          "head": "An aeroplane on the department-store roof",
+          "body": "In Paris, the Galeries Lafayette offered 25,000 francs to the aviator who would land on the department store's roof on the Boulevard Haussmann. The terrace measured 28 by 12 metres: barely bigger than a tennis court.\n\nOn 19 January 1919 Jules Védrines, war hero and veteran of the air races, set his Caudron G.3 down on it. The aeroplane was damaged and Védrines fined for flying over Paris, which was forbidden — the fine barely dented the prize. The store got itself worldwide publicity. Three months later, on 21 April 1919, Védrines was killed after an engine failure at Saint-Rambert-d'Albon in the Drôme, on his way to Rome."
+        },
+        "godefroy": {
+          "head": "Under the Arc de Triomphe",
+          "body": "On 14 July 1919, at the Victory Parade, the airmen had to march down the Champs-Élysées like the infantry: an insult to men who had fought their war in the sky. The idea took shape of setting things right by flying an aeroplane through the Arc de Triomphe. The first volunteer, the ace Jean Navarre, was killed in training a few days earlier.\n\nCharles Godefroy took up the challenge. For weeks he practised in secret by flying under a bridge in the south of France. On 7 August 1919 he took off from Villacoublay in a small Nieuport fighter, dropped to about ten metres and shot through the vault — some 14.6 metres wide — at around 150 km/h. A photographer caught the moment; the picture went round the world."
+        },
+        "irvin": {
+          "head": "Pull the ring",
+          "body": "Meanwhile, at McCook Field near Dayton, Ohio, Major Hoffman's team had tested seventeen parachute designs with dummies. The winner, Floyd Smith and Guy Ball's Type A, brought three ideas together: a canopy packed in a backpack, a ripcord pulled once clear of the aeroplane, and a small pilot chute that drags the main canopy out of the pack.\n\nIt still had to be tried for real. On 28 April 1919 a 23-year-old movie stuntman, Leslie Irvin, jumped from a DH-9 flown by Smith at about 1,500 feet and 100 mph. He pulled the ring, the 28-foot canopy opened… and he landed so hard he broke his ankle, to the sceptics' delight. No matter: less than two months later Irvin founded his own parachute company in Buffalo."
+        },
+        "locklear": {
+          "head": "The first wing walker",
+          "body": "And then there was Ormer Locklear. In November 1918, at Barron Field, Texas, this young lieutenant gave his first public wing-walking displays. He wasn't quite the first — in 1911 the Englishman S. F. Cody had flown with his two stepsons standing on the lower wing — but he was the first to make a living from it.\n\nBack in civilian life, Locklear set up a flying circus and invented the craziest act of the day: the plane change in mid-air. Clinging to one aeroplane, he waited for a second, trailing a rope ladder, to come alongside, and crossed from one to the other. He also climbed from a speeding car into an aeroplane. Hollywood soon came calling (we'll meet him again in No. 8)."
+        }
+      },
+      "asides": {
+        "stamp": "In May 1918, for the first airmail, the US Post Office printed a 24-cent stamp showing a Jenny. On one sheet the aeroplane was printed upside down: the \"Inverted Jenny\" became one of the most sought-after stamps in the world.",
+        "smith": "Floyd Smith, the Type A's inventor, made his own jump seventeen days after Irvin. Yet it is Irvin's name history kept — and the sources don't even agree on the date of his jump: some give 19 April, the National Museum of the US Air Force has the 28th."
+      },
+      "geek": {
+        "jenny": {
+          "title": "Spec sheet: the Curtiss JN-4D \"Jenny\"",
+          "body": "Designed in 1914 by Curtiss with British engineer B. Douglas Thomas, the Jenny is a dual-control biplane of fabric-covered spruce with open cockpits. The Army bought 6,070; Canada built about 1,200 as the \"Canuck\". An estimated 95 per cent of American and Canadian military pilots learned on it. Its pilots called it \"a bunch of parts flying in formation\" — fondly. Famous flaw: the engine runs hot, sometimes spraying scalding water over the windscreen.",
+          "specs": {
+            "span": {
+              "label": "Wingspan",
+              "value": "43 ft 7 in (13.3 m)"
+            },
+            "engine": {
+              "label": "Engine",
+              "value": "Curtiss OX-5, 90 hp V8"
+            },
+            "speed": {
+              "label": "Top speed",
+              "value": "≈ 75 mph"
+            },
+            "landing": {
+              "label": "Landing speed",
+              "value": "≈ 40 to 45 mph"
+            },
+            "endurance": {
+              "label": "Endurance",
+              "value": "≈ 2 h 15"
+            },
+            "price": {
+              "label": "Price new / surplus",
+              "value": "$5,000–6,700 / $200–500"
+            }
+          }
+        }
+      },
+      "myths": {
+        "arc": {
+          "claim": "Charles Godefroy flew through the Arc de Triomphe on a whim.",
+          "verdict": "Legend: the feat was prepared for weeks, in secret, by flying under a bridge in the south of France. The first volunteer, Jean Navarre, had been killed in training."
+        }
+      },
+      "quiz": {
+        "q1": {
+          "q": "How big was the Galeries Lafayette terrace Védrines landed on?",
+          "a": "28 m by 12",
+          "b": "60 m by 40",
+          "c": "8 m by 5",
+          "why": "28 by 12 metres — barely bigger than a tennis court."
+        },
+        "q2": {
+          "q": "What did Leslie Irvin break on his historic jump?",
+          "a": "His nose",
+          "b": "His parachute",
+          "c": "His ankle",
+          "why": "His ankle, on landing. The parachute had worked perfectly."
+        },
+        "q3": {
+          "q": "What did a surplus Jenny cost after the war?",
+          "a": "Over $50,000",
+          "b": "A few hundred dollars",
+          "c": "Nothing, it was given away",
+          "why": "Often less than $500, against $5,000–6,700 new."
+        }
+      },
+      "play": {
+        "title": "Open it yourself",
+        "body": "Since Irvin, the parachutist chooses when to open. In the \"Low Pull\" event, pull as low as you dare without ever going through the hard deck: the crowd loves it, and so does your score."
+      }
+    },
+    "circuses": {
+      "headline": "The circus is in town!",
+      "standfirst": "They arrived without warning, skimming over Main Street, and were gone the next day. The barnstormers took a million Americans on their first flight, slept under their wings and invented the air show. Among them was a tall, shy young man who would fly the Atlantic.",
+      "teaser": "They walked on wings, played tennis at 60 mph and climbed from cars into aeroplanes: the queens of the wing.",
+      "sources": "U.S. Centennial of Flight Commission; Smithsonian; National Geographic; Museum of Flight (Pangborn papers); HistoryLink; PBS (American Experience); Minnesota Historical Society; Georgia Historical Society; Wikipedia (Barnstorming).",
+      "text": {
+        "ritual": {
+          "head": "The village ritual",
+          "body": "The routine hardly ever changed. A biplane appears over a small Midwestern town, circles the steeple, skims the rooftops. It lands in a meadow, at a farm whose owner rents out his field for the afternoon. Then it takes off again, sweeps over Main Street and drops a shower of handbills: joyrides, stunts, parachute jumps, this very afternoon!\n\nThe shops close. Families arrive by buggy or Model T; an aeroplane's visit is as good as a holiday. Some towns lay on room, board and a dance in the fliers' honour. By the next day they are gone, on to the next town. The season runs from spring until after the harvest and the big county fairs."
+        },
+        "life": {
+          "head": "A vagabond's life",
+          "body": "They sold joyrides — one to five dollars, often five dollars for fifteen minutes — and put on acts: spins, dives, loops, wing walking, parachute jumps, plane changes in mid-air, even tennis or dancing on the wing.\n\nThe other side was less glamorous. Fuel and spare parts were hard to find; some days nobody paid; engines were mended in the meadow and the pilots slept under the wing. Pilot Charley Mayse navigated with a Rand McNally road map. The origin of the word \"barnstorming\" is debated: the barns the aeroplanes landed beside, or the touring actors and campaigning politicians who were already \"storming the barns\"."
+        },
+        "gates": {
+          "head": "The greatest flying circus on earth",
+          "body": "In 1921 Ivan Gates founded the most famous flying circus of them all with pilot Clyde Pangborn. Gates, the boss, hardly flew; Pangborn, nicknamed \"Upside-Down Pangborn\" for his love of inverted flight, was chief pilot and co-manager, and held the record for plane changes in mid-air.\n\nThe Gates Flying Circus invented the one-dollar joyride and made it pay through volume: one day in Steubenville, Ohio, pilot Bill Brooks flew 980 passengers. Time magazine would put their meets at 2,000, across 44 states, not counting Canada and Mexico; some shows drew 30,000 people. Among the madder acts: a stuntman, hanging head-down from a Jenny's undercarriage, picked a handkerchief off the ground… with his teeth.\n\nAt its peak, in August 1927 at Teterboro, New Jersey, the circus fielded eleven aeroplanes. One historian would claim it turned out more famous pilots than the Army and Navy combined."
+        },
+        "gordon": {
+          "head": "Hanging under the aeroplane",
+          "body": "Houston, March 1924. During a meet at Ellington Field, parachutist Rosalie Gordon jumped from the aeroplane flown by Pangborn. Her parachute snagged on the landing gear: she was left hanging beneath the machine, above a petrified crowd.\n\nA second aeroplane took off and tried to reach her, while an acrobat climbed down the fuselage to the undercarriage. She was finally hauled aboard and the aeroplane landed. Accounts differ on who saved her; the press told the story across the country, and the Gates Flying Circus became famous."
+        },
+        "lindbergh": {
+          "head": "\"Daredevil Lindbergh\"",
+          "body": "In April 1922 a tall, shy boy from Minnesota left university for a flying school in Lincoln, Nebraska. To pay for his lessons, Charles Lindbergh joined barnstormer Erold Bahl's crew: he climbed out on the wing to wave to the crowd, then learned the \"double jump\" from parachute maker Charles Hardin. On his first try, the second parachute was slow to open.\n\nIn May 1923, in Americus, Georgia, he bought a surplus Jenny for $500, with a brand-new OX-5 engine, an extra fuel tank and a fresh coat of olive-drab dope. He had fewer than twenty hours of instruction and had never flown solo — and he was careful not to tell the seller. After a week of practice he set off round the countryside as \"Daredevil Lindbergh\", at five dollars a ride. Four years later he flew non-stop from New York to Paris."
+        }
+      },
+      "quotes": {
+        "woods": {
+          "text": "There's nothing romantic about that.",
+          "who": "Pilot Jessie Woods, of the Flying Aces Air Circus, remembering nights spent on the lower wing of her aeroplane — and one stretch of three days without sleep."
+        }
+      },
+      "asides": {
+        "willard": "The story goes that Charles Foster Willard, one of the very first fairground fliers, was also the first man ever \"shot down\": a farmer annoyed by the racket is said to have broken his propeller with a squirrel gun.",
+        "mayse": "In 1922 a botched landing near Safford, Arizona, grounded barnstormer Charley Mayse for 28 days. He used them to meet Lola Carter — and marry her. Later he put his Jenny at the service of the Tucson police to track down kidnappers."
+      },
+      "geek": {
+        "books": {
+          "title": "The barnstormer's accounts",
+          "body": "A back-of-the-envelope sum with the period figures. At five dollars a ride, Lindbergh paid off his Jenny with about a hundred passengers; his first sixty customers near Maben, Mississippi, brought in some $300 in two weeks, enough for fuel and repairs. The Gates Flying Circus did the opposite: just one dollar, but volume — hence Bill Brooks's 980 passengers in a single day, a few minutes each, back to back.",
+          "specs": {
+            "jenny": {
+              "label": "Surplus Jenny",
+              "value": "$200 to $500"
+            },
+            "engine": {
+              "label": "Spare OX-5 engine",
+              "value": "$75"
+            },
+            "ride": {
+              "label": "Joyride",
+              "value": "$1 to $5"
+            },
+            "record": {
+              "label": "One-day record (Bill Brooks)",
+              "value": "980 passengers"
+            },
+            "lindbergh": {
+              "label": "Lindbergh, near Maben",
+              "value": "60 passengers in 2 weeks"
+            }
+          }
+        }
+      },
+      "myths": {
+        "million": {
+          "claim": "The Gates Flying Circus is said to have carried a million passengers without a serious accident.",
+          "verdict": "Fact… according to the estimates historians repeat. The figure dates from the period and was never audited, but it squares with Bill Brooks's 980 passengers in a single day."
+        },
+        "lindbergh": {
+          "claim": "Lindbergh was already a seasoned pilot when he bought his first aeroplane.",
+          "verdict": "Legend: he had fewer than twenty hours of instruction and had never flown solo. He really learned to fly… on tour."
+        }
+      },
+      "quiz": {
+        "q1": {
+          "q": "What did a joyride cost with the Gates Flying Circus?",
+          "a": "One dollar",
+          "b": "Twenty-five dollars",
+          "c": "A hundred dollars",
+          "why": "One dollar: the Gates Flying Circus invented the cut-price joyride."
+        },
+        "q2": {
+          "q": "How many passengers did Bill Brooks fly in a single day?",
+          "a": "98",
+          "b": "980",
+          "c": "9,800",
+          "why": "980, in Steubenville, Ohio: flights of a few minutes, back to back."
+        },
+        "q3": {
+          "q": "How much did Lindbergh pay for his Jenny in 1923?",
+          "a": "$500",
+          "b": "$5,000",
+          "c": "$50",
+          "why": "$500, new engine and extra tank included."
+        }
+      },
+      "play": {
+        "title": "Put on a show",
+        "body": "At the Grand Air Meet, the \"Exhibition\" event puts you in front of a packed grandstand: thread the hoops and land dead centre, like the barnstormers who lived on applause."
+      }
+    },
+    "queens": {
+      "headline": "Queens of the wing",
+      "standfirst": "A Chicago waitress, a manicurist from Texas, a circus trapeze artist, Buffalo Bill's niece: in the 1920s, women topped the bill in the flying circuses. They walked on wings, played tennis on them, climbed from cars into aeroplanes — and some went to France for the licence America refused them.",
+      "teaser": "The parachutist's trade: why a round canopy can't be steered, how a misjudged wind cost a man his life, and the club nobody dreams of joining.",
+      "sources": "The Henry Ford (Lillian Boyer collection); Wikipedia (Lillian Boyer, Gladys Roy, Gladys Ingle, Mabel Cody, Bessie Coleman, Neta Snook); San Diego Air & Space Museum; Snopes; FAA (Phoebe Omlie); Smithsonian; Air France; Loiret département.",
+      "text": {
+        "boyer": {
+          "head": "Lillian Boyer, Empress of the Air",
+          "body": "In 1921 two customers at the Chicago restaurant where she waited tables offered Lillian Boyer a ride in an aeroplane. On her second flight she climbed out on the wing. Pilot Billy Brock trained her for five months, became her manager, and soon the posters billed her as the \"Empress of the Air\" or \"the girl of nerve\".\n\nHer record is dizzying: 352 shows in 41 states and Canada, 143 transfers from a speeding car to an aeroplane — she was the first woman to do it — and 37 parachute jumps. A bad jump in 1925 broke her pelvis, hip and ribs; she went back on the wing. Her last stunt was on 8 September 1928 in Bethany, Missouri: federal rules on low flying ended her career, as they ended so many others."
+        },
+        "roy": {
+          "head": "Gladys Roy, ever higher",
+          "body": "Gladys Roy started in 1921 as a parachutist, then moved onto the wing. She walked it blindfolded, danced the Charleston on it and, in 1925, played a game of tennis on it with Ivan Unger that a photograph made famous. Booked by a vaudeville agency for the fairs of the West, she earned $200 to $500 a show around 1924 — then only $100 in 1926: the public was getting jaded, and the stunts had to keep growing.\n\nShe claimed a record for a low-altitude parachute jump, jumped from some 17,000 feet, and was planning a New York–Rome flight when, on 15 August 1927, posing for photographs on the ground, she walked into the spinning propeller of a parked aeroplane. She was about thirty."
+        },
+        "troupe": {
+          "head": "The troupe of the fearless",
+          "body": "Gladys Ingle, the only woman in the 13 Black Cats gang, made more than 300 plane changes and shot arrows at targets from the wing. In 1926 a Pathé camera filmed her crossing from one aeroplane to another with a spare wheel on her back, to fit it to an aeroplane \"in distress\" — a rehearsed act, of course, but done for real.\n\nMabel Cody, niece of Buffalo Bill, ran her own flying circus in Florida. During one car-to-plane transfer on a beach, a rung of the rope ladder broke: she fell some fifty feet and broke several bones. Ethel Dare, a former Barnum circus trapeze artist said to have been trained by Locklear, called herself \"the Flying Witch\"; she is said to have been the first woman to change planes in mid-air, without firm proof."
+        },
+        "omlie": {
+          "head": "Phoebe, from her teeth to glory",
+          "body": "Phoebe Fairgrave was not yet twenty when she talked the Fox studio into hiring her for the aerial stunts of the serial The Perils of Pauline. With pilot Vernon Omlie — later her husband — she learned to walk the wings, dance the Charleston on them, hang beneath the aeroplane by her teeth and jump with a parachute. She worked out her own double-drop act and, according to the FAA, set a women's parachute record of 15,200 feet in 1921.\n\nShe would move from the wing to the controls, to become one of the great pilots of her day."
+        },
+        "coleman": {
+          "head": "Bessie Coleman, \"Queen Bess\"",
+          "body": "A manicurist in Chicago, Bessie Coleman dreamed of flying. No American school would take women or Black students. Encouraged by Robert Abbott, publisher of the Chicago Defender, she learned French, crossed the Atlantic and on 15 June 1921 won her licence from the Fédération Aéronautique Internationale: the first African American woman pilot. Most biographers have her training at the Caudron school at Le Crotoy, on the Bay of the Somme.\n\nOn 3 September 1922, at Curtiss Field on Long Island, she performed in public for the first time. \"Queen Bess\" went from air show to air show; she refused to fly before segregated crowds and walked off a film set rather than appear in rags. On 30 April 1926, in Jacksonville, she was rehearsing a show with her mechanic William Wills at the controls. Unstrapped — she wanted to lean out to survey the ground for the parachute jump planned for the next day — she was thrown out when the aeroplane dived and then spun: a wrench left in the engine had jammed the controls. Ten thousand people attended her funeral in Chicago."
+        },
+        "bolland": {
+          "head": "Adrienne Bolland crosses the Andes",
+          "body": "Adrienne Bolland was a test pilot for Caudron, which counted on her to prove its aeroplanes were easy to fly. Sent to Argentina with a little 80-horsepower Caudron G.3, she took off from Mendoza on 1 April 1921, with no map and no compass, to reach Santiago de Chile over the mountains.\n\nShe flew for just over four hours, in temperatures of around −26 °C, passing south of Aconcagua. At 25 she was the first woman to cross the Andes; the Argentine Patriotic League awarded her a gold medal. A century later Air France celebrated the feat with two flights crewed entirely by women."
+        }
+      },
+      "quotes": {
+        "roy": {
+          "text": "Of late the crowds are beginning to tire of even my most difficult stunts and so I must necessarily invent new ones.",
+          "who": "Gladys Roy to the Los Angeles Times, May 1926."
+        }
+      },
+      "asides": {
+        "snook": "Amelia Earhart took her first flying lesson in early 1921 from a woman, Neta Snook, the first woman admitted to the Curtiss flying school. Earhart paid her in Liberty Bonds, at a dollar a minute; Snook later gave her fifteen hours for free. She told it all in a book with a no-nonsense title: I Taught Amelia to Fly."
+      },
+      "geek": {
+        "transfer": {
+          "title": "From a car to an aeroplane",
+          "body": "You need a long straight — a Florida beach, a racetrack —, a car going flat out and an aeroplane flying low just above it at the same speed. A rope ladder hangs from the aeroplane. The performer, standing in the car, grabs a rung and lets herself be plucked off the ground, then climbs to the wing as the pilot gains height. Danger lies everywhere: a mismatch in speed, a gust, a rung that breaks… which is what happened to Mabel Cody.",
+          "specs": {
+            "speed": {
+              "label": "Shared speed",
+              "value": "≈ 40 to 60 mph"
+            },
+            "ladder": {
+              "label": "Way up",
+              "value": "Rope ladder under the aeroplane"
+            },
+            "boyer": {
+              "label": "Lillian Boyer",
+              "value": "143 successful transfers"
+            },
+            "cody": {
+              "label": "Mabel Cody's fall",
+              "value": "≈ 50 ft"
+            }
+          }
+        }
+      },
+      "myths": {
+        "tennis": {
+          "claim": "Gladys Roy and Ivan Unger played tennis on the wing with a real ball.",
+          "verdict": "Legend, most likely: the game was mimed. A single ball \"out\" would have meant landing to fetch it… The photograph, though, is genuine."
+        },
+        "french": {
+          "claim": "Bessie Coleman had to learn French to become a pilot.",
+          "verdict": "Fact: turned away by American schools, she learned French to train in France, where she earned her licence in June 1921."
+        }
+      },
+      "quiz": {
+        "q1": {
+          "q": "What was Lillian Boyer's job before she walked the wings?",
+          "a": "Nurse",
+          "b": "Manicurist",
+          "c": "Waitress",
+          "why": "A waitress in a Chicago restaurant. The manicurist was Bessie Coleman."
+        },
+        "q2": {
+          "q": "In which country did Bessie Coleman earn her licence?",
+          "a": "France",
+          "b": "Germany",
+          "c": "The United States",
+          "why": "In France, on 15 June 1921, after learning French."
+        },
+        "q3": {
+          "q": "What did Adrienne Bolland fly over on 1 April 1921?",
+          "a": "The English Channel",
+          "b": "The Andes",
+          "c": "The South Atlantic",
+          "why": "The Andes, from Mendoza to Santiago, with no map or compass."
+        }
+      },
+      "play": {
+        "title": "A moving target",
+        "body": "Climbing from a car into an aeroplane means aiming at a moving target. In \"The Float\", it's the target that moves: anticipate its course and land on the horse-drawn float."
+      }
+    },
+    "trade": {
+      "headline": "The parachutist's trade",
+      "standfirst": "A silk dome that can't be steered, a wind you must read before you jump, acrobatic exits, two-parachute acts and a club nobody dreams of joining. Welcome to the trade that is also yours in this game.",
+      "teaser": "Back to France: the great air meets, the man with 1,111 loops and the duel of the two kings of aerobatics.",
+      "sources": "National Museum of the U.S. Air Force; The Washington Post, 4 March 1920 (quoted by Ghosts of DC); USPA; Paradata; Wikipedia (Caterpillar Club, Maryse Hilsz, A. Leo Stevens Parachute Medal); Air Journal; National Skydiving Museum; Agence Rol (BnF).",
+      "text": {
+        "canopy": {
+          "head": "A dome that can't be steered",
+          "body": "The 1920s parachute is disarmingly simple. The US Army's Type A, developed in 1918–19, set the pattern: a 28-foot round canopy packed in a backpack, a small pilot chute to pull it out, and a ring you pull once clear of the aeroplane. In France, the 1923 Ors parachute weighed 3.5 kg and fitted in a 12-to-14-litre pack.\n\nBut that dome cannot be flown. It slows the fall — to a few metres a second — and goes wherever the wind pushes it. To land on a target there is only one way: choose the right place to leave the aeroplane, upwind, and let the drift do the rest. Everything happens before the jump."
+        },
+        "potomac": {
+          "head": "The lesson of the Potomac",
+          "body": "Washington, 3 March 1920. Floyd Smith — the Type A's inventor — and Charles Willis, 24, boarded a Curtiss out of Bolling Field for a demonstration. The plan: jump from 1,200 feet over the naval air station and let the wind carry them to the airfield.\n\nThe wind was misjudged. Instead of pushing them towards the field, it carried them into the middle of the Eastern Branch channel. The two men came down in the water nearly a quarter of a mile apart; the Navy launch picked up Smith first, as he was closer. Willis struggled for two minutes, dragged down by his water-soaked leather flying suit, and sank before help arrived. His body was found three hours later."
+        },
+        "exit": {
+          "head": "Leaving the aeroplane",
+          "body": "Getting out of a biplane in flight is an act in itself: climb over the cockpit, face the propeller blast, snag nothing. The first jumpers, like Tiny Broadwick, used a line tied to the aeroplane that pulled the parachute out of its pack as they dropped away: the static line. With the ripcord the jumper chooses the moment, and the drill comes in three beats: jump clear of the aeroplane, count three, pull the ring.\n\nBarnstormers added showmanship: out onto the wing, a wave to the crowd, the dive. British military schools preferred the \"pull-off\": the pupil stood on a small platform at the foot of the outer wing strut, pulled his ripcord and let the opening canopy pluck him off the aeroplane. A spectacular method, still shown at the Hendon display in 1930."
+        },
+        "double": {
+          "head": "The double drop",
+          "body": "One parachute no longer thrills the crowd? Open two. The jumper opens a first canopy, cuts loose from it, falls again, then opens the second, which brings him down. Charles Broadwick already had Tiny doing double and triple drops in 1908, and in 1909 a certain George Sewell is said to have used as many as six parachutes in a single jump.\n\nIn the 1920s it was the flying circuses' big finish. Lindbergh learned it in 1922; Phoebe Omlie invented her own version; in France, Maryse Hilsz had some twenty to her name."
+        },
+        "caterpillar": {
+          "head": "The caterpillar's club",
+          "body": "On 20 October 1922, over Dayton, Lieutenant Harold R. Harris, chief of McCook Field's flight test section, had to abandon a stricken Loening PW-2A fighter. He jumped, pulled his ring and lived: the first American pilot's life saved by a manually opened backpack parachute.\n\nTwo reporters from the Dayton Herald suggested founding a club for survivors. The name recalls the silkworm — the caterpillar — whose thread wove the canopies. Leslie Irvin gave a gold caterpillar pin to everyone saved by one of his parachutes. The first woman member, Irene McFarland, joined in 1925; by the Second World War the club would count tens of thousands of members."
+        },
+        "collin": {
+          "head": "A nurse for a guinea pig",
+          "body": "Parachutes were usually tested with dummies. On 13 November 1923, on the parade ground at Issy-les-Moulineaux, near Paris, a former head nurse decorated with the Croix de guerre with palm volunteered to try the new Ors parachute: Mademoiselle Denyse Collin.\n\nAt the controls of the Morane-Saulnier was Alfred Fronval, the king of the loop. Shortly before 3 p.m., at about 350 metres and 180 km/h, Denyse Collin jumped. The parachute opened; she landed unhurt."
+        },
+        "hilsz": {
+          "head": "Maryse Hilsz, the money from the jumps",
+          "body": "After the war the young Maryse Hilsz haunted the airfields. Parachuting paid well: in 1924 she entered a jumping contest without ever having flown. She then performed for the Société pour le développement de l'aviation — more than 112 jumps, some twenty of them double drops — and stood on the wings in flight.\n\nWith her jump money she paid for flying lessons and earned her licence on 21 April 1930. Then came Paris–Saigon–Paris, Paris–Tokyo–Paris and, in 1936, a women's altitude record of 14,309 metres."
+        },
+        "crane": {
+          "head": "\"Jumping Jack\" Crane, king of accuracy",
+          "body": "Joe Crane learned to jump in the Army between 1921 and 1924, then in 1925 joined the Burns Flying Circus, which billed him as \"The World's Marvel Parachute Jumper\". His act: delaying the opening as long as he could. He did not know his predecessor had been killed doing it. On 19 July 1925 he fell 2,250 feet before opening, and proved that a man stays fully conscious in free fall.\n\nBut his real gift was accuracy. Under round canopies that couldn't be steered, he won contest after contest for landing closest to a target — exactly what you do in this game. By 1930 he was campaigning for mandatory reserve parachutes and wind limits; in 1933 he founded the association that became the US Parachute Association."
+        }
+      },
+      "quotes": {
+        "post": {
+          "text": "Failure to properly judge the wind yesterday cost one man his life.",
+          "who": "The Washington Post, 4 March 1920, the day after the Eastern Branch tragedy."
+        }
+      },
+      "asides": {
+        "pin": "The Caterpillar Club's gold caterpillar is said to have red eyes. It cannot be bought: it is earned, once in a lifetime if all goes well.",
+        "tree": "Maryse Hilsz's jumps didn't always end on the grass: once she was left hanging from a roof by her parachute; another time she spent two hours dangling by her braces from the top of a tree before anyone came to get her down."
+      },
+      "geek": {
+        "drift": {
+          "title": "Working out the drift",
+          "body": "The rule fits on one line: drift = wind speed × time under canopy. And time under canopy is the opening height divided by the rate of descent. With a round canopy coming down at about 6 m/s, opening at 600 metres gives 100 seconds under canopy; in a 5 m/s wind you drift 500 metres. So you must leave the aeroplane 500 metres short of the target, on the side the wind comes from. Opening lower cuts the drift… and the margin for error. In this game your canopy comes down at about 5.5 m/s: the same sum holds for the green light.",
+          "specs": {
+            "canopy": {
+              "label": "Type A canopy",
+              "value": "round, 28 ft (8.5 m)"
+            },
+            "descent": {
+              "label": "Rate of descent",
+              "value": "≈ 6 m/s (order of magnitude)"
+            },
+            "ors": {
+              "label": "Ors parachute (1923)",
+              "value": "3.5 kg, 12–14 l pack"
+            },
+            "rule": {
+              "label": "Drift",
+              "value": "wind × height ÷ descent rate"
+            }
+          }
+        }
+      },
+      "myths": {
+        "blackout": {
+          "claim": "A man blacks out if he falls too long in free fall.",
+          "verdict": "Legend: it was the belief of the day. Joe Crane disproved it on 19 July 1925 by falling 2,250 feet before opening, fully conscious."
+        }
+      },
+      "quiz": {
+        "q1": {
+          "q": "Why did Charles Willis drown in 1920?",
+          "a": "His parachute didn't open",
+          "b": "The wind was misjudged and his leather suit dragged him down",
+          "c": "The pilot picked the wrong river",
+          "why": "The wind carried them into the channel, and his water-soaked leather suit sank him."
+        },
+        "q2": {
+          "q": "Where does the Caterpillar Club's name come from?",
+          "a": "The silkworm, whose thread wove the canopies",
+          "b": "The tracks of tanks",
+          "c": "Irvin's nickname",
+          "why": "The silkworm's caterpillar: canopies were made of silk."
+        },
+        "q3": {
+          "q": "How far did Joe Crane fall before opening in 1925?",
+          "a": "225 feet",
+          "b": "22,500 feet",
+          "c": "2,250 feet",
+          "why": "2,250 feet, about 690 metres of free fall."
+        }
+      },
+      "play": {
+        "title": "Read the wind",
+        "body": "The \"Sea Breeze\" event is the lesson of the Potomac turned into a game: a steady wind blows out to sea. Wait for the right moment to jump, upwind of the target, and let the wind carry you there."
+      }
+    },
+    "meets": {
+      "headline": "Air meets and haute école",
+      "standfirst": "In France, Roaring Twenties aviation puts on its show at the air meets: vast crowds, presidents, records, and pilots who turn acrobatics into an art. Meet the man with 1,111 loops, the factory worker crowned \"king of the air\" and the virtuoso of the slow roll.",
+      "teaser": "The last issue: Hollywood pays dearly for its stuntmen, Washington blows the whistle, and the flying daredevils pass into legend.",
+      "sources": "Air Journal; Bibliothèque de la Défense; City of Bron; Remembering My Soldiers; Theatrum Belli; techno-science.net; Wikipedia (Morane-Saulnier MS.130, Caudron G.3, Ernst Udet, Udet U 12 Flamingo); This Day in Aviation.",
+      "text": {
+        "buc": {
+          "head": "Buc, October 1920",
+          "body": "On 8 October 1920 the Aéro-Club de France opened a three-day meet at Buc, near Versailles, in aid of the sports journalists' association and the aeronautics relief fund. The President of the Republic, Alexandre Millerand, inaugurated the events.\n\nOn the bill: precision take-offs and landings, aerobatic figures, an aerial photography contest, a speed race, timed climbs and descents, an altitude record attempt. On the field, the stars of the day: Fonck, the ace with 75 victories, Sadi-Lecointe, Bossoutrot, Fronval… and, strolling among them, aviator Adrienne Bolland beside the Maharaja of Kapurthala."
+        },
+        "crowds": {
+          "head": "The crowds of Vincennes and Bron",
+          "body": "In June 1925 the 2nd Vincennes Air Festival, staged by the Société pour le développement de l'aviation with the daily Le Journal, drew Parisians for three days. Parachute jumps were the great attraction, and the parachutists — Maryse Hilsz among them — were well paid to risk their lives.\n\nIn 1928, near Lyon, the Bron meet proclaimed itself \"the greatest air meet in the world\": 50,000 to 150,000 spectators according to the papers. There was aerobatics by Fronval and Détroyat, a speed race around the airfield won by Costes and, around the edges, aeroplanes giving the public their first flight."
+        },
+        "fronval": {
+          "head": "The man with 1,111 loops",
+          "body": "Chief pilot of Morane-Saulnier from 1921, Alfred Fronval turned the loop into an endurance event. On 28 October 1919, at Cuatro Vientos near Madrid, he flew more than 600 in 2 hours 42 minutes — the American record stood at 455. On 26 May 1920, at Villacoublay, watched by Robert Morane, he looped 962 times in 3 h 52 min 10 s.\n\nOn 25 February 1928 he raised the record to 1,111. He turns up at the controls for parachute tests and at every great air meet. Four months later, on 28 June 1928, he was killed in an accident… on the ground, at Villacoublay."
+        },
+        "duel": {
+          "head": "Doret versus Détroyat",
+          "body": "Marcel Doret was a worker at Renault when the aircraft builder Émile Dewoitine spotted him at an air meet. As a test pilot he turned his red-striped Dewoitine D.27 into a legend. On 21 August 1927, at Dübendorf near Zurich, he came third in an international aerobatics contest behind the German Gerhard Fieseler. Later, at Tempelhof, before more than 100,000 spectators, he would be crowned \"king of the air\".\n\nFacing him was Michel Détroyat, born in 1905, Morane-Saulnier's test pilot from 1927. A virtuoso of aerial \"haute école\", he is credited with developing the slow roll; he dazzled Bron in 1928 and won the Coupe Michelin in 1929. Their duels filled the stands, right up to the \"Doret–Détroyat match\" at Vincennes in 1934. Aerobatics had become a sport, with its judges and its champions."
+        },
+        "women": {
+          "head": "Women take on the records",
+          "body": "Barred from flying for the airlines, women aviators turned to air meets, long-distance flights and records — and became stars. Maryse Bastié, who ran a shoe shop in Cognac, earned her licence in 1925; on 28 July 1929, at Le Bourget, she stayed aloft for 26 h 47 min in a Caudron C.109 and broke the women's world endurance record.\n\nThe parachutist Maryse Hilsz had paid for her lessons with her jump money; the 1930s would be hers. With Hélène Boucher and Adrienne Bolland, they offered girls a model of independence that made the front pages."
+        }
+      },
+      "asides": {
+        "udet": "On the German side, the former ace Ernst Udet sold his little training biplane, the U 12 Flamingo (1925), with an inimitable act: he swooped down on the airfield and picked up a handkerchief lying on the grass… with his wingtip."
+      },
+      "geek": {
+        "caudron": {
+          "title": "Spec sheet: the Caudron G.3",
+          "body": "The Jenny's French cousin: a small biplane with a stubby nacelle and an open lattice tail, designed by the Caudron brothers before the war, first an observation machine, then the trainer of thousands of pupils. It was in a G.3 that Védrines landed on the Galeries Lafayette and Adrienne Bolland crossed the Andes. The figures vary between versions and sources.",
+          "specs": {
+            "span": {
+              "label": "Wingspan",
+              "value": "≈ 13.4 m (44 ft)"
+            },
+            "engine": {
+              "label": "Engine",
+              "value": "80 hp rotary (Le Rhône 9C)"
+            },
+            "speed": {
+              "label": "Top speed",
+              "value": "≈ 66 to 71 mph"
+            },
+            "weight": {
+              "label": "Empty weight",
+              "value": "≈ 420 to 445 kg"
+            },
+            "endurance": {
+              "label": "Endurance",
+              "value": "≈ 3 to 4 h"
+            }
+          }
+        }
+      },
+      "myths": {
+        "fronval": {
+          "claim": "Alfred Fronval, the king of the loop, was killed in the middle of a loop.",
+          "verdict": "Legend: he was killed on 28 June 1928 in an accident on the ground at Villacoublay — four months after raising his record to 1,111 loops."
+        }
+      },
+      "quiz": {
+        "q1": {
+          "q": "How many loops did Fronval fly in a row on 26 May 1920?",
+          "a": "96",
+          "b": "962",
+          "c": "9,620",
+          "why": "962, in 3 h 52 min 10 s. He went on to 1,111 in 1928."
+        },
+        "q2": {
+          "q": "Where did Marcel Doret work before becoming a test pilot?",
+          "a": "At Renault",
+          "b": "On the railways",
+          "c": "At the Galeries Lafayette",
+          "why": "A worker at Renault, he was spotted by Émile Dewoitine at an air meet."
+        },
+        "q3": {
+          "q": "What did Ernst Udet pick up with his wingtip?",
+          "a": "A hat",
+          "b": "A rose",
+          "c": "A handkerchief",
+          "why": "A handkerchief lying on the airfield grass."
+        }
+      },
+      "play": {
+        "title": "The meet's grand final",
+        "body": "The Grand Prix closes the Grand Tour the way the great meets closed the season: wind, hoops and a moving target, in front of the grandstand. Haute école, parachute-style."
+      }
+    },
+    "curtain": {
+      "headline": "Hollywood, then the curtain",
+      "standfirst": "Silent cinema pays its sky stuntmen well, and some pay with their lives. Then Washington blows the whistle, the Crash of 1929 closes the circuses, and the flying daredevils pass into legend. The last issue — but not the end of the story.",
+      "teaser": "The supplement: the flying daredevil's little glossary and the great timeline, from 1797 to 1936.",
+      "sources": "Wikipedia (Ormer Locklear, 13 Black Cats, Wings, Hell's Angels, Wing walking); San Diego Air & Space Museum; TCM; AFI Catalog; FAA (\"FAA Origins\", \"First Pilot's License\"); U.S. Centennial of Flight Commission; National Skydiving Museum.",
+      "text": {
+        "skywayman": {
+          "head": "Locklear's last scene",
+          "body": "Hollywood had hired Ormer Locklear, the first of the wing walkers. For the film The Skywayman he was asked for a night-time spiral dive over the Los Angeles oil fields, with phosphorus flares on the wings to fake a fire. The searchlights on him were to go out as his signal to pull up.\n\nOn 2 August 1920 they stayed on. Dazzled, Locklear flew into the ground with his partner Milton \"Skeets\" Elliott. He was 28. The scene was kept in the film."
+        },
+        "cats": {
+          "head": "The 13 Black Cats: anything for a price",
+          "body": "In Los Angeles, around 1924–25, a gang of stuntmen set up at Burdett Airport and promised to do \"ANYTHING for a price\". They called themselves the 13 Black Cats: black sweaters, a cat and the number 13 on the chest. Their customers: the newsreels and the movies.\n\nThe repertoire: plane changes, including from an upside-down aeroplane to a right-side-up one; card games and tennis on the wing; objects snatched from the ground while hanging from the lower-wing skids; a staged gunfight whose \"loser\" fell off the wing; a fake accident in which the victim dropped some 400 feet before a hidden parachute opened. And, a first in the trade, a published rate card. Undercut by cut-rate pilots, they split up in 1929."
+        },
+        "movies": {
+          "head": "From Wings to Hell's Angels",
+          "body": "In 1927 William Wellman's Wings filmed its dogfights with cameras lashed to the aeroplanes and with the help of the US Army Air Corps; pilots Frank Clarke, Frank Tomick and Dick Grace did wonders. The film won the first Academy Award for Best Picture.\n\nIn 1930 Howard Hughes's Hell's Angels employed dozens of pilots: three pilots and a mechanic lost their lives, according to most sources. Hughes, determined to fly himself a shot the others judged too dangerous, crashed and was injured. In 1931 aviator Pancho Barnes founded the first union of movie stunt pilots… modelled on the Black Cats' rate card."
+        },
+        "rules": {
+          "head": "Washington blows the whistle",
+          "body": "Accidents multiplied, local pilots complained of a competition without rules, newspapers were outraged. On 20 May 1926 President Coolidge signed the Air Commerce Act. The first regulations, issued on 31 December, required aircraft to be registered and pilots to be licensed; latecomers had until 1 May 1927.\n\nPilot Licence No. 1 went on 6 April 1927 to William MacCracken, the first federal head of aeronautics. A few weeks later a former barnstormer took off for Paris holding Licence No. 69: Charles Lindbergh. His flight of 20–21 May 1927 changed how America saw aviation — which now became a serious business."
+        },
+        "end": {
+          "head": "The curtain falls",
+          "body": "The new rules imposed minimum heights for stunts and airworthy machines: impossible to meet with tired Jennies, all the more so as the Army stopped selling its surplus. Lillian Boyer gave her last show in September 1928. In the spring of 1929 the Gates Flying Circus quietly closed in Florida; that same year the Black Cats split up. The October Crash finished off the rest.\n\nIn 1936 wing walking was banned below 1,500 feet (460 metres) — too high for the crowd to see anything at all. Two years later wing walkers had to wear parachutes. The golden age was over."
+        },
+        "legacy": {
+          "head": "What remains",
+          "body": "Almost everything. The association Joe Crane founded in 1933 became the US Parachute Association; its accuracy contests still exist. The Caterpillar Club counted tens of thousands of members during the Second World War. Many people still make their first jump on a static line, like Tiny Broadwick. Air shows still draw crowds, and now and then you can still see a figure standing on the wing of a biplane.\n\nAnd there is still a parachutist waiting for the green light above a county fair. That's you. Have a good jump."
+        }
+      },
+      "quotes": {
+        "courier": {
+          "text": "Time… to bring some order out of the chaos of laissez faire in the air.",
+          "who": "Buffalo Courier, 1924."
+        }
+      },
+      "asides": {
+        "perry": "For Wings, cameraman Harry Perry mounted his cameras on the aeroplanes themselves: in 1927 audiences saw aerial combat from the cockpit for the first time."
+      },
+      "myths": {
+        "letters": {
+          "claim": "In the 13 Black Cats, every member had to have a thirteen-letter name.",
+          "verdict": "Fact, in its way: that was the gang's rule — and those whose count fell short were given a nickname to make it up."
+        },
+        "orville": {
+          "claim": "Orville Wright received American Pilot Licence No. 1.",
+          "verdict": "Legend: it was offered to him and he declined — he no longer flew and didn't see why he would need a federal licence. It went to William MacCracken."
+        }
+      },
+      "quiz": {
+        "q1": {
+          "q": "Which award did Wings (1927) win?",
+          "a": "The first Academy Award for Best Picture",
+          "b": "The Palme d'Or",
+          "c": "None",
+          "why": "The very first Best Picture Oscar, presented in 1929."
+        },
+        "q2": {
+          "q": "Who received American Pilot Licence No. 1?",
+          "a": "Orville Wright",
+          "b": "Charles Lindbergh",
+          "c": "William MacCracken",
+          "why": "MacCracken, on 6 April 1927. Orville Wright had declined it; Lindbergh held No. 69."
+        },
+        "q3": {
+          "q": "Below what height was wing walking banned in 1936?",
+          "a": "150 feet",
+          "b": "1,500 feet",
+          "c": "15,000 feet",
+          "why": "1,500 feet, about 460 metres: too high for a show."
+        }
+      },
+      "play": {
+        "title": "Today's front page",
+        "body": "Every day a new jump, the same for every player: the Daily Jump. Make a name for yourself — the flying daredevils lived on nothing else."
+      }
+    },
+    "supplement": {
+      "headline": "The little glossary and the great timeline",
+      "standfirst": "The words of the trade, from barnstormers' slang to the language of aerobatics, and every date in this gazette, from the first jump over Paris to the ban of 1936. Each date points to the issue that tells it.",
+      "sources": "See each issue's sources."
+    }
+  }
+}

@@ -24,7 +24,16 @@ export type Objective =
   | 'wagon'
   | 'crosswind'
   | 'showcase'
-  | 'grandPrix';
+  | 'grandPrix'
+  | 'balloon'
+  | 'doubleDrop'
+  | 'grandAct';
+
+/**
+ * Where an event sits on the Grand Tour screen: with its venue, or among the
+ * period acts that extend the tour once the Grand Prix has a medal.
+ */
+export type EventGroup = 'venue' | 'heritage';
 
 export interface EventDef {
   /** Stable id (persistence key, route param, i18n key). */
@@ -35,6 +44,8 @@ export interface EventDef {
   seed: number;
   /** Shows the coaching tips. */
   tutorial: boolean;
+  /** The tour's panel it is listed in (its venue's, unless a period act). */
+  group?: EventGroup;
   /** Overrides on top of the base (Ace) tuning; scores are never multiplied. */
   overrides: Partial<GameConfig>;
   /** Minimum jump score for bronze, silver, gold. */
@@ -42,6 +53,23 @@ export interface EventDef {
 }
 
 export const VENUES: readonly Venue[] = ['county', 'seaside', 'lake', 'airfield', 'meeting'];
+
+/**
+ * A balloon act's run: the balloon drifts at the wind's speed, so the green
+ * light comes later and lasts a few metres; hoops are a plane-age invention.
+ */
+const BALLOON_ACT: Partial<GameConfig> = {
+  jumpShip: 'balloon',
+  spotLeadTime: 14,
+  spotOvertime: 12,
+  spotWindow: 10,
+  spotUpwindTime: 14,
+  ringCount: 0,
+  hardDeck: 120,
+  pullCeiling: 320,
+  targetRadius: 30,
+  bullseyeRadius: 2.5,
+};
 
 export const EVENTS: readonly EventDef[] = [
   {
@@ -176,6 +204,49 @@ export const EVENTS: readonly EventDef[] = [
       deployDuration: 1.4,
     },
     medals: [900, 1600, 2300],
+  },
+
+  // --- The period acts (see the Sky Gazette): they extend the tour past the Grand Prix ---
+  {
+    // The fairground professors' balloon ascension: no engine, no throw, the wind does it all.
+    id: 'fair-balloon',
+    venue: 'county',
+    objective: 'balloon',
+    group: 'heritage',
+    seed: 6101,
+    tutorial: false,
+    overrides: { ...BALLOON_ACT, exitAltitude: 900, windBase: 4, windGust: 0.6, planeLateral: 25 },
+    medals: [1100, 1550, 1750],
+  },
+  {
+    // Lindbergh's and Phoebe Omlie's star turn: open, cut away, fall again, open the second.
+    id: 'meet-double',
+    venue: 'meeting',
+    objective: 'doubleDrop',
+    group: 'heritage',
+    seed: 6203,
+    tutorial: false,
+    overrides: { canopies: 2, windBase: 3.5, ringCount: 0, targetRadius: 35, bullseyeRadius: 3 },
+    medals: [1500, 2250, 2450],
+  },
+  {
+    // Tiny Broadwick's act: a double drop from a balloon, over the seaside crowd.
+    id: 'sea-grand-act',
+    venue: 'seaside',
+    objective: 'grandAct',
+    group: 'heritage',
+    seed: 6307,
+    tutorial: false,
+    overrides: {
+      ...BALLOON_ACT,
+      canopies: 2,
+      exitAltitude: 1100,
+      windBase: 5,
+      windGust: 1,
+      planeLateral: 30,
+      spotUpwindTime: 16,
+    },
+    medals: [1400, 2100, 2300],
   },
 ];
 

@@ -15,6 +15,7 @@ class StubLoader implements TranslocoLoader {
         arcade: 'Arcade',
         daily: 'Daily Jump',
         records: 'Records',
+        gazette: 'Gazette',
         settings: 'Settings',
       },
     });
@@ -54,6 +55,7 @@ describe('Title', () => {
       'Arcade',
       'Daily Jump',
       'Records',
+      'Gazette',
       'Settings',
     ]);
     expect(menuItems.map((i) => i.value)).toEqual([
@@ -61,6 +63,7 @@ describe('Title', () => {
       '/game?mode=arcade',
       '/game?mode=daily',
       '/records',
+      '/gazette',
       '/settings',
     ]);
   });

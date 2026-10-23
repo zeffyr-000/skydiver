@@ -1,0 +1,91 @@
+name: Claude Review Reply
+
+# Lets the PR author continue a conversation with the reviewer bot by replying
+# to a review comment (or the PR conversation) with an explicit @claude mention.
+# Discuss-only: Claude explains, concedes, or proposes a suggestion block — it
+# never modifies files or pushes commits (contents: read).
+#
+# NOTE: issue_comment / pull_request_review_comment workflows always run from the
+# DEFAULT branch definition, so this file only takes effect once merged to main.
+
+on:
+  pull_request_review_comment: # reply to an inline (line-level) review comment
+    types: [created]
+  issue_comment: # top-level PR conversation comment
+    types: [created]
+
+# One reply per triggering comment; never cancel a reply mid-flight.
+concurrency:
+  group: claude-reply-${{ github.event.comment.id }}
+  cancel-in-progress: false
+
+jobs:
+  reply:
+    # Only when a human (never a bot, never Claude itself) mentions @claude on a
+    # pull request — the mention is what prevents loops and runaway cost.
+    if: >-
+      github.event.comment.user.type != 'Bot' &&
+      contains(github.event.comment.body, '@claude') &&
+      contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association) &&
+      (github.event_name == 'pull_request_review_comment' ||
+       github.event.issue.pull_request != null)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read # discuss-only — no commits
+      pull-requests: write
+      issues: write
+      id-token: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          # Check out the base branch, never the untrusted PR head: comment events
+          # default GITHUB_REF to the PR merge ref, so without this a PR could weaken
+          # its own review rules (AGENTS.md/code-review.md) and privileged code would
+          # run against untrusted content.
+          ref: ${{ github.event.pull_request.base.ref || github.ref }}
+
+      - name: Run Claude reply
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR NUMBER: ${{ github.event.pull_request.number || github.event.issue.number }}
+            EVENT: ${{ github.event_name }}
+            COMMENT ID: ${{ github.event.comment.id }}
+
+            A human has replied on a review thread of this PR and mentioned @claude.
+            Answer ONLY that thread — do NOT re-review the whole PR.
+
+            Ground yourself in the project rules first: read `AGENTS.md` and
+            `.claude/commands/code-review.md` from the checkout (this is the base
+            branch, the authoritative version), plus the matching `docs/*.md`
+            (`ARCHITECTURE.md`, `DESIGN_SYSTEM.md`, `TESTING.md`) if the thread
+            turns on one of their rules.
+
+            Understand the thread:
+            - pull_request_review_comment: read the comment (path, line, diff_hunk,
+              body, in_reply_to_id) via
+              `gh api repos/${{ github.repository }}/pulls/comments/${{ github.event.comment.id }}`,
+              and use `gh pr diff` for surrounding context.
+            - issue_comment: read the conversation via
+              `gh pr view ${{ github.event.pull_request.number || github.event.issue.number }} --comments`.
+
+            Then reply, briefly and non-defensively, exactly once:
+            - If the author is right or your original point does not apply, say so
+              plainly and withdraw it.
+            - If the point stands, explain why in 1-3 sentences, citing the concrete
+              AGENTS.md / code-review.md rule or the exact failure scenario.
+            - If they ask for the fix, include a minimal ```suggestion``` block. You
+              are in DISCUSS-ONLY mode: never edit files, never push commits.
+
+            Post the reply in the right place:
+            - pull_request_review_comment: reply IN-THREAD via
+              `gh api --method POST repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/comments/${{ github.event.comment.id }}/replies -f body="..."`
+            - issue_comment: `gh pr comment ${{ github.event.issue.number }} --body "..."`
+
+          claude_args: |
+            --model sonnet
+            --allowedTools "Bash(gh api:*),Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*)"

@@ -19,12 +19,8 @@
     </header>
 
     <div class="circuit__grid">
-      @for (v of venues; track v.venue; let vi = $index) {
-        <app-pixel-panel
-          class="circuit__venue"
-          [style.--i]="vi"
-          [heading]="'circuit.venue.' + v.venue | transloco"
-        >
+      @for (v of panels; track v.key; let vi = $index) {
+        <app-pixel-panel class="circuit__venue" [style.--i]="vi" [heading]="v.heading | transloco">
           <ul class="circuit__events">
             @for (e of v.events; track e.id) {
               @let unlocked = progress.isUnlocked(e.id);

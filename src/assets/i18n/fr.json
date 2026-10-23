@@ -8,6 +8,7 @@
     "arcade": "Arcade",
     "daily": "Saut du jour",
     "records": "Records",
+    "gazette": "La Gazette",
     "settings": "Réglages",
     "prompt": "Appuyez sur Entrée",
     "demo": "Démo"
@@ -48,20 +49,12 @@
       "action": "Sauter · ouvrir · arrondir",
       "pause": "Pause / reprendre"
     },
-    "jumpComplete": "Saut terminé",
-    "greatJump": "Beau saut !",
-    "poorJump": "Saut médiocre…",
-    "missed": "Cible manquée",
-    "crashed": "Écrasé",
-    "crashedMsg": "Vous avez heurté le sol trop fort !",
-    "crashNoPull": "La voile n'est jamais sortie.",
-    "crashLowPull": "Ouverture à {{alt}} m — trop bas pour s'ouvrir à temps.",
-    "bullseye": "En plein dans le mille !",
     "scoreAccuracy": "Précision",
     "scoreRings": "Anneaux",
     "scorePull": "Ouverture",
     "scoreLanding": "Posé",
     "scoreSpot": "Largage",
+    "scoreStunt": "Double descente",
     "scoreMultiplier": "Bonus difficulté",
     "jumpScore": "Score du saut",
     "landing": {
@@ -82,6 +75,7 @@
     "confirmInitials": "Valider",
     "recordSaved": "Ajouté au Panthéon des As !",
     "phase": {
+      "title": "Carton",
       "plane": "Largage",
       "freefall": "Chute libre",
       "deploying": "Ouverture",
@@ -97,12 +91,18 @@
       "spotRed": "FEU ROUGE",
       "spotAmber": "FEU ORANGE",
       "spotGreen": "FEU VERT - SAUTEZ !",
+      "balloonRed": "PAS ICI",
+      "balloonAmber": "PRESQUE...",
+      "balloonGreen": "MAINTENANT - COUPEZ !",
       "jumpPrompt": "[action] : SAUTER",
+      "balloonPrompt": "[action] : COUPER LA CORDE",
       "pullPrompt": "[action] : OUVRIR",
       "pullZone": "ZONE D'OUVERTURE",
       "pullNow": "OUVREZ !",
       "belowDeck": "SOUS LE PLANCHER !",
       "flarePrompt": "[action] : ARRONDIR !",
+      "cutawayPrompt": "[action] : LARGUER LA VOILURE",
+      "canopyCount": "VOILURE",
       "stall": "DÉCROCHAGE !",
       "ringHit": "ANNEAU !",
       "ringMiss": "ANNEAU RATÉ",
@@ -113,6 +113,7 @@
       "bullseye": "PLEIN CENTRE !",
       "splash": "PLOUF !",
       "hintPlane": "ATTENDEZ LE FEU VERT  -  [pause] : PAUSE",
+      "hintBalloon": "LE BALLON DÉRIVE AVEC LE VENT  -  [pause] : PAUSE",
       "hintFreefall": "[left] [right] TOURNER   [up] PLONGER   [down] CAMBRER",
       "hintCanopy": "[left] [right] TOURNER   [up] ACCÉLÉRER   [down] FREINER",
       "tipPlane": "Le feu passe au vert au-dessus du bon point de largage : sautez à ce moment-là.",
@@ -159,7 +160,7 @@
     },
     "keySlot": "{{control}}, touche {{slot}} : {{key}}",
     "pressKey": "...",
-    "capturing": "Appuyez sur une touche pour « {{control}} » — Échap annule.",
+    "capturing": "Appuyez sur une touche pour « {{control}} » — Échap annule.",
     "resetKeys": "Touches par défaut",
     "gamepad": "Manette",
     "gamepadHint": "Stick ou croix : piloter · A : sauter, ouvrir, arrondir · B : retour · Start : pause",
@@ -190,9 +191,12 @@
   },
   "circuit": {
     "title": "Le Grand Circuit",
-    "subtitle": "Dix épreuves, cinq terrains. Une médaille ouvre l’épreuve suivante.",
+    "subtitle": "Dix épreuves sur cinq terrains, puis trois numéros d’époque. Une médaille ouvre l’épreuve suivante.",
     "medals": "Médailles gagnées",
     "locked": "Verrouillée",
+    "group": {
+      "heritage": "Les numéros d’époque"
+    },
     "venue": {
       "county": "Foire du comté",
       "seaside": "Bord de mer",
@@ -241,6 +245,18 @@
     "meet-grand-prix": {
       "name": "Grand Prix",
       "goal": "Vent, anneaux et cible mobile : la finale du Meeting."
+    },
+    "fair-balloon": {
+      "name": "L’ascension du professeur",
+      "goal": "Pas d’avion : un ballon à fumée qui dérive avec le vent. Coupez la corde au bon moment — sans élan — et posez-vous sur la cible."
+    },
+    "meet-double": {
+      "name": "La double descente",
+      "goal": "Deux voilures : ouvrez haut, larguez la première, rechutez, puis ouvrez la seconde. Plus la rechute dure, plus la foule applaudit."
+    },
+    "sea-grand-act": {
+      "name": "Le grand numéro",
+      "goal": "Le numéro de Tiny Broadwick : une double descente depuis un ballon, au-dessus de la plage. Gare à la mer !"
     }
   },
   "brief": {
@@ -278,6 +294,37 @@
     "retry": "Réessayer",
     "nextEvent": "Épreuve suivante",
     "toCircuit": "Circuit",
-    "menu": "Menu"
+    "menu": "Menu",
+    "front": {
+      "masthead": "La Gazette du Ciel",
+      "extra": "Extra !",
+      "byline": "De notre envoyé spécial — {{venue}}",
+      "photo": "Cliché de notre photographe.",
+      "figures": "Les chiffres du saut",
+      "headline": {
+        "bullseye": "En plein dans le mille !",
+        "double": "Deux voilures, un triomphe",
+        "great": "Un saut de maître",
+        "good": "La foule applaudit",
+        "poor": "Un saut en demi-teinte",
+        "missed": "Hors cible !",
+        "water": "Plongeon imprévu !",
+        "crashed": "Frayeur sur le terrain"
+      },
+      "exitPlane": "Notre parachutiste a quitté l’avion à {{alt}} mètres.",
+      "exitBalloon": "Notre parachutiste a coupé la corde de son ballon à {{alt}} mètres.",
+      "pull": "Voilure ouverte à {{pull}} mètres.",
+      "double": "Une première voilure s’ouvre puis se détache : {{refall}} secondes de rechute, et la seconde s’ouvre à {{pull}} mètres.",
+      "landing": {
+        "standup": "Atterrissage debout, à {{dist}} m de la cible.",
+        "slide": "Arrivée en glissade, à {{dist}} m de la cible.",
+        "tumble": "Arrivée en roulé-boulé, à {{dist}} m de la cible.",
+        "crash": "Arrivée brutale, à {{dist}} m de la cible."
+      },
+      "water": "Arrivée… dans l’eau, à {{dist}} m de la cible, sous les rires du public.",
+      "bullseye": "En plein dans le mille : la foule a envahi le pré.",
+      "crashNoPull": "Le public a retenu son souffle : notre parachutiste n’a jamais ouvert sa voilure. Plus de peur que de mal, assure-t-on en coulisses.",
+      "crashLowPull": "Le public a retenu son souffle : ouverte à {{alt}} mètres, la voilure n’a pas eu le temps de se gonfler. Plus de peur que de mal, assure-t-on en coulisses."
+    }
   }
 }

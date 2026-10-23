@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { BAKED_SPECS } from './baked-sprites';
+import { CROWD_STYLES, PROP_SIZE, type PropKind } from './ground';
 import { bakedFrame } from './sprites';
 
 const DEG = Math.PI / 180;
@@ -28,5 +29,22 @@ describe('bakedFrame', () => {
   it('treats non-directional sheets as variants only', () => {
     const fall = BAKED_SPECS['diver-fall']; // 7 poses
     expect(bakedFrame(fall, fall.elevs[1] * DEG, 1.2, 6)).toBe(fall.cols + 6);
+  });
+});
+
+describe('BAKED_SPECS', () => {
+  it('bakes a sheet for every prop on the ground', () => {
+    for (const kind of Object.keys(PROP_SIZE) as PropKind[]) {
+      expect(BAKED_SPECS[kind]).toBeDefined();
+    }
+  });
+
+  it('bakes each crowd style watching and cheering', () => {
+    expect(BAKED_SPECS.spectator.cols).toBe(CROWD_STYLES * 2);
+  });
+
+  it('bakes the Jenny with and without the jumper on its wing, frame for frame', () => {
+    const { plane, 'plane-empty': empty } = BAKED_SPECS;
+    expect([empty.cols, empty.yaws, empty.elevs]).toEqual([plane.cols, plane.yaws, plane.elevs]);
   });
 });

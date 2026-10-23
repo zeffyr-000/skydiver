@@ -20,7 +20,15 @@ import {
   WATER_COLORS,
   type GroundTexture,
 } from './ground-texture';
-import { clamp, forwardOf, planePosition, spotLightAt, targetAt } from './physics';
+import {
+  canCutAway,
+  clamp,
+  forwardOf,
+  planePosition,
+  shipAltitude,
+  spotLightAt,
+  targetAt,
+} from './physics';
 import { mixPacked, Raster, tinyText, tinyWidth } from './raster';
 import { bakedFrame, drawBaked, type BakedAtlas } from './sprites';
 import type { GameConfig, GameState, LandingQuality, Ring } from './types';
@@ -36,11 +44,17 @@ export const HUD_KEYS = [
   'spotAmber',
   'spotGreen',
   'jumpPrompt',
+  'balloonRed',
+  'balloonAmber',
+  'balloonGreen',
+  'balloonPrompt',
   'pullPrompt',
   'pullZone',
   'pullNow',
   'belowDeck',
   'flarePrompt',
+  'cutawayPrompt',
+  'canopyCount',
   'stall',
   'ringHit',
   'ringMiss',
@@ -51,6 +65,7 @@ export const HUD_KEYS = [
   'bullseye',
   'splash',
   'hintPlane',
+  'hintBalloon',
   'hintFreefall',
   'hintCanopy',
   'tipPlane',
@@ -67,7 +82,12 @@ export interface HudRun {
   score: number;
   /** e.g. "JUMP 2/3" (already translated). */
   jump: string;
+  /** The venue's name for the opening title card (translated; empty: no card). */
+  venue?: string;
 }
+
+/** How long the silent-film title card holds the opening of a jump (s). */
+export const TITLE_CARD_S = 2.4;
 
 // Canvas colours (palette mirrored from src/styles/_tokens.scss).
 const INK = {
@@ -125,6 +145,10 @@ const HUD = {
 } as const;
 
 /** Real-world sizes (m). */
+/** A cut-away canopy sinks this fast (m/s)… */
+const LOOSE_SINK = 3;
+/** …and is drawn for this long after the cut (s). */
+const LOOSE_SHOWN_S = 25;
 const CANOPY_M = 7.5;
 /** Height of the canopy rig's visual middle above the harness (m). */
 const RIG_MID_M = 3.3;
@@ -152,6 +176,15 @@ const PROP_DOTS: Record<PropKind, number> = {
   hangar: hexToPacked('#76786e'),
   grandstand: hexToPacked('#86603a'),
   lighthouse: hexToPacked('#c1352b'),
+  ferris: hexToPacked('#c1352b'),
+  bigtop: hexToPacked('#e0604a'),
+  car: hexToPacked('#18181f'),
+  watertower: hexToPacked('#62402a'),
+  church: hexToPacked('#ddd0b0'),
+  huts: hexToPacked('#4a6aa4'),
+  pylon: hexToPacked('#e8d8b0'),
+  bessonneau: hexToPacked('#9a8c5c'),
+  jenny: hexToPacked('#e8d8b0'),
 };
 
 /** A raster plus the canvas it's composited through (null without a DOM canvas). */
@@ -214,6 +247,8 @@ export class SkyDiverRenderer {
   tutorial = false;
   /** Draw the HUD (off for the menus' backdrop). */
   hud = true;
+  /** Age (s) of the opening title card while it holds the jump; null when it's gone. */
+  titleCard: number | null = null;
   /** Calm the screen: no shake, speed lines or blinking; softer cloud whiteout and confetti. */
   reducedMotion = false;
   /** Ground texture pyramid (overridable: specs use a small one). */
@@ -268,6 +303,7 @@ export class SkyDiverRenderer {
       this.tutorial,
       this.hud,
       this.reducedMotion,
+      this.titleCard,
     ];
     if (frame.every((v, i) => v === this.lastFrame[i])) {
       return;
@@ -307,6 +343,7 @@ export class SkyDiverRenderer {
     }
 
     this.drawPlane(s, cfg, cam);
+    this.drawReleased(s, cam);
     this.drawDiver(s, cfg, cam);
     this.drawTouchdownFx(s, cfg, cam);
     this.drawCloudWhiteout(s, cam);
@@ -532,7 +569,11 @@ export class SkyDiverRenderer {
       if (prop.kind === 'windsock') {
         yaw = windHeading - Math.PI / 2; // the sock streams downwind
       } else if (prop.kind === 'windmill') {
-        anim = Math.floor(s.elapsed * 3) % 2;
+        anim = this.reducedMotion ? 0 : Math.floor(s.elapsed * 3) % 2;
+      } else if (prop.kind === 'ferris') {
+        anim = this.reducedMotion ? 0 : Math.floor(s.elapsed * 2) % 4;
+      } else if (prop.kind === 'car') {
+        anim = prop.variant; // hood up / folded
       } else if (prop.kind === 'spectator') {
         anim = prop.variant * 2 + (cheering ? Math.floor(s.elapsed * 5 + i) % 2 : 0);
       }
@@ -726,6 +767,10 @@ export class SkyDiverRenderer {
   // ---------------------------------------------------------- plane/diver ---
 
   private drawPlane(s: GameState, cfg: GameConfig, cam: Camera): void {
+    if (cfg.jumpShip === 'balloon') {
+      this.drawBalloon(s, cfg, cam);
+      return;
+    }
     const t = s.phase === Phase.Plane ? s.planeTime : s.elapsed;
     if (s.phase !== Phase.Plane && s.elapsed - s.planeTime > 6) {
       return;
@@ -735,7 +780,8 @@ export class SkyDiverRenderer {
     if (!p) {
       return;
     }
-    const sheet = this.baked?.plane;
+    // The jumper stands out on the wing until he goes.
+    const sheet = this.baked?.[s.phase === Phase.Plane ? 'plane' : 'plane-empty'];
     if (!sheet) {
       this.ctx.fillStyle = INK.red;
       const size = Math.max(2, 9.5 * p.scale);
@@ -750,9 +796,68 @@ export class SkyDiverRenderer {
     drawBaked(this.ctx, sheet, frame, p.sx, p.sy, p.scale / sheet.ppm);
   }
 
+  /**
+   * The balloon act: the professor hangs from the trapeze (the diver's position)
+   * until he lets go; then the empty balloon drifts on and climbs away.
+   */
+  private drawBalloon(s: GameState, cfg: GameConfig, cam: Camera): void {
+    const aboard = s.phase === Phase.Plane;
+    if (!aboard && s.elapsed - s.planeTime > 20) {
+      return;
+    }
+    const pos = aboard ? { x: s.posX, y: s.posY } : planePosition(s, cfg, s.elapsed);
+    const alt = shipAltitude(s, cfg);
+    const p = project(cam, pos.x, pos.y, alt);
+    if (!p) {
+      return;
+    }
+    const sheet = this.baked?.['smoke-balloon'];
+    if (!sheet) {
+      const r = Math.max(3, 4.4 * p.scale);
+      this.ctx.fillStyle = INK.red;
+      this.ctx.fillRect(
+        Math.round(p.sx - r),
+        Math.round(p.sy - 10.6 * p.scale - r),
+        Math.round(r * 2),
+        Math.round(r * 2),
+      );
+      return;
+    }
+    const elevation = Math.atan2(cam.z - alt, Math.hypot(pos.x - cam.x, pos.y - cam.y));
+    const frame = bakedFrame(sheet, elevation, 0, aboard ? 0 : 1);
+    drawBaked(this.ctx, sheet, frame, p.sx, p.sy, p.scale / sheet.ppm);
+  }
+
+  /** A canopy cut away in a double drop: it streams off downwind, sinking slowly. */
+  private drawReleased(s: GameState, cam: Camera): void {
+    const r = s.released;
+    const t = r ? s.elapsed - r.at : 0;
+    if (!r || t > LOOSE_SHOWN_S) {
+      return;
+    }
+    const x = r.x + s.windBaseX * t;
+    const y = r.y + s.windBaseY * t;
+    const alt = Math.max(0, r.altitude - LOOSE_SINK * t);
+    const p = project(cam, x, y, alt);
+    const sheet = this.baked?.['canopy-loose'];
+    if (!p || !sheet) {
+      return;
+    }
+    const elevation = Math.atan2(cam.z - (alt + RIG_MID_M), Math.hypot(x - cam.x, y - cam.y));
+    const flutter = this.reducedMotion ? 0 : Math.floor(s.elapsed * 3) % 2;
+    drawBaked(
+      this.ctx,
+      sheet,
+      bakedFrame(sheet, elevation, 0, flutter),
+      p.sx,
+      p.sy,
+      p.scale / sheet.ppm,
+    );
+  }
+
   private drawDiver(s: GameState, cfg: GameConfig, cam: Camera): void {
     if (s.phase === Phase.Plane) {
-      return; // still aboard
+      return; // still aboard (on a balloon, the professor is part of its sprite)
     }
     const ctx = this.ctx;
     const baked = this.baked;
@@ -987,6 +1092,11 @@ export class SkyDiverRenderer {
     if (next) {
       this.paintPointer(r, cam, next.x, next.y, next.altitude, P.gold, false, s.elapsed);
     }
+    // Hanging under a balloon the target sits right behind its envelope: the
+    // jump light says when, the pointer would only scribble on the silk.
+    if (s.phase === Phase.Plane && cfg.jumpShip === 'balloon') {
+      return;
+    }
     const t = targetAt(cfg, s.elapsed);
     this.paintPointer(r, cam, t.x, t.y, 0, P.redHot, true, s.elapsed);
   }
@@ -1201,8 +1311,20 @@ export class SkyDiverRenderer {
       INK.brass,
     );
     right(sm, this.run.jump, 25, INK.brass);
+    let line = 36;
     if (s.rings.length > 0 && s.phase !== Phase.Plane) {
-      right(body, `${L.rings ?? ''} ${s.ringsPassed}/${s.rings.length}`, 36, INK.amber);
+      right(body, `${L.rings ?? ''} ${s.ringsPassed}/${s.rings.length}`, line, INK.amber);
+      line += 14;
+    }
+    if (cfg.canopies > 1 && s.phase !== Phase.Landed && s.phase !== Phase.Crashed) {
+      const current = s.cutawayAt === null ? 1 : 2;
+      right(body, `${L.canopyCount ?? ''} ${current}/${cfg.canopies}`, line, INK.amber);
+    }
+
+    // The opening title card takes the screen from the prompts and coaching.
+    if (this.titleCard !== null && this.run.venue) {
+      this.drawTitleCard(fonts, this.run.venue, this.run.jump, this.titleCard);
+      return;
     }
 
     // Target distance next to its marker.
@@ -1233,8 +1355,20 @@ export class SkyDiverRenderer {
     switch (s.phase) {
       case Phase.Plane: {
         const light = spotLightAt(s, cfg);
-        prompt = L.jumpPrompt ?? '';
-        const label = light === 'green' ? L.spotGreen : light === 'amber' ? L.spotAmber : L.spotRed;
+        const balloon = cfg.jumpShip === 'balloon';
+        prompt = (balloon ? L.balloonPrompt : L.jumpPrompt) ?? '';
+        const label =
+          light === 'green'
+            ? balloon
+              ? L.balloonGreen
+              : L.spotGreen
+            : light === 'amber'
+              ? balloon
+                ? L.balloonAmber
+                : L.spotAmber
+              : balloon
+                ? L.balloonRed
+                : L.spotRed;
         const color = light === 'green' ? INK.green : light === 'amber' ? INK.amber : INK.red;
         shadowText(ctx, body, label ?? '', HUD.spot.x + HUD.spot.r + 9, HUD.spot.y - 6, color);
         break;
@@ -1269,6 +1403,8 @@ export class SkyDiverRenderer {
         if (s.flareTime >= cfg.flareDuration) {
           alert = L.stall ?? '';
           alertColor = INK.red;
+        } else if (canCutAway(s, cfg)) {
+          prompt = L.cutawayPrompt ?? '';
         } else if (s.altitude < 12 && s.flareTime === 0) {
           prompt = blink ? (L.flarePrompt ?? '') : '';
         }
@@ -1309,7 +1445,9 @@ export class SkyDiverRenderer {
     // Controls hint (bottom line).
     const hint =
       s.phase === Phase.Plane
-        ? L.hintPlane
+        ? cfg.jumpShip === 'balloon'
+          ? L.hintBalloon
+          : L.hintPlane
         : s.phase === Phase.Freefall
           ? L.hintFreefall
           : s.phase === Phase.Canopy || s.phase === Phase.Deploying
@@ -1318,6 +1456,62 @@ export class SkyDiverRenderer {
     if (hint) {
       centred(sm, hint, w / 2, h - 18, INK.parchment);
     }
+  }
+
+  /**
+   * The jump opens on a silent-film intertitle: a black card in a double cream
+   * rule with corner diamonds, the venue over the event's name. It fades in
+   * and out with its age `t` (cut, under reduced motion).
+   */
+  private drawTitleCard(fonts: HudFonts, venue: string, title: string, t: number): void {
+    const fade = this.reducedMotion ? 1 : clamp(Math.min(t / 0.3, (TITLE_CARD_S - t) / 0.5), 0, 1);
+    const ctx = this.ctx;
+    // A long event name drops to the body size rather than spill off the card.
+    const font = fonts.big.measure(title) + 64 <= this.w - 32 ? fonts.big : fonts.body;
+    const cw = Math.min(this.w - 32, Math.max(260, font.measure(title) + 64));
+    const ch = 78;
+    const x = Math.round((this.w - cw) / 2);
+    const y = Math.round(this.h * 0.36 - ch / 2);
+    ctx.globalAlpha = fade * 0.94;
+    ctx.fillStyle = '#0c0b10';
+    ctx.fillRect(x, y, cw, ch);
+    ctx.globalAlpha = fade;
+    ctx.fillStyle = INK.parchment;
+    const rule = (inset: number) => {
+      ctx.fillRect(x + inset, y + inset, cw - inset * 2, 1);
+      ctx.fillRect(x + inset, y + ch - inset - 1, cw - inset * 2, 1);
+      ctx.fillRect(x + inset, y + inset, 1, ch - inset * 2);
+      ctx.fillRect(x + cw - inset - 1, y + inset, 1, ch - inset * 2);
+    };
+    rule(4);
+    rule(7);
+    const diamond = (cx: number, cy: number) => {
+      for (let k = -2; k <= 2; k++)
+        ctx.fillRect(cx - (2 - Math.abs(k)), cy + k, (2 - Math.abs(k)) * 2 + 1, 1);
+    };
+    for (const [dx, dy] of [
+      [4, 4],
+      [cw - 5, 4],
+      [4, ch - 5],
+      [cw - 5, ch - 5],
+    ]) {
+      diamond(x + dx, y + dy);
+    }
+    const mid = Math.round(this.w / 2);
+    fonts.body.draw(ctx, venue, mid - fonts.body.measure(venue) / 2, y + 16, INK.brass);
+    ctx.fillStyle = INK.brassDark;
+    ctx.fillRect(mid - 30, y + 33, 24, 1);
+    ctx.fillRect(mid + 7, y + 33, 24, 1);
+    ctx.fillStyle = INK.brass;
+    diamond(mid, y + 33);
+    font.draw(
+      ctx,
+      title,
+      mid - font.measure(title) / 2,
+      font === fonts.big ? y + 42 : y + 48,
+      INK.highlight,
+    );
+    ctx.globalAlpha = 1;
   }
 
   /** Coaching tip for the moment (tutorial event), in a dark box under the wind gauge. */

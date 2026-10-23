@@ -1,0 +1,291 @@
+@use 'pixel-ui' as px;
+
+// An issue set like a 1920s gazette: Silkscreen for heads and labels,
+// Departure Mono for the reading, sepia plates in sunken frames, and boxes of
+// different papers for the asides, the buffs' sidebars and the toys.
+
+:host {
+  display: block;
+  color: var(--ink);
+}
+
+@mixin label($color: var(--biplane-red-dark)) {
+  font-family: var(--font-head);
+  font-size: var(--fs-head);
+  font-weight: 700;
+  text-transform: uppercase;
+  color: $color;
+}
+
+.issue {
+  line-height: 1.5;
+
+  [appReading]:focus-visible {
+    outline-offset: var(--sp-2);
+  }
+}
+
+.issue__label {
+  @include label;
+  margin: 0 0 var(--sp-2);
+}
+
+.block {
+  margin: var(--sp-8) 0;
+}
+
+// --- Headline, standfirst, contents ---
+
+.issue__headline {
+  font-size: var(--fs-h1);
+  line-height: 1.1;
+  color: var(--ink);
+  text-align: center;
+  margin: 0 0 var(--sp-6);
+}
+
+.issue__standfirst {
+  margin: 0 0 var(--sp-6);
+  padding: 0 var(--sp-4);
+  box-shadow:
+    inset var(--border-w) 0 0 0 var(--biplane-red),
+    inset calc(-1 * var(--border-w)) 0 0 0 var(--biplane-red);
+}
+
+.issue__contents {
+  margin: 0 0 var(--sp-8);
+  padding: var(--sp-3) var(--sp-4);
+  box-shadow:
+    inset 0 2px 0 0 var(--ink),
+    inset 0 -2px 0 0 var(--ink);
+
+  ol {
+    margin: 0;
+    padding-left: var(--sp-8);
+  }
+}
+
+// --- Stories ---
+
+.story {
+  margin: var(--sp-8) 0;
+}
+
+.story__head {
+  @include label(var(--ink));
+  font-size: var(--fs-h3);
+  line-height: 1.2;
+  margin: 0 0 var(--sp-3);
+  padding-bottom: var(--sp-2);
+  box-shadow: inset 0 calc(-1 * var(--border-w)) 0 0 var(--ink);
+}
+
+.story__body p {
+  margin: 0 0 var(--sp-4);
+}
+
+// --- Plates: dithered period photographs at ×2 ---
+
+.plate {
+  margin: var(--sp-8) 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+.plate__img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  image-rendering: pixelated;
+  border: var(--sp-2) solid var(--canvas-cream);
+  @include px.pixel-inset();
+}
+
+.plate__caption {
+  max-width: 640px;
+  text-align: center;
+}
+
+.plate__credit {
+  @include label(var(--brass-dark));
+  display: block;
+  margin-top: var(--sp-1);
+
+  a {
+    color: var(--biplane-red-dark);
+  }
+}
+
+// --- Pull quote ---
+
+.pull {
+  margin: var(--sp-8) var(--sp-6);
+  padding: var(--sp-4) 0;
+  text-align: center;
+  box-shadow:
+    inset 0 var(--border-w) 0 0 var(--biplane-red),
+    inset 0 calc(-1 * var(--border-w)) 0 0 var(--biplane-red);
+}
+
+.pull__text {
+  @include label(var(--ink));
+  font-size: var(--fs-h3);
+  line-height: 1.4;
+  text-transform: none;
+  margin: 0 0 var(--sp-3);
+}
+
+.pull__who {
+  color: var(--biplane-red-dark);
+}
+
+// --- "Did you know?" ---
+
+.aside {
+  margin: var(--sp-8) 0;
+  padding: var(--sp-4);
+  background: var(--parchment-dark);
+  @include px.pixel-inset();
+}
+
+.aside__text {
+  margin: 0;
+}
+
+// --- For the buffs: a folding sidebar ---
+
+.geek {
+  margin: var(--sp-8) 0;
+}
+
+.geek__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--sp-1) var(--sp-4);
+}
+
+.geek__tag {
+  color: var(--biplane-red-dark);
+}
+
+.geek__title {
+  flex: 1;
+}
+
+.geek__fold {
+  font-weight: 400;
+}
+
+.geek__body {
+  margin: var(--sp-2) var(--border-w) 0;
+  padding: var(--sp-4);
+  background: var(--canvas-cream);
+  box-shadow: 0 0 0 2px var(--ink);
+
+  p {
+    margin: 0 0 var(--sp-4);
+  }
+}
+
+.geek__specs {
+  width: 100%;
+  border-collapse: collapse;
+
+  th,
+  td {
+    padding: var(--sp-2) var(--sp-3);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  th {
+    @include label;
+    width: 40%;
+  }
+
+  tr + tr > * {
+    box-shadow: inset 0 2px 0 0 var(--parchment-dark);
+  }
+}
+
+// --- Dates & glossary ---
+
+.dates {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.dates__row {
+  display: grid;
+  grid-template-columns: 176px minmax(0, 1fr) auto;
+  gap: var(--sp-4);
+  align-items: baseline;
+  padding: var(--sp-2) 0;
+
+  & + & {
+    box-shadow: inset 0 2px 0 0 var(--parchment-dark);
+  }
+}
+
+.dates__date {
+  @include label;
+}
+
+.terms {
+  margin-bottom: var(--sp-6);
+
+  dl {
+    display: grid;
+    grid-template-columns: 224px minmax(0, 1fr);
+    gap: var(--sp-3) var(--sp-4);
+    margin: 0;
+  }
+
+  dt {
+    @include label(var(--ink));
+    padding-top: var(--sp-1);
+  }
+
+  dd {
+    margin: 0;
+  }
+}
+
+// --- In the game ---
+
+.play {
+  margin: var(--sp-8) 0;
+  padding: var(--sp-4) var(--sp-6);
+  color: var(--ink-light);
+  background: var(--sky-twilight);
+  @include px.pixel-bevel();
+
+  .issue__label {
+    color: var(--brass);
+  }
+
+  p {
+    margin: 0 0 var(--sp-3);
+  }
+}
+
+.play__title {
+  @include label(var(--ink-light));
+  font-size: var(--fs-h3);
+}
+
+// --- Sources ---
+
+.issue__sources {
+  margin: var(--sp-8) 0 0;
+  padding-top: var(--sp-3);
+  box-shadow: inset 0 2px 0 0 var(--parchment-dark);
+
+  .issue__label {
+    margin-right: var(--sp-2);
+  }
+}

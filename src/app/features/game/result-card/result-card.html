@@ -1,8 +1,10 @@
 @let r = result();
 @let p = plan();
-<div class="res">
-  <header class="res__head">
-    <p class="res__kicker">
+@let f = figures();
+<div class="front">
+  <header class="front__mast">
+    <p class="front__name">{{ 'result.front.masthead' | transloco }}</p>
+    <p class="front__event">
       @if (p.event; as e) {
         {{ 'events.' + e.id + '.name' | transloco }}
       } @else if (p.mode === 'daily') {
@@ -11,92 +13,149 @@
         {{ 'game.jumpProgress' | transloco: { current: jumpIndex() + 1, total: p.jumps.length } }}
       }
     </p>
-    <h2 class="res__title" [class.res__title--bad]="r.crashed">{{ heading() | transloco }}</h2>
+    <p class="front__extra">{{ 'result.front.extra' | transloco }}</p>
   </header>
 
-  <div class="res__body">
-    <div class="res__tally">
-      @if (r.crashed) {
-        <p class="res__verdict">{{ 'game.crashedMsg' | transloco }}</p>
-        <p class="res__note">
-          @if (r.pullAltitude === null) {
-            {{ 'game.crashNoPull' | transloco }}
-          } @else {
-            {{ 'game.crashLowPull' | transloco: { alt: r.pullAltitude.toFixed(0) } }}
+  <h2 class="front__headline" [class.front__headline--bad]="r.crashed">
+    {{ 'result.front.headline.' + headline() | transloco }}
+  </h2>
+  @if (jump(); as cfg) {
+    <p class="front__byline">
+      {{ 'result.front.byline' | transloco: { venue: ('circuit.venue.' + cfg.venue | transloco) } }}
+    </p>
+  }
+
+  <div class="front__body">
+    <div class="front__story">
+      @if (photo(); as src) {
+        <figure class="front__photo">
+          <img
+            [src]="src"
+            [width]="photoW"
+            [height]="photoH"
+            [alt]="'result.front.photo' | transloco"
+          />
+          @if (p.event && medal(); as m) {
+            <span class="front__stamp" [style.--d.ms]="totalDelay()">
+              <span class="res__medal res__medal--{{ m }}" aria-hidden="true"></span>
+            </span>
           }
-        </p>
-      } @else if (r.breakdown; as b) {
-        @if (r.bullseye) {
-          <p class="res__banner">&#9733; {{ 'game.bullseye' | transloco }} &#9733;</p>
+          <figcaption>{{ 'result.front.photo' | transloco }}</figcaption>
+        </figure>
+      }
+      <p class="front__article">
+        @if (r.crashed) {
+          @if (r.pullAltitude === null) {
+            {{ 'result.front.crashNoPull' | transloco }}
+          } @else {
+            {{ 'result.front.crashLowPull' | transloco: { alt: f.pull } }}
+          }
+        } @else {
+          {{
+            (jump()?.jumpShip === 'balloon' ? 'result.front.exitBalloon' : 'result.front.exitPlane')
+              | transloco: { alt: f.alt }
+          }}
+          @if (r.refallTime !== null) {
+            {{ 'result.front.double' | transloco: { refall: f.refall, pull: f.pull } }}
+          } @else {
+            {{ 'result.front.pull' | transloco: { pull: f.pull } }}
+          }
+          @if (splashed()) {
+            {{ 'result.front.water' | transloco: { dist: f.dist } }}
+          } @else {
+            {{ 'result.front.landing.' + r.landing | transloco: { dist: f.dist } }}
+          }
+          @if (r.bullseye) {
+            {{ 'result.front.bullseye' | transloco }}
+          }
         }
+      </p>
+    </div>
+
+    <aside class="front__figures">
+      <p class="front__figures-title">{{ 'result.front.figures' | transloco }}</p>
+      @if (r.breakdown; as b) {
         <dl class="res__rows">
           <div class="res__row" [style.--d.ms]="0">
             <dt>
-              {{ 'game.scoreAccuracy' | transloco }} <em>{{ r.landedDistance.toFixed(1) }} m</em>
+              {{ 'game.scoreAccuracy' | transloco }} <em>{{ f.dist }} m</em>
             </dt>
             <dd><app-count-up [value]="b.accuracy" [delay]="0" /></dd>
           </div>
-          <div class="res__row" [style.--d.ms]="rowMs">
-            <dt>
-              {{ 'game.scoreRings' | transloco }} <em>{{ r.ringsPassed }}/{{ r.ringsTotal }}</em>
-            </dt>
-            <dd>+<app-count-up [value]="b.rings" [delay]="rowMs" /></dd>
-          </div>
+          @if (r.ringsTotal > 0) {
+            <div class="res__row" [style.--d.ms]="rowMs">
+              <dt>
+                {{ 'game.scoreRings' | transloco }} <em>{{ r.ringsPassed }}/{{ r.ringsTotal }}</em>
+              </dt>
+              <dd>+<app-count-up [value]="b.rings" [delay]="rowMs" /></dd>
+            </div>
+          }
           <div class="res__row" [style.--d.ms]="rowMs * 2">
             <dt>
               {{ 'game.scorePull' | transloco }}
-              <em>{{ r.pullAltitude === null ? '—' : r.pullAltitude.toFixed(0) + ' m' }}</em>
+              <em>{{ r.pullAltitude === null ? '—' : f.pull + ' m' }}</em>
             </dt>
             <dd>+<app-count-up [value]="b.pull" [delay]="rowMs * 2" /></dd>
           </div>
-          <div class="res__row" [style.--d.ms]="rowMs * 3">
+          @if (r.refallTime !== null) {
+            <div class="res__row" [style.--d.ms]="rowMs * 3">
+              <dt>
+                {{ 'game.scoreStunt' | transloco }} <em>{{ f.refall }} s</em>
+              </dt>
+              <dd>+<app-count-up [value]="b.stunt" [delay]="rowMs * 3" /></dd>
+            </div>
+          }
+          <div class="res__row" [style.--d.ms]="rowMs * 4">
             <dt>
               {{ 'game.scoreLanding' | transloco }}
               <em>{{ 'game.landing.' + r.landing | transloco }}</em>
             </dt>
-            <dd>+<app-count-up [value]="b.landing" [delay]="rowMs * 3" /></dd>
+            <dd>+<app-count-up [value]="b.landing" [delay]="rowMs * 4" /></dd>
           </div>
-          <div class="res__row" [style.--d.ms]="rowMs * 4">
+          <div class="res__row" [style.--d.ms]="rowMs * 5">
             <dt>
               {{ 'game.scoreSpot' | transloco }} <em>{{ 'game.spot.' + r.spot | transloco }}</em>
             </dt>
-            <dd>+<app-count-up [value]="b.spot" [delay]="rowMs * 4" /></dd>
+            <dd>+<app-count-up [value]="b.spot" [delay]="rowMs * 5" /></dd>
           </div>
           @if (b.multiplier !== 1) {
-            <div class="res__row res__row--mult" [style.--d.ms]="rowMs * 5">
+            <div class="res__row res__row--mult" [style.--d.ms]="rowMs * 6">
               <dt>{{ 'game.scoreMultiplier' | transloco }}</dt>
               <dd>&times;{{ b.multiplier }}</dd>
             </div>
           }
         </dl>
       }
-      <div class="res__total" [style.--d.ms]="rowMs * 5">
+      <div class="res__total" [style.--d.ms]="rowMs * 6">
         <span>{{ 'game.jumpScore' | transloco }}</span>
-        <span class="res__total-value"><app-count-up [value]="r.score" [delay]="rowMs * 5" /></span>
+        <span class="res__total-value"><app-count-up [value]="r.score" [delay]="rowMs * 6" /></span>
       </div>
-    </div>
 
-    <aside class="res__side">
       @if (p.event; as e) {
         <div class="res__stamp" [style.--d.ms]="totalDelay()">
           @if (medal(); as m) {
-            <span class="res__medal res__medal--{{ m }}" aria-hidden="true"></span>
+            @if (!photo()) {
+              <span class="res__medal res__medal--{{ m }}" aria-hidden="true"></span>
+            }
             <p class="res__medal-name res__medal-name--{{ m }}">
               {{ 'result.medal.' + m | transloco }}
             </p>
           } @else {
             <p class="res__medal-name">{{ 'result.noMedal' | transloco }}</p>
           }
+          <p class="res__best">{{ 'brief.best' | transloco }} : {{ best() }}</p>
         </div>
-        <ol class="res__ladder">
+        <ol class="res__ladder" [attr.aria-label]="'circuit.medals' | transloco">
           @for (m of ['gold', 'silver', 'bronze']; track m; let i = $index) {
-            <li [class.res__ladder--hit]="r.score >= e.medals[2 - i]">
+            <li
+              [class.res__ladder--hit]="r.score >= e.medals[2 - i]"
+              [attr.aria-label]="('result.medal.' + m | transloco) + ' — ' + e.medals[2 - i]"
+            >
               <span class="res__dot res__dot--{{ m }}" aria-hidden="true"></span>
-              {{ 'result.medal.' + m | transloco }} — {{ e.medals[2 - i] }}
+              {{ e.medals[2 - i] }}
             </li>
           }
         </ol>
-        <p class="res__best">{{ 'brief.best' | transloco }} : {{ best() }}</p>
         @if (newBest()) {
           <p class="res__flash">{{ 'result.newBest' | transloco }}</p>
         }
@@ -110,7 +169,7 @@
         }
       } @else {
         <p class="res__run-label">{{ 'result.runTotal' | transloco }}</p>
-        <p class="res__run-value"><app-count-up [value]="runScore()" [delay]="rowMs * 6" /></p>
+        <p class="res__run-value"><app-count-up [value]="runScore()" [delay]="rowMs * 7" /></p>
         @if (final()) {
           @if (needsInitials()) {
             <p class="res__flash">&#9733; {{ 'game.newHighScore' | transloco }} &#9733;</p>

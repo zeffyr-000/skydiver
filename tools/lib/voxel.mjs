@@ -159,6 +159,18 @@ export class VoxelModel {
     return this.region(x0, y0, z0, x1, y1, z1, (x, y, z) => (fn(x, y, z) ? -1 : 0));
   }
 
+  /** The same voxels with the origin moved by -(dx, dy, dz): the model shifts by (dx, dy, dz). */
+  moved(dx, dy, dz) {
+    const m = Object.create(VoxelModel.prototype);
+    const d = [dx, dy, dz];
+    m.vs = this.vs;
+    m.n = this.n;
+    m.mat = this.mat;
+    m.o = this.o.map((v, i) => v + d[i]);
+    m.lines = this.lines.map(([a, b, c]) => [a.map((v, i) => v + d[i]), b.map((v, i) => v + d[i]), c]);
+    return m;
+  }
+
   /** A thin line (rigging) drawn after the voxels, depth-tested. */
   line(a, b, color) {
     this.lines.push([a, b, hex(color)]);

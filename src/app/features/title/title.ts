@@ -37,6 +37,7 @@ export class Title {
         { value: '/game?mode=arcade', label: this.transloco.translate('menu.arcade') },
         { value: '/game?mode=daily', label: this.transloco.translate('menu.daily') },
         { value: '/records', label: this.transloco.translate('menu.records') },
+        { value: '/gazette', label: this.transloco.translate('menu.gazette') },
         { value: '/settings', label: this.transloco.translate('menu.settings') },
       ]),
     ),

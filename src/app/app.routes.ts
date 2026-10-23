@@ -8,6 +8,10 @@ export const routes: Routes = [
     loadComponent: () => import('./features/circuit/circuit').then((m) => m.Circuit),
   },
   {
+    path: 'gazette',
+    loadComponent: () => import('./features/gazette/gazette').then((m) => m.Gazette),
+  },
+  {
     path: 'settings',
     loadComponent: () => import('./features/settings/settings').then((m) => m.Settings),
   },

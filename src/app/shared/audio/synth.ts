@@ -18,6 +18,7 @@ export type SoundName =
   | 'jump'
   | 'deploy'
   | 'canopyOpen'
+  | 'cutaway'
   | 'flare'
   | 'stall'
   | 'ringPass'
@@ -43,6 +44,7 @@ export interface AmbienceLevels {
   windPitch: number;
   engine: number;
   music: number;
+  crowd: number;
 }
 
 type Wave = OscillatorType | PeriodicWave;
@@ -63,6 +65,7 @@ export class Synth {
   private readonly windGain: GainNode;
   private readonly windFilter: BiquadFilterNode;
   private readonly engineGain: GainNode;
+  private readonly crowdGain: GainNode;
 
   private track: Track | null = null;
   private lead: Note[] = [];
@@ -127,6 +130,34 @@ export class Synth {
     }
     engineTone.connect(engineFilter).connect(this.engineGain).connect(this.sfx);
     lfo.start();
+
+    // The crowd: voice-band noise whose level chatters on two slow, out-of-step
+    // swells — a field full of people talking at once.
+    const crowd = ctx.createBufferSource();
+    crowd.buffer = this.noise;
+    crowd.loop = true;
+    crowd.playbackRate.value = 0.83; // off the wind's loop, so the two never phase
+    const voices = ctx.createBiquadFilter();
+    voices.type = 'bandpass';
+    voices.frequency.value = 620;
+    voices.Q.value = 1.3;
+    const chatter = ctx.createGain();
+    chatter.gain.value = 0.6;
+    for (const [freq, depth] of [
+      [0.9, 0.22],
+      [2.3, 0.14],
+    ]) {
+      const swell = ctx.createOscillator();
+      swell.frequency.value = freq;
+      const amount = ctx.createGain();
+      amount.gain.value = depth;
+      swell.connect(amount).connect(chatter.gain);
+      swell.start();
+    }
+    this.crowdGain = ctx.createGain();
+    this.crowdGain.gain.value = 0;
+    crowd.connect(voices).connect(chatter).connect(this.crowdGain).connect(this.sfx);
+    crowd.start();
   }
 
   /** Bus levels from the settings (0..1 each); perceptual (squared) curve. */
@@ -141,6 +172,7 @@ export class Synth {
     this.windGain.gain.setTargetAtTime(a.wind * 0.42, t, 0.12);
     this.windFilter.frequency.setTargetAtTime(350 + a.windPitch * 1900, t, 0.2);
     this.engineGain.gain.setTargetAtTime(a.engine * 0.22, t, 0.15);
+    this.crowdGain.gain.setTargetAtTime(a.crowd * 0.3, t, 0.4);
     this.musicDuck.gain.setTargetAtTime(a.music, t, 0.4);
   }
 
@@ -241,6 +273,12 @@ export class Synth {
       case 'canopyOpen':
         this.noiseHit(t, 0.12, 0.6, 'lowpass', 1400, 400);
         this.tone('sine', 95, t, 0.32, 0.8, this.sfx, 0.003, 0.25, 42);
+        break;
+      case 'cutaway':
+        // The knife through the risers, then the silk streaming away.
+        this.noiseHit(t, 0.5, 0.05, 'highpass', 3000);
+        this.tone('sine', 660, t, 0.18, 0.2, this.sfx, 0.002, 0.15, 180);
+        this.noiseHit(t + 0.06, 0.25, 0.7, 'bandpass', 900, 2600);
         break;
       case 'flare':
         this.noiseHit(t, 0.7, 0.3, 'bandpass', 1300, 380);

@@ -1,0 +1,24 @@
+<div class="myth">
+  <p class="myth__label">{{ 'gazette.ui.myth' | transloco }}</p>
+  <p class="myth__claim">
+    {{ 'gazette.ui.quote' | transloco: { text: (base() + '.claim' | transloco) } }}
+  </p>
+  @if (guess(); as g) {
+    <div class="myth__verdict" appReading #verdict>
+      <p class="myth__result" [class.myth__result--right]="g === answer()">
+        {{ (g === answer() ? 'gazette.ui.right' : 'gazette.ui.wrong') | transloco }}
+        <span class="myth__stamp">{{ 'gazette.ui.' + answer() | transloco }}</span>
+      </p>
+      <p class="myth__text">{{ base() + '.verdict' | transloco }}</p>
+    </div>
+  } @else {
+    <div class="myth__choices">
+      <app-pixel-button (pressed)="choose('legend')">{{
+        'gazette.ui.legend' | transloco
+      }}</app-pixel-button>
+      <app-pixel-button variant="brass" (pressed)="choose('fact')">{{
+        'gazette.ui.fact' | transloco
+      }}</app-pixel-button>
+    </div>
+  }
+</div>

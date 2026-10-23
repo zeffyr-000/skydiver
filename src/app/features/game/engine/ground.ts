@@ -45,7 +45,16 @@ export type PropKind =
   | 'windmill'
   | 'hangar'
   | 'grandstand'
-  | 'lighthouse';
+  | 'lighthouse'
+  | 'ferris'
+  | 'bigtop'
+  | 'car'
+  | 'watertower'
+  | 'church'
+  | 'huts'
+  | 'pylon'
+  | 'bessonneau'
+  | 'jenny';
 
 /** Real height and shadow radius (m) per prop — for the painted golden-hour shadows. */
 export const PROP_SIZE: Record<PropKind, { height: number; radius: number }> = {
@@ -64,6 +73,15 @@ export const PROP_SIZE: Record<PropKind, { height: number; radius: number }> = {
   hangar: { height: 5.2, radius: 5.5 },
   grandstand: { height: 5, radius: 5.5 },
   lighthouse: { height: 16, radius: 2 },
+  ferris: { height: 15, radius: 2 },
+  bigtop: { height: 9.6, radius: 6 },
+  car: { height: 1.9, radius: 1.2 },
+  watertower: { height: 13, radius: 2.2 },
+  church: { height: 19, radius: 4 },
+  huts: { height: 3.5, radius: 3.5 },
+  pylon: { height: 10.5, radius: 0.8 },
+  bessonneau: { height: 8.3, radius: 9 },
+  jenny: { height: 3.6, radius: 5 },
 };
 
 /** A standing object on the ground. */
@@ -75,7 +93,7 @@ export interface Prop {
   yaw: number;
   /** Size multiplier (variety). */
   scale: number;
-  /** Sheet variant (shirt colour, tree shape…). */
+  /** Sheet variant (the spectator's Sunday best, the Ford's hood…). */
   variant: number;
 }
 
@@ -166,6 +184,9 @@ export interface Terrain {
   /** The sea, at the seaside venue. */
   sea: Sea | null;
 }
+
+/** Spectator styles in the baked sheet (suits, dresses, a child…). */
+export const CROWD_STYLES = 8;
 
 type Scenery = PropKind | 'pond';
 const SCENERY: Scenery[] = ['oak', 'poplar', 'pine', 'bush', 'rock', 'bale', 'pond'];
@@ -480,7 +501,7 @@ export function generateTerrain(seed: number, cfg: GameConfig): Terrain {
       y,
       yaw: headingTo(x, y, 0, 0),
       scale: rand(0.95, 1.05),
-      variant: Math.floor(rng() * 3),
+      variant: Math.floor(rng() * CROWD_STYLES),
     });
   }
   const [wx, wy] = at(a0 + (moving ? -0.9 : Math.PI), Rd + 10);
@@ -503,7 +524,7 @@ export function generateTerrain(seed: number, cfg: GameConfig): Terrain {
         y,
         yaw: headingTo(x, y, 0, 0),
         scale: rand(0.95, 1.05),
-        variant: Math.floor(rng() * 3),
+        variant: Math.floor(rng() * CROWD_STYLES),
       });
     }
   }
@@ -542,6 +563,133 @@ export function generateTerrain(seed: number, cfg: GameConfig): Terrain {
     props.push({ kind: 'lighthouse', x: lx, y: ly, yaw: 0, scale: 1, variant: 0 });
   }
 
+  // --- Period dressing: the crowd's Model Ts and what each venue is known
+  // for. It draws from its own stream, so everything above — and every event
+  // calibrated on it — stays exactly where it was ---
+  const deco = mulberry32(seed ^ 0x51ed270b);
+  const drand = (a: number, b: number) => a + (b - a) * deco();
+  /** Inside the landmark: the lake, the wood, or on the strip. */
+  const onLandmark = (x: number, y: number, r: number): boolean => {
+    const lm = landmark;
+    if (lm.kind === 'lake') {
+      return ((x - lm.x) / (lm.rx + r + 4)) ** 2 + ((y - lm.y) / (lm.ry + r + 4)) ** 2 <= 1;
+    }
+    if (lm.kind === 'forest') {
+      return Math.hypot(x - lm.x, y - lm.y) < lm.r + r;
+    }
+    const [along, across] = lm.orientation === 'h' ? [x - lm.x, y - lm.y] : [y - lm.y, x - lm.x];
+    return Math.abs(along) < lm.lengthM / 2 + r && Math.abs(across) < lm.widthM / 2 + r;
+  };
+  /** Clear ground for something of radius `r`, `gap` metres from its neighbours. */
+  const roomFor = (x: number, y: number, r: number, gap = 2) =>
+    Math.hypot(x, y) >= R + 20 + r &&
+    Math.abs(x) <= TERRAIN_EXTENT &&
+    Math.abs(y) <= TERRAIN_EXTENT &&
+    !onRoad(x, y, r + 2) &&
+    !onLandmark(x, y, r) &&
+    ponds.every((p) => Math.hypot(p.x - x, p.y - y) > p.r + r + 2) &&
+    props.every((p) => Math.hypot(p.x - x, p.y - y) > PROP_SIZE[p.kind].radius + r + gap);
+  const place = (kind: PropKind, x: number, y: number, yaw: number, variant = 0): boolean => {
+    const r = PROP_SIZE[kind].radius;
+    // Fords park side by side; everything else keeps its distance.
+    if (!roomFor(x, y, r, kind === 'car' ? 0.4 : 2) || wet(x, y, r)) return false;
+    props.push({ kind, x, y, yaw, scale: 1, variant });
+    return true;
+  };
+  /** Place facing the target somewhere around bearing `a` (a few tries further round). */
+  const placeAround = (kind: PropKind, a: number, d: number): boolean => {
+    for (let k = 0; k < 6; k++) {
+      const [x, y] = at(a + k * 0.45, d);
+      if (place(kind, x, y, headingTo(x, y, 0, 0))) return true;
+    }
+    return false;
+  };
+  // The crowd came by Ford: a row parked past the stands (two at a meeting),
+  // further round the ring if a pond or the road is in the way.
+  for (let row = 0; row < (venue === 'meeting' ? 2 : 1); row++) {
+    const d = Rd + 30 + row * 7;
+    const cars = venue === 'meeting' ? 9 : 4 + Math.floor(deco() * 4);
+    for (const start of [1.75, -0.5, 2.4, -1.3]) {
+      let parked = 0;
+      for (let i = 0; i < cars; i++) {
+        const [x, y] = at(a0 + start + (i * 3.4 + row * 1.7) / d, d);
+        const yaw = headingTo(x, y, 0, 0) + drand(-0.2, 0.2);
+        if (place('car', x, y, yaw, deco() < 0.6 ? 0 : 1)) parked++;
+      }
+      if (parked >= 3) break;
+    }
+  }
+  if (venue === 'county') {
+    // The county fair: the big wheel and the circus.
+    const a = a0 + Math.PI + 0.9;
+    const d = Rd + drand(70, 95);
+    placeAround('ferris', a, d);
+    placeAround('bigtop', a + 0.4, d + 8);
+  }
+  if (venue === 'meeting') {
+    // The air-race course round the field, and the flight line of Jennys.
+    for (let k = 0; k < 3; k++) {
+      placeAround('pylon', a0 + 0.4 + (k * Math.PI * 2) / 3, drand(170, 210));
+    }
+    for (let k = 0; k < 3; k++) {
+      placeAround('jenny', a0 - 1.55 - k * 0.16, Rd + 70);
+    }
+  }
+  if (landmark.kind === 'airstrip') {
+    // Planes parked along the strip; at the airfield, the canvas Bessonneau
+    // beside the hangar and a water tower.
+    const lm = landmark;
+    const h = lm.orientation === 'h';
+    const off = Math.sign(h ? lm.y : lm.x);
+    const spot = (along: number, side: number): [number, number] =>
+      h ? [lm.x + along, lm.y + off * side] : [lm.x + off * side, lm.y + along];
+    const planes = venue === 'airfield' ? 3 : 1;
+    for (let k = 0; k < planes; k++) {
+      const along = -lm.lengthM / 2 + 70 + k * 17;
+      const [x, y] = spot(along, 21);
+      place('jenny', x, y, headingTo(x, y, ...spot(along, 0)));
+    }
+    if (venue === 'airfield') {
+      const [bx, by] = spot(-lm.lengthM / 2 + 46, 40);
+      place('bessonneau', bx, by, headingTo(bx, by, ...spot(-lm.lengthM / 2 + 46, 0)));
+      const [qx, qy] = spot(-lm.lengthM / 2 - 4, 46);
+      place('watertower', qx, qy, 0);
+    }
+  }
+  if (sea) {
+    // Bathing huts in rows on the upper beach, doors to the sea.
+    const rows = 2 + Math.floor(deco() * 2);
+    for (let k = 0; k < rows; k++) {
+      const along = drand(-260, 260);
+      let hx = sea.nx * sea.d - sea.ny * along;
+      let hy = sea.ny * sea.d + sea.nx * along;
+      const dd = seaDepth(sea, hx, hy);
+      hx -= sea.nx * (dd + 19);
+      hy -= sea.ny * (dd + 19);
+      if (roomFor(hx, hy, PROP_SIZE.huts.radius)) {
+        const yaw = headingTo(hx, hy, hx + sea.nx, hy + sea.ny);
+        props.push({ kind: 'huts', x: hx, y: hy, yaw, scale: 1, variant: 0 });
+      }
+    }
+  }
+  if (village) {
+    // The village church, set back behind the houses.
+    const v = village;
+    for (let tries = 0; tries < 4; tries++) {
+      const back = (deco() < 0.5 ? -1 : 1) * drand(34, 44);
+      const t = drand(-30, 30);
+      const x = road.orientation === 'h' ? v.x + t : v.x + back;
+      const y = road.orientation === 'h' ? v.y + back : v.y + t;
+      const facing = road.orientation === 'h' ? headingTo(x, y, x, v.y) : headingTo(x, y, v.x, y);
+      if (place('church', x, y, facing)) break;
+    }
+  }
+  if (venue === 'county' && deco() < 0.6) {
+    // A water tower by one of the farms.
+    const barn = props.find((p) => p.kind === 'barn');
+    if (barn) place('watertower', barn.x + drand(-18, 18), barn.y + drand(-18, 18), 0);
+  }
+
   // --- Sky: a few balloons over the field and a scattered cumulus layer ---
   const sky: SkyProp[] = [];
   const balloons = venue === 'meeting' ? 5 : 2 + Math.floor(rng() * 2);
@@ -565,8 +713,13 @@ export function generateTerrain(seed: number, cfg: GameConfig): Terrain {
     landmark.kind === 'lake' &&
     ((x - landmark.x) / (landmark.rx + 4)) ** 2 + ((y - landmark.y) / (landmark.ry + 4)) ** 2 <= 1;
   const inSea = (x: number, y: number) => !!sea && seaDepth(sea, x, y) > -BEACH_M * 0.5;
-  const dry = props.filter(
-    (p) => p.kind === 'lighthouse' || (!wet(p.x, p.y, 3) && !inLake(p.x, p.y) && !inSea(p.x, p.y)),
+  // (The lighthouse and the bathing huts stand on the beach on purpose.)
+  const dry = props.filter((p) =>
+    p.kind === 'lighthouse'
+      ? true
+      : p.kind === 'huts'
+        ? !inLake(p.x, p.y) && !inSea(p.x, p.y)
+        : !wet(p.x, p.y, 3) && !inLake(p.x, p.y) && !inSea(p.x, p.y),
   );
 
   return { fields, road, landmark, river, ponds, props: dry, sky, village, sea };

@@ -8,6 +8,7 @@
     "arcade": "Arcade",
     "daily": "Daily Jump",
     "records": "Records",
+    "gazette": "Gazette",
     "settings": "Settings",
     "prompt": "Press Enter",
     "demo": "Demo"
@@ -48,20 +49,12 @@
       "action": "Jump · open the chute · flare",
       "pause": "Pause / resume"
     },
-    "jumpComplete": "Jump Complete",
-    "greatJump": "Great Jump!",
-    "poorJump": "Poor Jump…",
-    "missed": "Missed the Target",
-    "crashed": "Crashed",
-    "crashedMsg": "You hit the ground too hard!",
-    "crashNoPull": "The chute never came out.",
-    "crashLowPull": "Pulled at {{alt}} m — too low to open in time.",
-    "bullseye": "Bullseye!",
     "scoreAccuracy": "Accuracy",
     "scoreRings": "Hoops",
     "scorePull": "Pull",
     "scoreLanding": "Landing",
     "scoreSpot": "Exit",
+    "scoreStunt": "Double drop",
     "scoreMultiplier": "Difficulty Bonus",
     "jumpScore": "Jump Score",
     "landing": {
@@ -82,6 +75,7 @@
     "confirmInitials": "Confirm",
     "recordSaved": "Added to the Hall of Aces!",
     "phase": {
+      "title": "Title Card",
       "plane": "Jump Run",
       "freefall": "Free Fall",
       "deploying": "Opening",
@@ -97,12 +91,18 @@
       "spotRed": "RED LIGHT",
       "spotAmber": "AMBER LIGHT",
       "spotGreen": "GREEN LIGHT - GO!",
+      "balloonRed": "NOT HERE",
+      "balloonAmber": "NEARLY...",
+      "balloonGreen": "NOW - CUT LOOSE!",
       "jumpPrompt": "[action]: JUMP",
+      "balloonPrompt": "[action]: CUT LOOSE",
       "pullPrompt": "[action]: OPEN CHUTE",
       "pullZone": "PULL WINDOW",
       "pullNow": "PULL!",
       "belowDeck": "BELOW THE DECK!",
       "flarePrompt": "[action]: FLARE!",
+      "cutawayPrompt": "[action]: CUT AWAY",
+      "canopyCount": "CANOPY",
       "stall": "STALL!",
       "ringHit": "HOOP!",
       "ringMiss": "MISSED HOOP",
@@ -113,6 +113,7 @@
       "bullseye": "BULLSEYE!",
       "splash": "SPLASH!",
       "hintPlane": "WAIT FOR THE GREEN LIGHT  -  [pause]: PAUSE",
+      "hintBalloon": "THE BALLOON DRIFTS WITH THE WIND  -  [pause]: PAUSE",
       "hintFreefall": "[left] [right] TURN   [up] TRACK   [down] ARCH",
       "hintCanopy": "[left] [right] TURN   [up] DIVE   [down] BRAKES",
       "tipPlane": "The light turns green over the right exit point: jump then.",
@@ -190,9 +191,12 @@
   },
   "circuit": {
     "title": "The Grand Tour",
-    "subtitle": "Ten events, five fields. Any medal opens the next event.",
+    "subtitle": "Ten events at five fields, then three period acts. Any medal opens the next event.",
     "medals": "Medals won",
     "locked": "Locked",
+    "group": {
+      "heritage": "Period Acts"
+    },
     "venue": {
       "county": "County Fair",
       "seaside": "Seaside",
@@ -241,6 +245,18 @@
     "meet-grand-prix": {
       "name": "Grand Prix",
       "goal": "Wind, hoops and a moving float: the meet’s final."
+    },
+    "fair-balloon": {
+      "name": "The Professor’s Ascension",
+      "goal": "No aeroplane: a smoke balloon drifting with the wind. Cut loose at the right moment — no throw — and land on the target."
+    },
+    "meet-double": {
+      "name": "The Double Drop",
+      "goal": "Two canopies: open high, cut the first away, fall again, then open the second. The longer the re-fall, the louder the crowd."
+    },
+    "sea-grand-act": {
+      "name": "The Grand Act",
+      "goal": "Tiny Broadwick’s act: a double drop from a balloon, over the beach. Mind the sea!"
     }
   },
   "brief": {
@@ -278,6 +294,37 @@
     "retry": "Retry",
     "nextEvent": "Next Event",
     "toCircuit": "Grand Tour",
-    "menu": "Menu"
+    "menu": "Menu",
+    "front": {
+      "masthead": "The Sky Gazette",
+      "extra": "Extra!",
+      "byline": "From our special correspondent — {{venue}}",
+      "photo": "Our photographer’s snapshot.",
+      "figures": "The jump in figures",
+      "headline": {
+        "bullseye": "Bang on the bullseye!",
+        "double": "Two canopies, one triumph",
+        "great": "A masterly jump",
+        "good": "The crowd cheers",
+        "poor": "A so-so jump",
+        "missed": "Wide of the mark!",
+        "water": "An unplanned dip!",
+        "crashed": "A fright on the field"
+      },
+      "exitPlane": "Our parachutist left the aeroplane at {{alt}} metres.",
+      "exitBalloon": "Our parachutist cut loose from the balloon at {{alt}} metres.",
+      "pull": "Canopy open at {{pull}} metres.",
+      "double": "A first canopy opens, then breaks away: {{refall}} seconds of re-fall, and the second opens at {{pull}} metres.",
+      "landing": {
+        "standup": "Touched down standing, {{dist}} m from the target.",
+        "slide": "Slid in, {{dist}} m from the target.",
+        "tumble": "Tumbled in, {{dist}} m from the target.",
+        "crash": "Hit hard, {{dist}} m from the target."
+      },
+      "water": "Came down… in the water, {{dist}} m from the target, to the crowd’s delight.",
+      "bullseye": "Bang on the bullseye: the crowd swarmed onto the field.",
+      "crashNoPull": "The crowd held its breath: our parachutist never opened. More fright than harm, we are assured backstage.",
+      "crashLowPull": "The crowd held its breath: opened at {{alt}} metres, the canopy had no time to fill. More fright than harm, we are assured backstage."
+    }
   }
 }

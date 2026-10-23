@@ -1,4 +1,4 @@
-import { forwardOf, spotLightAt, targetAt } from './physics';
+import { canCutAway, forwardOf, spotLightAt, targetAt } from './physics';
 import type { GameConfig, GameState, InputState } from './types';
 import { Phase } from './types';
 
@@ -24,6 +24,11 @@ function headingTo(dx: number, dy: number): number {
 function steerTo(s: GameState, desired: number, dead: number): number {
   const d = wrap(desired - s.heading - s.turnRate * 0.25);
   return d > dead ? 1 : d < -dead ? -1 : 0;
+}
+
+/** A double drop is on: a second canopy waits and the first hasn't been cut away yet. */
+function doubleDropPending(s: GameState, cfg: GameConfig): boolean {
+  return cfg.canopies > 1 && s.cutawayAt === null;
 }
 
 /** Where the target will be when we touch down (it may be a moving wagon). */
@@ -62,31 +67,43 @@ export const naivePilot: Pilot = (s, cfg) => {
   return { ...IDLE, turn: steerTo(s, headingTo(t.x - s.posX, t.y - s.posY), 0.15) };
 };
 
-/** A decent human: jumps on green, tracks toward the target, pulls mid-window, flares around 4 m. */
+/**
+ * A decent human: jumps on green, tracks toward the target, pulls mid-window,
+ * flares around 4 m. On a double drop: opens high, cuts away with room to
+ * spare, pulls the second one early.
+ */
 export const casualPilot: Pilot = (s, cfg) => {
   if (s.phase === Phase.Plane) {
     return { ...IDLE, action: spotLightAt(s, cfg) === 'green' };
   }
   const t = aimPoint(s, cfg);
   const aim = headingTo(t.x - s.posX, t.y - s.posY);
+  const double = doubleDropPending(s, cfg);
   if (s.phase === Phase.Freefall) {
     return {
       turn: steerTo(s, aim, 0.2),
       drive: Math.hypot(t.x - s.posX, t.y - s.posY) > 60 ? 1 : 0,
-      action: s.altitude <= cfg.hardDeck + 90,
+      action: s.altitude <= cfg.hardDeck + (double ? 600 : 90),
     };
   }
   return {
     turn: steerTo(s, aim, 0.12),
     drive: 0,
-    action: s.phase === Phase.Canopy && s.altitude <= 4 && s.flareTime === 0,
+    action:
+      (double && canCutAway(s, cfg) && s.canopyTime >= 6) ||
+      (s.phase === Phase.Canopy && s.altitude <= 4 && s.flareTime === 0),
   };
 };
 
-/** Plays it all: tight spot, hoops, pull just above the deck, crabbed approach, timed flare. */
+/**
+ * Plays it all: tight spot, hoops, pull just above the deck, crabbed approach,
+ * timed flare — and on a double drop, a long re-fall between the two canopies.
+ */
 export function skilledPilot(pullAt?: number): Pilot {
   return (s, cfg) => {
-    const pull = pullAt ?? cfg.hardDeck + 15;
+    const double = doubleDropPending(s, cfg);
+    const last = pullAt ?? cfg.hardDeck + 15;
+    const pull = double ? last + 450 : last;
     if (s.phase === Phase.Plane) {
       const f = forwardOf(s.planeHeading);
       const along = (s.posX - s.spotX) * f.x + (s.posY - s.spotY) * f.y;
@@ -127,7 +144,9 @@ export function skilledPilot(pullAt?: number): Pilot {
     return {
       turn: s.altitude < 3 ? 0 : steerTo(s, desired, 0.08),
       drive,
-      action: s.phase === Phase.Canopy && s.altitude <= 3.6 && s.flareTime === 0,
+      action:
+        (double && canCutAway(s, cfg) && s.canopyTime >= 3) ||
+        (s.phase === Phase.Canopy && s.altitude <= 3.6 && s.flareTime === 0),
     };
   };
 }

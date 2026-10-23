@@ -1,0 +1,174 @@
+name: Claude Code Review
+
+on:
+  pull_request:
+    # "synchronize" covers every push to the PR branch, including force pushes
+    types: [opened, synchronize, reopened, ready_for_review]
+
+# Cancel a running review when a new commit is pushed to the same PR
+concurrency:
+  group: claude-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  claude-review:
+    # Skip drafts and Dependabot PRs: repository secrets (including the Claude
+    # token) are not exposed to Dependabot runs, so the review would fail auth.
+    if: >-
+      github.event.pull_request.draft == false &&
+      github.actor != 'dependabot[bot]' &&
+      !startsWith(github.head_ref, 'dependabot/')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: read
+      id-token: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      # Fetch the base branch so the review rules (AGENTS.md, code-review.md, docs)
+      # can be read from base instead of the PR head — a PR must not be able to
+      # weaken its own review rules.
+      - name: Fetch base branch for authoritative review rules
+        run: git fetch --depth=1 origin "${{ github.base_ref }}"
+
+      # Escalate to a higher-reasoning model (Opus) for large or sensitive PRs;
+      # keep the faster Sonnet for routine ones — mirrors Copilot's effort levels.
+      # Aliases (sonnet/opus) resolve to the latest model of each family.
+      - name: Select review model by PR complexity
+        id: model
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          CHANGED=$(gh pr view "${{ github.event.pull_request.number }}" \
+            --repo "${{ github.repository }}" --json files -q '.files[].path')
+          FILES=$(printf '%s\n' "$CHANGED" | grep -c . || true)
+          LINES=$(( ${{ github.event.pull_request.additions }} + ${{ github.event.pull_request.deletions }} ))
+          # Areas where subtle bugs are costly: the deterministic engine core and its
+          # tuning, persisted stores (players' saves), global styles, app wiring, CI.
+          SENSITIVE=$(printf '%s\n' "$CHANGED" | grep -Ec \
+            'engine/(physics|config|events|ground|ground-texture|camera|sound-cues|renderer)\.ts|shared/.*\.store\.ts|src/styles/|app\.config|app\.routes|transloco\.loader|tools/bake-voxels|\.github/workflows/' || true)
+          MODEL="sonnet"
+          REASON="routine"
+          if [ "${FILES:-0}" -gt 15 ] || [ "${LINES:-0}" -gt 400 ] || [ "${SENSITIVE:-0}" -gt 0 ]; then
+            MODEL="opus"
+            REASON="complex"
+          fi
+          echo "model=$MODEL" >> "$GITHUB_OUTPUT"
+          echo "Selected $MODEL ($REASON — files=$FILES, lines=$LINES, sensitive=$SENSITIVE)"
+
+      - name: Run Claude Code Review
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          track_progress: true
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR NUMBER: ${{ github.event.pull_request.number }}
+
+            You are reviewing a pull request for Skydiver, a client-side-only browser
+            game: Angular 22 (zoneless, standalone, OnPush) + TypeScript, a pure
+            deterministic game engine rendered to a 640×360 canvas, a bespoke pixel-art
+            UI kit, Transloco (en + fr). There is no backend.
+
+            Before reviewing, read the project rules from the BASE branch, not the PR
+            head, so a PR cannot weaken its own review rules. Use:
+              git show origin/${{ github.base_ref }}:AGENTS.md
+              git show origin/${{ github.base_ref }}:.claude/commands/code-review.md
+            `AGENTS.md` is the single source of truth for architecture and rules;
+            `code-review.md` is the convention checklist. Judge the diff against them.
+            Additionally, for each area the diff touches, read the matching doc (also
+            from the base branch, via
+            `git show origin/${{ github.base_ref }}:docs/<name>.md`) — these docs hold
+            detailed rules NOT fully repeated in AGENTS.md. Map:
+            game engine, loop, stores, i18n, controls / gamepad, motion, audio →
+            `ARCHITECTURE.md`; UI kit, SCSS tokens / mixins, voxel sprites, Gazette
+            plates → `DESIGN_SYSTEM.md`; unit specs, calibration specs, e2e →
+            `TESTING.md`.
+            The enumerated list below is a reminder of common cases, NOT an upper
+            bound: also flag every violation of the checklist or a relevant doc, even
+            if it is not repeated here.
+
+            Review this pull request in the style of GitHub Copilot code reviews:
+
+            **Summary comment**: ALWAYS post a summary comment on the PR, even when you
+            found nothing to comment on inline — never end a review with zero output.
+            Start with a short summary (2-4 sentences) of what the PR does and your
+            overall impression. Do not list every file exhaustively.
+            When the code looks good and you post no inline comments, the summary must
+            still briefly state what you reviewed (the key files/areas) and why it passed
+            (e.g. "conventions followed: OnPush, signals, inject(), pure engine,
+            Transloco en/fr") so the author sees an explicit green review rather than
+            silence.
+            If you found cross-cutting problems that do not map cleanly onto a single
+            changed line (e.g. engine logic leaking into a component, state held in a
+            component instead of a shared store, a sound played ad hoc instead of
+            derived in `sound-cues.ts`, a voxel model changed without regenerating the
+            baked sprites), add a short "Architecture notes" list to this summary — do
+            not drop them just because they do not fit an inline suggestion.
+
+            **Excluded files**: do not review or comment on lock files, generated or
+            build-output files (`engine/baked-sprites.ts`, `gazette/gazette-plates.ts`),
+            images (PNGs, SVGs, `public/assets/sprites/baked/*`), or dependency
+            manifests (e.g. `package-lock.json`, `package.json` version bumps) — focus
+            on hand-written source. A generator (`tools/*.mjs`) changed without its
+            regenerated output, or vice versa, is still worth an architecture note.
+
+            **Inline comments**: only comment on changed lines where you found a real
+            issue and you are confident about it:
+            - bugs and logic errors (undefined variables, incorrect conditions,
+              unhandled edge cases, regressions, wrong signal usage, listener / timer /
+              `requestAnimationFrame` / audio-node leaks not released via `DestroyRef`)
+            - engine purity and determinism: Angular, DOM or clock (`Date.now`,
+              `performance.now`) in the pure engine files (`types`, `config`,
+              `physics`, `ground`, `ground-texture`, `camera`); a bare `Math.random()`
+              in simulation code instead of the injected `rng`; `integrate()` mutating
+              its input; the renderer reading the wall clock; new scenery in
+              `generateTerrain()` drawing from the main `rng` instead of `deco`
+            - gameplay calibration: a balance / medal spec loosened, skipped or a
+              scripted pilot dropped so that a retune of `config.ts` / `events.ts`
+              passes
+            - persistence: a store payload change that drops or corrupts players'
+              saved settings, records or progress (hydration must tolerate missing,
+              corrupt and older payloads)
+            - security vulnerabilities (XSS via `innerHTML` / `bypassSecurityTrust*`,
+              unvalidated or unescaped input, hardcoded secrets / API keys / tokens
+              committed in source or config)
+            - project-convention violations that are genuine defects: `any` types; a
+              non-null `!` without a comment saying why it is safe; a component without
+              `ChangeDetectionStrategy.OnPush` (required in this project); constructor
+              injection instead of `inject()`; `@NgModule`; `ChangeDetectorRef` /
+              `markForCheck()`; `@angular/material` or `--mat-sys-*`; a raw
+              `<button>` / `<input type="range">` where a pixel UI kit component
+              exists; a custom control that is not focusable (unreachable by gamepad);
+              user-facing text hard-coded instead of Transloco; an i18n key added to
+              only one of `en.json` / `fr.json` (or of the `gazette/` pair); a key name
+              written into a string ("Space", "Esc", "←") instead of a key token
+              (`[action]`, `[left]`, …); ICU / MessageFormat syntax; hard-coded colours
+              / sizes in SCSS instead of `_tokens.scss` tokens; rounded corners; a
+              component-level `@media (prefers-reduced-motion)` instead of the global
+              `data-motion` rule / `MotionService`; a sound played ad hoc instead of a
+              cue in `sound-cues.ts`; a UI kit component injecting `AudioService`
+              instead of the `UI_SOUNDS` token; non-English comments
+            - concrete performance issues (allocations per pixel or per frame in the
+              engine / renderer / raster hot paths, heavy work in templates, eager
+              imports that bloat the initial bundle instead of a lazy route or scope)
+            - typos in code or strings
+
+            For each inline comment: a brief explanation (1-2 sentences) and, whenever
+            possible, a directly applicable code suggestion in a ```suggestion``` block.
+
+            Avoid (in INLINE comments): style or personal-preference remarks, praise for
+            correct code, speculative comments ("this could potentially..."), repeating
+            the same issue on multiple lines. If the code looks good, post no inline
+            comment — but still post the green summary comment described above. Note:
+            non-English comments, a missing `OnPush` and a missing `fr.json` key are
+            genuine convention defects, NOT style remarks — always flag them.
+
+          claude_args: |
+            --model ${{ steps.model.outputs.model }}
+            --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(git show:*)"

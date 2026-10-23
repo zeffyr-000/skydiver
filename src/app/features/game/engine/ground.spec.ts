@@ -1,12 +1,18 @@
 import { describe, expect, it } from 'vitest';
 import { BASE_CONFIG } from './config';
 import {
+  BEACH_M,
+  CROWD_STYLES,
   distanceToPolyline,
   generateTerrain,
   mulberry32,
   PROP_SIZE,
+  seaDepth,
   TERRAIN_EXTENT,
+  type PropKind,
+  type Terrain,
 } from './ground';
+import type { Venue } from './types';
 
 describe('mulberry32', () => {
   it('is deterministic and stays in [0, 1)', () => {
@@ -55,6 +61,53 @@ describe('generateTerrain', () => {
       expect(count('windsock')).toBe(1);
       expect(count('spectator')).toBeGreaterThanOrEqual(14);
     }
+  });
+
+  it('dresses the crowd in all its Sunday-best styles', () => {
+    const styles = new Set<number>();
+    for (const seed of seeds) {
+      for (const p of generateTerrain(seed, cfg).props) {
+        if (p.kind === 'spectator') {
+          expect(p.variant).toBeLessThan(CROWD_STYLES);
+          styles.add(p.variant);
+        }
+      }
+    }
+    expect(styles.size).toBe(CROWD_STYLES);
+  });
+
+  it('dresses each venue in its period: the fair, the race, the airfield, the beach', () => {
+    const at = (venue: Venue) => seeds.map((seed) => generateTerrain(seed, { ...cfg, venue }));
+    const count = (t: Terrain, kind: PropKind) => t.props.filter((p) => p.kind === kind).length;
+    // The crowd came by Ford, everywhere.
+    for (const venue of ['county', 'seaside', 'lake', 'airfield', 'meeting'] as const) {
+      for (const t of at(venue)) expect(count(t, 'car')).toBeGreaterThanOrEqual(3);
+    }
+    for (const t of at('county')) {
+      expect(count(t, 'ferris')).toBe(1);
+      expect(count(t, 'bigtop')).toBe(1);
+    }
+    for (const t of at('meeting')) {
+      expect(count(t, 'pylon')).toBe(3);
+      expect(count(t, 'jenny')).toBeGreaterThanOrEqual(3);
+    }
+    const airfields = at('airfield');
+    expect(airfields.filter((t) => count(t, 'bessonneau') === 1).length).toBeGreaterThan(50);
+    expect(airfields.filter((t) => count(t, 'jenny') > 0).length).toBeGreaterThan(50);
+    // Bathing huts stand on the sand, never in the sea.
+    const beaches = at('seaside');
+    expect(beaches.filter((t) => count(t, 'huts') > 0).length).toBeGreaterThan(50);
+    for (const t of beaches) {
+      for (const p of t.props.filter((q) => q.kind === 'huts')) {
+        expect(seaDepth(t.sea!, p.x, p.y)).toBeLessThan(-BEACH_M / 2); // sea is set at the seaside
+      }
+    }
+  });
+
+  it('gives most villages a church', () => {
+    const villages = seeds.map((s) => generateTerrain(s, cfg)).filter((t) => t.village);
+    const churches = villages.filter((t) => t.props.some((p) => p.kind === 'church'));
+    expect(churches.length).toBeGreaterThan(villages.length * 0.8);
   });
 
   it('rolls one landmark per jump and hits all three kinds across seeds', () => {

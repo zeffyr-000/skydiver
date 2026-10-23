@@ -121,7 +121,7 @@ painted procedurally at the canvas's resolution by `engine/horizon.ts`.)
 In-game art is **pre-rendered from voxel models**, not hand-drawn per frame: one model gives
 every angle the Mode 7 camera needs with the same light, scale and outline.
 
-- **Tool:** `node tools/bake-voxels.mjs` (pure Node, ~11 s, deterministic). Models live in that
+- **Tool:** `node tools/bake-voxels.mjs` (pure Node, ~25 s, deterministic). Models live in that
   file; the kit (primitives, renderer, sheet packing) in `tools/lib/voxel.mjs`. Output:
   `public/assets/sprites/baked/*.png` + the generated `src/app/features/game/engine/baked-sprites.ts`
   — never edit that file by hand, re-run the tool and commit both.
@@ -143,6 +143,53 @@ every angle the Mode 7 camera needs with the same light, scale and outline.
 - **Layout:** frame = elevationRow × cols + yawStep × anim + animFrame; choose the yaw steps (1
   for round things, 8 for buildings, 16 for the plane) and elevations (e.g. 14°/38°/70° for
   props, negative ones for things seen from below like balloons).
+- **Files:** every sheet has under 256 colours and on/off alpha, so it is written as a **palette
+  PNG** with index 0 transparent (`encodeCompactPng` in `tools/lib/png.mjs`, lossless, ~30 %
+  smaller than RGBA; it falls back to RGBA if a sheet ever outgrows that). The whole set weighs
+  ~790 kB; mind it when adding animated sheets (the Ferris wheel's 96 frames are the largest).
+- **Period, not generic:** the cast is dressed for the 1920s (see
+  [RESEARCH_1920S.md](RESEARCH_1920S.md)):
+  - the **jumper** (`aviator()`): red leather flying jacket with a sheepskin collar, khaki
+    jodhpurs flaring at the thigh, tall riding boots, gauntlets, leather helmet and brass
+    goggles, a long white scarf, and the **Type A pack** on his back with its brass ripcord ring
+    (`pack: 'open'` once pulled; the balloon professor has none — his chute hangs from the
+    balloon);
+  - the **ship**: a Curtiss **JN-4 "Jenny"** (OX-5 radiator nose and exhaust stubs, tandem
+    cockpits, unequal-span two-bay wings with kingposts, US stars, striped rudder), baked twice:
+    `plane` with the jumper out on the lower wing holding a strut, `plane-empty` once he's gone;
+    `jenny` is the same model parked tail-down on the grass (`VoxelModel.moved()` puts the
+    origin under the wheels);
+  - the **crowd** (`civilian()`): eight Sunday-best styles × watching/cheering — suits with
+    boaters, fedoras or flat caps, shirtsleeves and braces, drop-waist dresses with cloches,
+    a parasol, a child in knickerbockers; cheering men wave their hats. `CROWD_STYLES` in
+    `ground.ts` must match;
+  - the **scenery**: Ferris wheel (turning, 4 frames), circus big top, Ford Model T (hood up or
+    folded), timber water tower, village church, striped bathing huts on wheels, checkered
+    air-race pylons, the canvas Bessonneau hangar.
+
+## Gazette plates (period photographs)
+
+The Gazette (`features/gazette/`) illustrates its issues with **public-domain period
+photographs and documents**, turned into pixel art so they sit on the UI's grid instead of
+looking pasted in:
+
+- **Tool:** `node tools/gazette-plates.mjs` (macOS: decodes with `sips`; originals are cached in
+  the OS temp dir, so re-runs are offline and byte-identical). The `PLATES` list in that file
+  names each plate's Wikimedia Commons file, crop and size box. Output:
+  `public/assets/gazette/*.png` + the generated
+  `src/app/features/gazette/gazette-plates.ts` (sizes and Commons page — never edit by hand).
+- **Look:** crop → area-average down to the box (≤ 280×200 plate pixels by default) →
+  auto-levels → **Bayer 4×4 ordered dither** onto a short ramp: `sepia` (ink → parchment-dark →
+  canvas-cream) for photographs, `ticket` for the green Pégoud ticket, free `stamp` inks for the
+  Inverted Jenny. Palette PNGs, 4–10 kB each.
+- **Display:** always at ×2 (`width`/`height` = plate size × 2, `image-rendering: pixelated`) in
+  a sunken cream frame, with a caption, a credit and a link to the original.
+- **The result's press photo** uses the same ramp and dither, live in the browser:
+  [`gazette-photo.ts`](../src/app/features/game/result-card/gazette-photo.ts) turns one HUD-less
+  frame of the touchdown into a 180×101 photo for the result card's front page.
+- **Licensing:** only add files Commons marks *public domain* or *CC0*, and credit them in both
+  Gazette translations (`plates.<id>.caption` / `.credit`). `gazette.spec.ts` fails if a baked
+  plate is unused or used twice.
 
 ## The UI kit (`src/app/ui/`)
 

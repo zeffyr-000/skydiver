@@ -1,0 +1,33 @@
+@if (doc() === 'rates') {
+  <div class="card">
+    <p class="card__head">{{ 'gazette.rates.card' | transloco }}</p>
+    <table class="card__table">
+      <tbody>
+        @for (r of rates; track r) {
+          <tr>
+            <td>{{ 'gazette.rates.rows.' + r + '.label' | transloco }}</td>
+            <td class="card__price">{{ 'gazette.rates.rows.' + r + '.price' | transloco }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+    <p class="card__foot">{{ 'gazette.rates.footer' | transloco }}</p>
+  </div>
+  <p class="note">{{ 'gazette.rates.note' | transloco }}</p>
+} @else {
+  <p class="badge">{{ 'gazette.ui.reconstruction' | transloco }}</p>
+  <div class="bill">
+    <p class="bill__top">{{ 'gazette.handbill.top' | transloco }}</p>
+    <p class="bill__headline">{{ 'gazette.handbill.headline' | transloco }}</p>
+    <p class="bill__sub">{{ 'gazette.handbill.sub' | transloco }}</p>
+    <p class="bill__stops">{{ 'gazette.handbill.stops' | transloco }}</p>
+    <ul class="bill__acts">
+      @for (a of acts; track a) {
+        <li>{{ 'gazette.handbill.acts.' + a | transloco }}</li>
+      }
+    </ul>
+    <p class="bill__price">{{ 'gazette.handbill.price' | transloco }}</p>
+    <p class="bill__small">{{ 'gazette.handbill.small' | transloco }}</p>
+  </div>
+  <p class="note">{{ 'gazette.handbill.note' | transloco }}</p>
+}

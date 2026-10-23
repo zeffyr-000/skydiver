@@ -28,6 +28,22 @@ const LANDING_POINTS: Record<LandingQuality, number> = {
   crash: 0,
 };
 const SPOT_POINTS: Record<SpotLight, number> = { green: 150, amber: 50, red: 0 };
+/** Double drop: a flat bonus for cutting away and opening the second canopy… */
+const DOUBLE_DROP_POINTS = 400;
+/** …plus this much per second of re-fall before the second pull… */
+const REFALL_POINTS_PER_S = 40;
+/** …up to this much (the crowd's thrill has its limits). */
+const REFALL_MAX = 320;
+
+/** Under canopy, the action key cuts away the first canopy down to this height, then flares (m). */
+export const CUTAWAY_FLOOR = 80;
+
+/** A balloon starts this far below its exit altitude and eases up to it (m)… */
+const BALLOON_RISE = 180;
+/** …with this time constant (s). */
+const BALLOON_RISE_TIME = 5;
+/** Lightened of its passenger, the balloon shoots up (m/s). */
+export const BALLOON_LIFT = 4;
 
 // Gust wander frequencies (rad/s): two different primes keep the wind from
 // tracing a circle, and being a pure function of `elapsed` keeps it deterministic.
@@ -68,6 +84,38 @@ export function targetAt(cfg: GameConfig, elapsed: number): { x: number; y: numb
   return { x: f.x * d, y: f.y * d };
 }
 
+/** The jump ship's ground speed: the plane's own, or the wind's for a drifting balloon. */
+export function shipSpeed(s: GameState, cfg: GameConfig): number {
+  return cfg.jumpShip === 'balloon' ? Math.hypot(s.windBaseX, s.windBaseY) : cfg.planeSpeed;
+}
+
+/** A balloon's height `t` seconds into the act: it eases up to the exit altitude. */
+export function balloonAltitude(cfg: GameConfig, t: number): number {
+  // The rise never takes more than a fifth of the height (a short ?fast=1 run starts in the air).
+  const rise = Math.min(BALLOON_RISE, cfg.exitAltitude * 0.2);
+  return cfg.exitAltitude - rise * Math.exp(-t / BALLOON_RISE_TIME);
+}
+
+/** How high the jump ship is now (a balloon let go of its jumper climbs away). */
+export function shipAltitude(s: GameState, cfg: GameConfig): number {
+  if (cfg.jumpShip !== 'balloon') {
+    return cfg.exitAltitude;
+  }
+  const atExit = balloonAltitude(cfg, s.planeTime);
+  return s.phase === Phase.Plane ? atExit : atExit + BALLOON_LIFT * (s.elapsed - s.planeTime);
+}
+
+/** Under the first of two canopies and high enough: the action key cuts it away. */
+export function canCutAway(s: GameState, cfg: GameConfig): boolean {
+  return (
+    s.phase === Phase.Canopy &&
+    s.cutawayAt === null &&
+    cfg.canopies > 1 &&
+    s.altitude >= CUTAWAY_FLOOR &&
+    s.flareTime <= 0
+  );
+}
+
 function wrapAngle(a: number): number {
   const t = Math.PI * 2;
   return ((((a + Math.PI) % t) + t) % t) - Math.PI;
@@ -82,12 +130,16 @@ function wrapAngle(a: number): number {
 export function createJump(cfg: GameConfig, rng: () => number = Math.random): GameState {
   const windDir = rng() * Math.PI * 2;
   const windScale = 0.5 + 0.8 * rng();
-  const planeHeading = rng() * Math.PI * 2;
+  const runHeading = rng() * Math.PI * 2;
   const lateral = (rng() * 2 - 1) * cfg.planeLateral;
   const groundSeed = Math.floor(rng() * 0xffffffff) >>> 0;
 
   const windBaseX = Math.cos(windDir) * cfg.windBase * windScale;
   const windBaseY = Math.sin(windDir) * cfg.windBase * windScale;
+  // A balloon has no run of its own: it drifts downwind at the wind's speed.
+  const balloon = cfg.jumpShip === 'balloon';
+  const planeHeading = balloon ? wrapAngle(windDir + Math.PI / 2) : runHeading;
+  const speed = balloon ? Math.hypot(windBaseX, windBaseY) : cfg.planeSpeed;
 
   // The ideal exit sits upwind of the target (where a passive body would
   // drift onto it), shifted sideways by the run's offset: the line never
@@ -95,11 +147,11 @@ export function createJump(cfg: GameConfig, rng: () => number = Math.random): Ga
   const f = forwardOf(planeHeading);
   const spotX = -windBaseX * cfg.spotUpwindTime + Math.cos(planeHeading) * lateral;
   const spotY = -windBaseY * cfg.spotUpwindTime + Math.sin(planeHeading) * lateral;
-  const lead = cfg.planeSpeed * cfg.spotLeadTime;
+  const lead = speed * cfg.spotLeadTime;
   const planeStartX = spotX - f.x * lead;
   const planeStartY = spotY - f.y * lead;
 
-  const rings = layRings(cfg, rng, spotX, spotY, f, windBaseX, windBaseY);
+  const rings = layRings(cfg, rng, spotX, spotY, f, speed, windBaseX, windBaseY);
 
   const s: GameState = {
     phase: Phase.Plane,
@@ -111,12 +163,12 @@ export function createJump(cfg: GameConfig, rng: () => number = Math.random): Ga
     spotX,
     spotY,
     spot: 'red',
-    altitude: cfg.exitAltitude,
+    altitude: balloon ? balloonAltitude(cfg, 0) : cfg.exitAltitude,
     descentSpeed: 0,
     posX: planeStartX,
     posY: planeStartY,
-    velX: f.x * cfg.planeSpeed,
-    velY: f.y * cfg.planeSpeed,
+    velX: f.x * speed,
+    velY: f.y * speed,
     heading: planeHeading,
     turnRate: 0,
     pitch: 0,
@@ -132,6 +184,8 @@ export function createJump(cfg: GameConfig, rng: () => number = Math.random): Ga
     canopyTime: 0,
     flareTime: 0,
     outroTimer: 0,
+    cutawayAt: null,
+    released: null,
     rings,
     ringsPassed: 0,
     groundSeed,
@@ -153,6 +207,7 @@ function layRings(
   spotX: number,
   spotY: number,
   f: { x: number; y: number },
+  speed: number,
   windX: number,
   windY: number,
 ): Ring[] {
@@ -167,7 +222,7 @@ function layRings(
   const maxStep = cfg.trackSpeed * gapTime * 0.5;
 
   // First hoop: where a passive diver lands after the exit throw (~4 s in).
-  const throwCarry = cfg.planeSpeed / cfg.freefallDrag;
+  const throwCarry = speed / cfg.freefallDrag;
   let x = spotX + f.x * throwCarry * 0.8 + windX * 4;
   let y = spotY + f.y * throwCarry * 0.8 + windY * 4;
   const rings: Ring[] = [];
@@ -206,9 +261,10 @@ function layRings(
 /** Where the plane is along its run at time `t` (seconds into it). */
 export function planePosition(s: GameState, cfg: GameConfig, t: number): { x: number; y: number } {
   const f = forwardOf(s.planeHeading);
+  const speed = shipSpeed(s, cfg);
   return {
-    x: s.planeStartX + f.x * cfg.planeSpeed * t,
-    y: s.planeStartY + f.y * cfg.planeSpeed * t,
+    x: s.planeStartX + f.x * speed * t,
+    y: s.planeStartY + f.y * speed * t,
   };
 }
 
@@ -254,16 +310,27 @@ export function integrate(s: GameState, input: InputState, dt: number, cfg: Game
     const p = planePosition(n, cfg, n.planeTime);
     n.posX = p.x;
     n.posY = p.y;
+    if (cfg.jumpShip === 'balloon') {
+      n.altitude = balloonAltitude(cfg, n.planeTime);
+    }
     const forced = n.planeTime >= cfg.spotLeadTime + cfg.spotOvertime;
     return input.action || forced ? exitPlane(n, cfg) : n;
   }
 
-  // --- Pull (free fall) / flare (canopy) on the context key ---
+  // --- Pull (free fall) / cut away or flare (canopy) on the context key ---
   if (input.action) {
     if (n.phase === Phase.Freefall) {
       n.phase = Phase.Deploying;
       n.deployTimer = cfg.deployDuration;
       n.pullAltitude = n.altitude;
+    } else if (canCutAway(n, cfg)) {
+      // Double drop: let the first canopy go and fall again toward the second.
+      n.phase = Phase.Freefall;
+      n.cutawayAt = n.freefallTime;
+      n.released = { x: n.posX, y: n.posY, altitude: n.altitude, at: n.elapsed };
+      n.canopyTime = 0;
+      n.trim = 0;
+      n.pitch = 0;
     } else if (n.phase === Phase.Canopy && n.flareTime <= 0) {
       n.flareTime = 1e-6;
     }
@@ -425,6 +492,7 @@ export function resolveJump(
   const t = targetAt(cfg, s.elapsed);
   const landedDistance = Math.hypot(s.posX - t.x, s.posY - t.y);
   const crashed = landing === 'crash';
+  const refallTime = s.cutawayAt === null ? null : s.freefallTime - s.cutawayAt;
   const breakdown = crashed
     ? null
     : scoreJump(
@@ -434,6 +502,7 @@ export function resolveJump(
           pullAltitude: s.pullAltitude,
           rings: s.rings,
           spot: s.spot,
+          refallTime,
         },
         cfg,
       );
@@ -448,7 +517,9 @@ export function resolveJump(
     ringsPassed: s.ringsPassed,
     ringsTotal: s.rings.length,
     spot: s.spot,
+    exitAltitude: cfg.jumpShip === 'balloon' ? balloonAltitude(cfg, s.planeTime) : cfg.exitAltitude,
     freefallTime: s.freefallTime,
+    refallTime,
     score: breakdown?.total ?? 0,
     breakdown,
   };
@@ -476,6 +547,14 @@ export function pullPoints(pullAltitude: number | null, cfg: GameConfig): number
   );
 }
 
+/** Double-drop bonus for a re-fall of `refallTime` seconds (0 without a cut-away). */
+export function stuntPoints(refallTime: number | null): number {
+  if (refallTime === null) {
+    return 0;
+  }
+  return DOUBLE_DROP_POINTS + Math.min(REFALL_MAX, Math.round(refallTime * REFALL_POINTS_PER_S));
+}
+
 /** Itemise a safe touchdown into the result card's lines. */
 export function scoreJump(
   j: {
@@ -484,6 +563,8 @@ export function scoreJump(
     pullAltitude: number | null;
     rings: Ring[];
     spot: SpotLight;
+    /** Seconds of re-fall after a cut-away (null or absent: no double drop). */
+    refallTime?: number | null;
   },
   cfg: GameConfig,
 ): ScoreBreakdown {
@@ -503,13 +584,15 @@ export function scoreJump(
   const pull = pullPoints(j.pullAltitude, cfg);
   const landing = LANDING_POINTS[j.landing];
   const spot = SPOT_POINTS[j.spot];
-  const base = accuracy + rings + pull + landing + spot;
+  const stunt = stuntPoints(j.refallTime ?? null);
+  const base = accuracy + rings + pull + landing + spot + stunt;
   return {
     accuracy,
     rings,
     pull,
     landing,
     spot,
+    stunt,
     base,
     multiplier: cfg.scoreMultiplier,
     total: Math.round(base * cfg.scoreMultiplier),

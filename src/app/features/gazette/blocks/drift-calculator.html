@@ -1,0 +1,53 @@
+@let r = result();
+<div class="drift">
+  <p class="drift__title">{{ 'gazette.drift.title' | transloco }}</p>
+  <p class="drift__intro">{{ 'gazette.drift.intro' | transloco }}</p>
+
+  <div class="drift__controls">
+    <div class="drift__control">
+      <span>{{ 'gazette.drift.wind' | transloco: { v: wind() } }}</span>
+      <app-pixel-slider
+        [(value)]="wind"
+        [min]="0"
+        [max]="maxWind"
+        [ariaLabel]="'gazette.drift.windLabel' | transloco"
+      />
+    </div>
+    <div class="drift__control">
+      <span>{{ 'gazette.drift.alt' | transloco: { v: opening() } }}</span>
+      <app-pixel-slider
+        [(value)]="opening"
+        [min]="150"
+        [max]="maxOpening"
+        [step]="50"
+        [ariaLabel]="'gazette.drift.altLabel' | transloco"
+      />
+    </div>
+  </div>
+
+  <!-- The ground, seen from the side: exit point upwind, the wind carrying the canopy to the target. -->
+  <div class="drift__map" aria-hidden="true">
+    <span class="drift__wind">&#9654; &#9654; &#9654;</span>
+    <span class="drift__exit" [style.right.%]="share() * 88 + 6">
+      <span class="drift__pin"></span>{{ 'gazette.drift.exit' | transloco }}
+    </span>
+    <span class="drift__span" [style.width.%]="share() * 88"></span>
+    <span class="drift__target"
+      ><span class="drift__bull"></span>{{ 'gazette.drift.target' | transloco }}</span
+    >
+  </div>
+
+  <p class="drift__readout">
+    <span>{{ 'gazette.drift.time' | transloco: { s: r.seconds } }}</span>
+    <span>{{ 'gazette.drift.drift' | transloco: { m: r.metres } }}</span>
+  </p>
+  <p class="drift__advice" aria-live="polite">
+    @if (verdict() === 'calm') {
+      {{ 'gazette.drift.calm' | transloco }}
+    } @else {
+      {{ 'gazette.drift.advice' | transloco: { m: r.metres } }}
+      {{ 'gazette.drift.' + verdict() | transloco }}
+    }
+  </p>
+  <p class="drift__note">{{ 'gazette.drift.note' | transloco }}</p>
+</div>

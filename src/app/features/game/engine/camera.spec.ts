@@ -47,6 +47,21 @@ describe('cameraFor', () => {
 });
 
 describe('floor projection', () => {
+  it('after a cut-away, swings from the canopy chase back down into the column', () => {
+    const s = { ...createJump(cfg, () => 0.4), pullAltitude: 600, altitude: 560 };
+    const canopy = cameraFor({ ...s, phase: Phase.Canopy, canopyTime: 5 }, cfg, W, H);
+    const cut = { ...s, phase: Phase.Freefall, freefallTime: 20, cutawayAt: 20 };
+    expect(cameraFor(cut, cfg, W, H).pitch).toBeCloseTo(canopy.pitch);
+    const settled = cameraFor({ ...cut, freefallTime: 23 }, cfg, W, H);
+    const falling = cameraFor(
+      { ...s, phase: Phase.Freefall, pullAltitude: null, freefallTime: 10 },
+      cfg,
+      W,
+      H,
+    );
+    expect(settled.pitch).toBeCloseTo(falling.pitch);
+  });
+
   it('rows hit the ground farther away toward the horizon', () => {
     const s = createJump(cfg, () => 0.4);
     const cam = cameraFor(

@@ -42,6 +42,15 @@ describe('Circuit', () => {
     expect(buttons.filter((b) => !b.disabled)).toHaveLength(1);
   });
 
+  it('lists the period acts in a panel of their own, after the five venues', async () => {
+    const fixture = await render();
+    const panels = [...fixture.nativeElement.querySelectorAll('app-pixel-panel')] as HTMLElement[];
+    expect(panels).toHaveLength(6);
+    const acts = EVENTS.filter((e) => e.group === 'heritage');
+    expect(acts.map((e) => e.id)).toEqual(['fair-balloon', 'meet-double', 'sea-grand-act']);
+    expect(panels[5].querySelectorAll('button')).toHaveLength(acts.length);
+  });
+
   it('a medal on the first event opens the second', async () => {
     TestBed.inject(ProgressStore).submitEvent(EVENTS[0].id, EVENTS[0].medals[0]);
     const fixture = await render();
