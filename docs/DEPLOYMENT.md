@@ -55,6 +55,22 @@ clients pick up new deploys.
 `.github/workflows/pr-check.yml` lints, runs unit tests (with coverage) and builds the production
 bundle on every PR to `main`, so a merge to `main` is known to build.
 
+### Claude code review
+
+`.github/workflows/claude-code-review.yml` has Claude review every non-draft PR (Dependabot
+excluded): inline comments with `suggestion` blocks plus an always-present summary. It judges the
+diff against `AGENTS.md`, the checklist in [`.claude/commands/code-review.md`](../.claude/commands/code-review.md)
+and the matching `docs/*.md`, all read from the **base** branch so a PR can't weaken its own
+rules. Routine PRs get Sonnet; large ones (> 15 files or > 400 lines) or ones touching the engine
+core, the persisted stores, global styles, app wiring or CI get Opus.
+
+`.github/workflows/claude-review-reply.yml` answers a reply that mentions `@claude` on a review
+thread or the PR conversation — discuss-only, it never pushes commits. Comment-triggered
+workflows run from `main`, so it only works once merged.
+
+One-time setup: install the [Claude GitHub App](https://github.com/apps/claude) on the repo and
+add a `CLAUDE_CODE_OAUTH_TOKEN` secret (generated with `claude setup-token`).
+
 ## Continuous deployment (GitHub Pages)
 
 `.github/workflows/deploy.yml` builds and publishes to **GitHub Pages** automatically on every push

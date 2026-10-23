@@ -11,6 +11,7 @@ import type { GameConfig } from './types';
  */
 export const BASE_CONFIG: GameConfig = {
   // Jump run
+  jumpShip: 'plane',
   exitAltitude: 1500,
   planeSpeed: 35,
   spotLeadTime: 4.5,
@@ -32,6 +33,7 @@ export const BASE_CONFIG: GameConfig = {
 
   // Opening
   deployDuration: 1.2,
+  canopies: 1,
   hardDeck: 150,
   pullCeiling: 400,
 

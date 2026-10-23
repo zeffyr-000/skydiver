@@ -1,0 +1,60 @@
+@use 'pixel-ui' as px;
+
+:host {
+  display: block;
+}
+
+.myth {
+  padding: var(--sp-4) var(--sp-6);
+  color: var(--ink);
+  background: var(--canvas-cream);
+  box-shadow:
+    inset 0 0 0 2px var(--ink),
+    inset 0 0 0 var(--sp-1) var(--canvas-cream),
+    inset 0 0 0 calc(var(--sp-1) + 2px) var(--ink);
+  text-align: center;
+}
+
+.myth__label,
+.myth__result {
+  font-family: var(--font-head);
+  font-size: var(--fs-head);
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--biplane-red-dark);
+  margin: 0 0 var(--sp-3);
+}
+
+.myth__claim {
+  margin: 0 0 var(--sp-4);
+}
+
+.myth__choices {
+  display: flex;
+  justify-content: center;
+  gap: var(--sp-4);
+}
+
+.myth__verdict {
+  &:focus-visible {
+    outline-offset: var(--sp-2);
+  }
+}
+
+.myth__result--right {
+  color: var(--grass-dark);
+}
+
+// The answer, stamped like a rubber stamp on a proof.
+.myth__stamp {
+  display: inline-block;
+  margin-left: var(--sp-2);
+  padding: 0 var(--sp-2);
+  color: var(--canvas-cream);
+  background: var(--biplane-red);
+}
+
+.myth__text {
+  margin: 0;
+  text-align: left;
+}

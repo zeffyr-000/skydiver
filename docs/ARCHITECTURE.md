@@ -9,7 +9,7 @@ logic, and rendering happen entirely in the browser.
 Browser
   └── Angular 22 SPA (zoneless, standalone, signals)
         ├── App shell (router outlet, screen-wipe overlay, global pixel-art theme, i18n)
-        ├── Feature screens (title · circuit · game · settings · records)
+        ├── Feature screens (title · circuit · game · records · gazette · settings)
         ├── Game engine (pure simulation + loop + input + canvas renderer)
         └── Audio (Web Audio synth: chiptune + effects, all generated — no sample files)
 ```
@@ -59,6 +59,7 @@ Angular Router with lazy-loaded standalone components and `PreloadAllModules`:
 { path: 'circuit',  loadComponent: () => import('./features/circuit/circuit').then(m => m.Circuit) }
 { path: 'settings', loadComponent: () => import('./features/settings/settings').then(m => m.Settings) }
 { path: 'records',  loadComponent: () => import('./features/records/records').then(m => m.Records) }
+{ path: 'gazette',  loadComponent: () => import('./features/gazette/gazette').then(m => m.Gazette) } // ?issue=<id> opens an issue
 { path: '**', redirectTo: '' }
 ```
 
@@ -88,7 +89,7 @@ Three layers, from pure to impure:
 
 | Layer | File | Role |
 |-------|------|------|
-| Cues (pure) | [`engine/sound-cues.ts`](../src/app/features/game/engine/sound-cues.ts) | `cuesBetween(prev, next, cfg)` → the one-shots a step triggered (green light, jump, pull, canopy, flare, stall, hoop pass/miss, hard-deck beeps, landing quality, bullseye, crowd); `ambienceFor(state, cfg)` → continuous levels (wind rush & brightness, biplane engine, music duck) |
+| Cues (pure) | [`engine/sound-cues.ts`](../src/app/features/game/engine/sound-cues.ts) | `cuesBetween(prev, next, cfg)` → the one-shots a step triggered (green light, jump, pull, canopy, flare, stall, hoop pass/miss, hard-deck beeps, landing quality, bullseye, crowd); `ambienceFor(state, cfg)` → continuous levels (wind rush & brightness, biplane engine, music duck, the crowd's murmur as you come down over the field) |
 | Score (pure) | [`shared/audio/music.ts`](../src/app/shared/audio/music.ts) | the two chiptune loops (menu rag, flight theme) as compact text scores: one token per sixteenth (`E5` note, `.` hold, `-` rest; drums `k s h x`) |
 | Synth (Web Audio) | [`shared/audio/synth.ts`](../src/app/shared/audio/synth.ts) | `Synth` — music and SFX buses, pulse waves (cached `PeriodicWave` per duty), filtered noise, a lookahead step sequencer (25 ms tick, 120 ms ahead, swing), one recipe per `SoundName` |
 | Service | [`shared/audio/audio.service.ts`](../src/app/shared/audio/audio.service.ts) | `AudioService` (root) — creates the `AudioContext` on the **first pointer/key gesture** (autoplay policy), applies the two volume settings (squared curve), exposes `play()`, `music()`, `setAmbience()` |
@@ -122,6 +123,23 @@ bundle for nothing). Strings that name a control use **key tokens** — `[action
 [`SettingsStore`](../src/app/shared/settings.store.ts) choice by the root
 [`App`](../src/app/app.ts). Adding a language is documented in the
 [README](../README.md#-internationalisation).
+
+**The Gazette's text is a lazy scope.** Its ~90 kB per language would double the main
+translations, so it lives in `src/assets/i18n/gazette/{en,fr}.json` and the `Gazette` screen
+provides it with `provideTranslocoScope({ scope: 'gazette', loader: { en: () => import(…) } })`:
+each language becomes its own lazy chunk, fetched when the screen opens; keys read
+`'gazette.issues.<issue>.text.<id>.head' | transloco`. The *structure* — eight issues read in
+order plus a supplement, each a run of typed blocks (prose, plates, pull quotes, asides,
+folding "for the buffs" sidebars, legend-or-fact cards, documents, the drift and figures toys)
+followed by its dates, a game tie-in and a quiz — is data in
+[`gazette.data.ts`](../src/app/features/gazette/gazette.data.ts);
+[`gazette.spec.ts`](../src/app/features/gazette/gazette.spec.ts) fails if a block lacks its
+text, a text has no block, a date is told twice or out of order, or the two languages drift
+apart. Paragraphs are blank-line separated in one string and split by the `paragraphs` pipe.
+Reading position (last issue, issues read, best quiz scores) persists in
+[`GazetteStore`](../src/app/shared/gazette.store.ts). Prose blocks carry the `appReading`
+directive: focusable, the arrows (or a pad) scroll the page through the block, then hand focus
+to the next block — so the paper reads top to bottom on a gamepad too.
 
 ### Controls — keyboard bindings and gamepads
 
@@ -211,16 +229,18 @@ TypeScript with **no Angular dependency**, split by concern:
 
 | Phase | The player… | Skill tested |
 |-------|-------------|--------------|
-| `Plane` (jump run) | rides the biplane and jumps on the **green light** | spotting: the ideal exit sits upwind of the target, the run line passes off to the side |
+| `Plane` (jump run) | rides the biplane — or hangs under a **balloon** (`jumpShip: 'balloon'`) drifting downwind at the wind's speed, rising at first, no exit throw — and jumps on the **green light** | spotting: the ideal exit sits upwind of the target, the run line passes off to the side |
 | `Freefall` (~30 s from 1500 m) | turns (←/→), tracks (↑) or arches (↓) through a slalom of **hoops**, one every ~4–5 s | positioning; the hoops lead toward the target |
 | `Deploying` | pulled (Space): the canopy opens over ~1.2 s | **pull late**: the bonus peaks at the hard deck (150 m), nothing below it — and below ~65 m it won't open in time |
 | `Canopy` (~20–40 s) | flies a nimble wing with forward airspeed: turns, brakes (↓), front risers (↑) | the wind really matters (into it you crawl, downwind you race); a held turn spirals down |
+| **double drop** (`canopies: 2`) | under the first canopy, above 80 m, Space **cuts it away** (`canCutAway`): back to `Freefall`, then a second pull | the longer the re-fall before the second pull, the bigger the stunt bonus — and the less room left |
 | touchdown | flares (Space) a few metres up | timing: too early stalls, too late slams in; stand-up needs low descent *and* ground speed |
 
 Controls are unified: ←/→ always turn, ↑/↓ always drive/brake, Space/Enter is the one context
 action (jump → pull → flare, and skip the outro). A jump scores **accuracy** (to the bullseye),
-**hoops**, **pull altitude**, **landing quality** (stand-up / slide / tumble) and **exit timing**,
-times the difficulty multiplier; a crash scores 0. A run is three jumps.
+**hoops**, **pull altitude**, **landing quality** (stand-up / slide / tumble), **exit timing** and,
+on a double drop, a **stunt** bonus (400 + 40 per second of re-fall, capped), times the difficulty
+multiplier; a crash scores 0. A run is three jumps.
 
 **Balance guard.** [balance.spec.ts](../src/app/features/game/engine/balance.spec.ts) plays whole
 jumps with scripted pilots (naive, casual, skilled, reckless) through the real engine and
@@ -313,13 +333,18 @@ seed):
 
 | Mode | Route | Plan |
 |------|-------|------|
-| **Grand Tour** (circuit) | `/circuit` → `/game?mode=circuit&event=<id>` | one event: fixed conditions, a **fixed seed** (the same drop zone every attempt, so it can be learned), plain points, bronze/silver/gold thresholds. Ten events over five venues; any medal unlocks the next. The first one shows coaching tips. |
+| **Grand Tour** (circuit) | `/circuit` → `/game?mode=circuit&event=<id>` | one event: fixed conditions, a **fixed seed** (the same drop zone every attempt, so it can be learned), plain points, bronze/silver/gold thresholds. Ten events over five venues, then three **period acts** (`group: 'heritage'`, their own panel on the Grand Tour screen): the professor's balloon ascension, the double drop, and the grand act (both at once, over the beach). Any medal unlocks the next. The first one shows coaching tips. |
 | **Daily jump** | `/game?mode=daily` | one jump derived from the local date (seed = hash of the day): everyone gets the same conditions with no backend; the day's best is kept |
 | **Arcade** | `/game?mode=arcade` (or plain `/game`) | three random jumps at three venues, at the Settings difficulty (score multiplier); boards per difficulty |
 
 Each **venue** reshapes the drop zone (`GameConfig.venue` → `generateTerrain`): the county fair
-(farmland, villages), the seaside (sea, beach and lighthouse), the mountain lake (a lake beside the
-target, pines), the airfield (strip and hangars) and the Grand Meet (stands all round, balloons). An
+(farmland, villages, a Ferris wheel and a circus big top), the seaside (sea, beach, lighthouse and
+bathing huts), the mountain lake (a lake beside the target, pines), the airfield (strip, hangars, a
+canvas Bessonneau, parked Jennys, a water tower) and the Grand Meet (stands all round, balloons,
+air-race pylons, a flight line of Jennys). Everywhere the crowd's Model Ts are parked past the
+stands and villages get a church. This **period dressing draws from its own random stream**
+(`mulberry32(seed ^ 0x51ed270b)`), appended after everything else: adding to it never moves the
+older layout, so the fixed-seed events keep their drop zones. An
 event can also make the **target move** (`targetSpeed`): a horse-drawn float drives down a road
 through the drop zone and `targetAt(cfg, elapsed)` gives its position for scoring, the HUD and the
 autopilot.
@@ -339,9 +364,14 @@ constructor → planFromQuery(route) → prepareJump(0): config + seeded createJ
 afterNextRender → boot(): fit canvas · create input (the player's bindings)/renderer/loop
                   (the world renders behind the card)
 briefing → BriefingCard (goal, conditions, drop-zone map, medals) · Jump! → stage 'playing'
+          → a silent-film title card holds the run for TITLE_CARD_S (venue over event; the
+            renderer draws it from `titleCard`, its age; the action key cuts it; phase
+            announced as 'title'; skipped under ?fast=1)
 GameLoop.step(dt) → integrate state · on touchdown bank the score (ProgressStore / RecordsStore),
                     freeze a beat (hit-stop), then stage 'result' after the outro
-result → ResultCard (count-up tally, medal stamp / day's best / run total + initials) · actions:
+result → takePhoto(): one HUD-less frame → gazettePhoto() (sepia ordered dither) · ResultCard as
+         a Sky Gazette front page: headlineFor(result, splashed), byline, press photo, a short
+         report, the count-up tally, medal stamp / day's best / run total + initials · actions:
          retry · next event · next jump · play again · back to the Grand Tour / menu
 window:resize → viewportFor() → canvas size (whole-number scale)
 effects → GamepadNavService.flying while playing & not paused · HUD prompts re-filled when the

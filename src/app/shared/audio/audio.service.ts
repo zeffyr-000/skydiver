@@ -8,8 +8,8 @@ export type MusicTrack = 'menu' | 'flight';
 
 const TRACKS: Record<MusicTrack, Track> = { menu: MENU_THEME, flight: FLIGHT_THEME };
 
-/** No wind, no engine, music at full. */
-export const QUIET: AmbienceLevels = { wind: 0, windPitch: 0, engine: 0, music: 1 };
+/** No wind, no engine, no crowd, music at full. */
+export const QUIET: AmbienceLevels = { wind: 0, windPitch: 0, engine: 0, music: 1, crowd: 0 };
 
 /**
  * The game's audio, app-wide. Browsers only start audio after a user gesture,

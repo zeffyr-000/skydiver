@@ -78,6 +78,12 @@ export function paintMinimap(
       'grandstand',
       'marquee',
       'lighthouse',
+      'ferris',
+      'bigtop',
+      'church',
+      'watertower',
+      'huts',
+      'bessonneau',
     ].includes(p.kind);
     if (building || p.kind === 'oak' || p.kind === 'pine' || p.kind === 'poplar') {
       r.plot(toX(p.x), toY(p.y), building ? C.building : C.tree);

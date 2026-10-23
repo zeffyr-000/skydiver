@@ -43,9 +43,18 @@ export type SpotLight = 'green' | 'amber' | 'red';
 /** The place a jump happens: drives how the countryside is laid out. */
 export type Venue = 'county' | 'seaside' | 'lake' | 'airfield' | 'meeting';
 
+/**
+ * What the diver jumps from: the biplane on its run, or — as the fairground
+ * "professors" did — a hot-air balloon drifting with the wind (no engine, no
+ * airspeed, so no exit throw; it rises a little at first).
+ */
+export type JumpShip = 'plane' | 'balloon';
+
 /** All tunable constants for a jump. Grouped so difficulty just swaps a few. */
 export interface GameConfig {
   // --- Jump run (spotting) ---
+  /** The plane on its run, or a balloon drifting downwind at the wind's speed. */
+  jumpShip: JumpShip;
   /** Exit altitude (metres). */
   exitAltitude: number;
   /** Jump-ship ground speed along its run (m/s). */
@@ -84,6 +93,11 @@ export interface GameConfig {
   // --- Opening ---
   /** Seconds the canopy takes to open (line stretch + inflation). */
   deployDuration: number;
+  /**
+   * Canopies carried. Two make a double drop possible: open the first, cut it
+   * away (the action key, high enough), fall again, open the second.
+   */
+  canopies: number;
   /** Below this altitude a pull earns no pull bonus (and is usually fatal). */
   hardDeck: number;
   /** Pulls at or above this altitude earn no pull bonus; it peaks at the hard deck. */
@@ -188,6 +202,8 @@ export interface ScoreBreakdown {
   landing: number;
   /** Exit timing bonus (green light). */
   spot: number;
+  /** Double-drop bonus: a cut-away and a second opening, more for a longer re-fall. */
+  stunt: number;
   /** Sum before the difficulty multiplier. */
   base: number;
   multiplier: number;
@@ -211,8 +227,12 @@ export interface JumpResult {
   ringsPassed: number;
   ringsTotal: number;
   spot: SpotLight;
+  /** Height the diver left the jump ship at (a balloon is still rising when you let go). */
+  exitAltitude: number;
   /** Seconds spent in free fall. */
   freefallTime: number;
+  /** Seconds of free fall between a cut-away and the second pull (null: no double drop). */
+  refallTime: number | null;
   score: number;
   /** Itemised score, or null on a crash (nothing to tally). */
   breakdown: ScoreBreakdown | null;
@@ -276,6 +296,12 @@ export interface GameState {
   flareTime: number;
   /** Seconds left in the landed/crashed outro. */
   outroTimer: number;
+
+  // --- Double drop ---
+  /** Free-fall time at the cut-away (null until the first canopy is cut away). */
+  cutawayAt: number | null;
+  /** Where and when the first canopy was let go (it drifts off on its own). */
+  released: { x: number; y: number; altitude: number; at: number } | null;
 
   // --- Hoops ---
   rings: Ring[];

@@ -38,10 +38,11 @@ import { GameLoop } from './engine/loop';
 import { InputController } from './engine/input';
 import { createJump, integrate } from './engine/physics';
 import { ambienceFor, cuesBetween } from './engine/sound-cues';
-import { HUD_KEYS, SkyDiverRenderer, type HudLabels } from './engine/renderer';
+import { HUD_KEYS, SkyDiverRenderer, TITLE_CARD_S, type HudLabels } from './engine/renderer';
 import { loadBaked } from './engine/sprites';
 import type { GameConfig, GameState, JumpResult } from './engine/types';
 import { Phase } from './engine/types';
+import { gazettePhoto } from './result-card/gazette-photo';
 import { ResultCard, type ResultAction } from './result-card/result-card';
 import { BASE_H, BASE_W, viewportFor } from './viewport';
 
@@ -118,6 +119,10 @@ export class Game {
   protected readonly unlockedNext = signal(false);
   protected readonly needsInitials = signal(false);
   protected readonly recordSaved = signal(false);
+  /** The touchdown as a press photo for the result's front page. */
+  protected readonly photo = signal<string | null>(null);
+  /** The jump ended in the water. */
+  protected readonly splashed = signal(false);
 
   /** The pause card's key list: the player's keys, or the pad's buttons. */
   protected readonly pauseKeys = computed(() => {
@@ -138,25 +143,6 @@ export class Game {
   protected readonly dailyBest = computed(() => {
     const day = this.plan().day;
     return day ? this.progress.dailyBest(day) : 0;
-  });
-
-  /** The result card judges the jump, not just reports it. */
-  protected readonly resultHeading = computed(() => {
-    const r = this.lastResult();
-    if (!r) {
-      return 'game.jumpComplete';
-    }
-    if (r.crashed) {
-      return 'game.crashed';
-    }
-    const base = r.breakdown?.base ?? 0;
-    if (r.breakdown && r.breakdown.accuracy === 0) {
-      return 'game.missed';
-    }
-    if (r.bullseye || base >= 2000) {
-      return 'game.greatJump';
-    }
-    return base < 1000 ? 'game.poorJump' : 'game.jumpComplete';
   });
 
   /** Buttons under the result, by mode. */
@@ -195,6 +181,8 @@ export class Game {
   private resultPending = false;
   /** Seconds left of the touchdown freeze-frame. */
   private hitStop = 0;
+  /** Seconds left of the silent-film title card that opens the jump. */
+  private titleCard = 0;
   /** Translated HUD strings, pushed into the canvas renderer. */
   private hudLabels: HudLabels = {};
   private fast = false;
@@ -316,8 +304,14 @@ export class Game {
     this.state = createJump(cfg, jump.seed === null ? Math.random : mulberry32(jump.seed));
     this.briefState.set(this.state);
     this.lastResult.set(null);
+    this.photo.set(null);
+    this.splashed.set(false);
     this.resultPending = false;
     this.hitStop = 0;
+    this.titleCard = 0;
+    if (this.renderer) {
+      this.renderer.titleCard = null;
+    }
     this.phaseKey.set(this.state.phase);
     this.stage.set('briefing');
     this.audio.setAmbience(QUIET);
@@ -327,6 +321,10 @@ export class Game {
   /** Briefing done: fly. */
   protected startJump(): void {
     this.input?.reset();
+    this.titleCard = this.fast ? 0 : TITLE_CARD_S;
+    if (this.titleCard > 0) {
+      this.phaseKey.set('title');
+    }
     this.stage.set('playing');
   }
 
@@ -338,6 +336,17 @@ export class Game {
       this.hitStop -= dt;
       return;
     }
+    if (this.titleCard > 0) {
+      // The card holds the action; the action key cuts straight to the run.
+      this.titleCard = this.input.read().action ? 0 : this.titleCard - dt;
+      if (this.renderer) {
+        this.renderer.titleCard = this.titleCard > 0 ? TITLE_CARD_S - this.titleCard : null;
+      }
+      if (this.titleCard <= 0) {
+        this.phaseKey.set(this.state.phase);
+      }
+      return;
+    }
     const cfg = this.config();
     if (this.state.phase === Phase.Landed || this.state.phase === Phase.Crashed) {
       // The outro plays first (skippable — integrate consumes the action).
@@ -346,6 +355,7 @@ export class Game {
         this.pushHud();
       } else if (this.resultPending) {
         this.resultPending = false;
+        this.takePhoto();
         this.stage.set('result');
         this.audio.setAmbience(QUIET);
         this.playResultJingle();
@@ -359,9 +369,11 @@ export class Game {
       this.audio.play(cue);
     }
     if (this.state.result && prev.phase !== this.state.phase) {
-      if (this.renderer?.isWater(this.state.posX, this.state.posY)) {
+      const water = !!this.renderer?.isWater(this.state.posX, this.state.posY);
+      if (water) {
         this.audio.play('splash');
       }
+      this.splashed.set(water);
       this.onResolved(this.state.result);
     }
     this.pushHud();
@@ -398,6 +410,21 @@ export class Game {
     this.renderer?.draw(this.state, this.config());
   }
 
+  /**
+   * The front page's photo: one frame of the touchdown drawn without the HUD,
+   * turned into a dithered press photo (the next frame redraws the HUD).
+   */
+  private takePhoto(): void {
+    const renderer = this.renderer;
+    if (!renderer) {
+      return;
+    }
+    renderer.hud = false;
+    renderer.draw(this.state, this.config());
+    this.photo.set(gazettePhoto(this.canvasRef().nativeElement));
+    renderer.hud = true;
+  }
+
   private pushHud(): void {
     const now = performance.now();
     if (now - this.lastHudPush < HUD_INTERVAL_MS) {
@@ -432,7 +459,12 @@ export class Game {
         : plan.event
           ? this.transloco.translate(`events.${plan.event.id}.name`)
           : this.transloco.translate('brief.daily');
-    this.renderer.run = { score: this.runScore(), jump: where.toUpperCase() };
+    const venue = plan.jumps[this.jumpIndex()]?.config.venue;
+    this.renderer.run = {
+      score: this.runScore(),
+      jump: where.toUpperCase(),
+      venue: venue ? this.transloco.translate(`circuit.venue.${venue}`).toUpperCase() : '',
+    };
   }
 
   /** Touchdown: bank the score (a crash scores 0) and record progress. */

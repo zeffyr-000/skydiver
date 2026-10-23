@@ -1,0 +1,74 @@
+@use 'pixel-ui' as px;
+
+:host {
+  display: block;
+}
+
+@mixin label($color: var(--biplane-red-dark)) {
+  font-family: var(--font-head);
+  font-size: var(--fs-head);
+  font-weight: 700;
+  text-transform: uppercase;
+  color: $color;
+}
+
+.flyer {
+  padding: var(--sp-4) var(--sp-6);
+  color: var(--ink);
+  background: var(--parchment-dark);
+  @include px.pixel-inset();
+
+  p {
+    margin: 0 0 var(--sp-3);
+  }
+}
+
+.flyer__title {
+  @include label;
+  font-size: var(--fs-h3);
+}
+
+.flyer__picks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-1);
+  margin-bottom: var(--sp-3);
+}
+
+.flyer__sky {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-bottom: var(--sp-3);
+  background: linear-gradient(var(--sky-twilight), var(--sky-ember));
+  box-shadow: 0 0 0 2px var(--ink);
+  shape-rendering: crispEdges;
+}
+
+.flyer__ground {
+  fill: var(--grass-dark);
+}
+
+.flyer__path {
+  fill: none;
+  stroke: var(--canvas-cream);
+  stroke-width: 1.5;
+  stroke-dasharray: 4 3;
+}
+
+.flyer__wing,
+.flyer__body {
+  fill: var(--biplane-red);
+}
+
+.flyer__body {
+  fill: var(--biplane-red-dark);
+}
+
+.flyer__prop {
+  fill: var(--brass);
+}
+
+.flyer__name {
+  @include label(var(--ink));
+}

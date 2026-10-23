@@ -82,6 +82,12 @@ export function cameraFor(s: GameState, cfg: GameConfig, w: number, h: number): 
   if (s.phase === Phase.Plane) {
     pitch = PITCH_PLANE;
     dist = DIST_PLANE;
+  } else if (s.phase === Phase.Freefall && s.cutawayAt !== null) {
+    // Cut away (double drop): swing from the canopy chase back down the column.
+    const k = smoothstep((s.freefallTime - s.cutawayAt) / EXIT_SWING);
+    pitch = lerp(canopyPitch, PITCH_FREEFALL, k);
+    dist = lerp(DIST_CANOPY, DIST_FREEFALL, k);
+    lift = CANOPY_LIFT * (1 - k);
   } else if (s.phase === Phase.Freefall || s.pullAltitude === null) {
     const k = smoothstep(s.freefallTime / EXIT_SWING);
     pitch = lerp(PITCH_PLANE, PITCH_FREEFALL, k);

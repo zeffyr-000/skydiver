@@ -32,9 +32,19 @@ test.describe('Sky Diver game', () => {
     await expect(page.getByRole('img', { name: 'Map of the drop zone' })).toBeVisible();
     await jump(page);
 
+    // The jump opens on its silent-film title card, then the run starts.
+    await expect(page.locator('.game__phase')).toHaveText(/title card/i);
     await expect(page.locator('.game__phase')).toHaveText(/jump run/i);
     await page.keyboard.press('Space');
     await expect(page.locator('.game__phase')).toHaveText(/free fall/i);
+  });
+
+  test('the action key cuts the title card short', async ({ page }) => {
+    await page.goto('/game');
+    await jump(page);
+    await expect(page.locator('.game__phase')).toHaveText(/title card/i);
+    await page.keyboard.press('Space');
+    await expect(page.locator('.game__phase')).toHaveText(/jump run/i, { timeout: 1000 });
   });
 
   test('a jump resolves into a result card', async ({ page }) => {

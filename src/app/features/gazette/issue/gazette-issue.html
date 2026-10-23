@@ -1,0 +1,191 @@
+@let i = issue();
+@let k = key();
+<article class="issue" aria-labelledby="issue-headline">
+  <header class="issue__head">
+    <h3 class="issue__headline" id="issue-headline">{{ k + '.headline' | transloco }}</h3>
+    <p class="issue__standfirst" appReading>{{ k + '.standfirst' | transloco }}</p>
+  </header>
+
+  @if (stories().length) {
+    <div class="issue__contents">
+      <p class="issue__label">{{ 'gazette.ui.inThisIssue' | transloco }}</p>
+      <ol>
+        @for (s of stories(); track s) {
+          <li>{{ k + '.text.' + s + '.head' | transloco }}</li>
+        }
+      </ol>
+    </div>
+  }
+
+  @for (b of i.blocks; track $index) {
+    @if (b.kind === 'text') {
+      <section class="story">
+        <h4 class="story__head">{{ k + '.text.' + b.id + '.head' | transloco }}</h4>
+        <div class="story__body" appReading>
+          @for (para of k + '.text.' + b.id + '.body' | transloco | paragraphs; track $index) {
+            <p>{{ para }}</p>
+          }
+        </div>
+      </section>
+    } @else if (b.kind === 'plate') {
+      @let p = plates[b.plate];
+      <figure class="plate">
+        <img
+          class="plate__img"
+          [src]="p.src"
+          [width]="p.w * 2"
+          [height]="p.h * 2"
+          [alt]="'gazette.plates.' + b.plate + '.caption' | transloco"
+        />
+        <figcaption class="plate__caption">
+          {{ 'gazette.plates.' + b.plate + '.caption' | transloco }}
+          <span class="plate__credit">
+            {{ 'gazette.plates.' + b.plate + '.credit' | transloco }} ·
+            <a [href]="p.commons" target="_blank" rel="noopener">{{
+              'gazette.ui.original' | transloco
+            }}</a>
+          </span>
+        </figcaption>
+      </figure>
+    } @else if (b.kind === 'quote') {
+      <blockquote class="pull" appReading>
+        <p class="pull__text">
+          {{
+            'gazette.ui.quote' | transloco: { text: (k + '.quotes.' + b.id + '.text' | transloco) }
+          }}
+        </p>
+        <footer class="pull__who">{{ k + '.quotes.' + b.id + '.who' | transloco }}</footer>
+      </blockquote>
+    } @else if (b.kind === 'aside') {
+      <aside class="aside" appReading>
+        <p class="issue__label">{{ 'gazette.ui.aside' | transloco }}</p>
+        <p class="aside__text">{{ k + '.asides.' + b.id | transloco }}</p>
+      </aside>
+    } @else if (b.kind === 'geek') {
+      @let open = unfolded().has(b.id);
+      <div class="geek">
+        <app-pixel-button [block]="true" [ariaPressed]="open" (pressed)="toggle(b.id)">
+          <span class="geek__bar">
+            <span class="geek__tag">{{ 'gazette.ui.geek' | transloco }}</span>
+            <span class="geek__title">{{ k + '.geek.' + b.id + '.title' | transloco }}</span>
+            <span class="geek__fold">{{
+              (open ? 'gazette.ui.fold' : 'gazette.ui.unfold') | transloco
+            }}</span>
+          </span>
+        </app-pixel-button>
+        @if (open) {
+          <div class="geek__body" appReading>
+            <p>{{ k + '.geek.' + b.id + '.body' | transloco }}</p>
+            @if (b.specs?.length) {
+              <table class="geek__specs">
+                <tbody>
+                  @for (s of b.specs; track s) {
+                    <tr>
+                      <th scope="row">
+                        {{ k + '.geek.' + b.id + '.specs.' + s + '.label' | transloco }}
+                      </th>
+                      <td>{{ k + '.geek.' + b.id + '.specs.' + s + '.value' | transloco }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            }
+          </div>
+        }
+      </div>
+    } @else if (b.kind === 'myth') {
+      <app-myth-card class="block" [base]="k + '.myths.' + b.id" [answer]="b.answer" />
+    } @else if (b.kind === 'doc') {
+      <app-gazette-document class="block" [doc]="b.doc" />
+    } @else if (b.widget === 'drift') {
+      <app-drift-calculator class="block" />
+    } @else {
+      <app-figure-flyer class="block" />
+    }
+  }
+
+  @if (isSupplement()) {
+    <section class="story">
+      <h4 class="story__head">{{ 'gazette.supplement.glossary' | transloco }}</h4>
+      @for (g of glossary; track g.group) {
+        <div class="terms" appReading>
+          <p class="issue__label">{{ 'gazette.glossary.groups.' + g.group | transloco }}</p>
+          <dl>
+            @for (t of g.terms; track t) {
+              <dt>{{ 'gazette.glossary.terms.' + t + '.term' | transloco }}</dt>
+              <dd>{{ 'gazette.glossary.terms.' + t + '.def' | transloco }}</dd>
+            }
+          </dl>
+        </div>
+      }
+    </section>
+    <section class="story">
+      <h4 class="story__head">{{ 'gazette.supplement.timeline' | transloco }}</h4>
+      <ol class="dates">
+        @for (row of timeline; track row.key) {
+          <li class="dates__row">
+            <span class="dates__date">{{
+              'gazette.timeline.' + row.key + '.date' | transloco
+            }}</span>
+            <span class="dates__text">{{
+              'gazette.timeline.' + row.key + '.text' | transloco
+            }}</span>
+            @if (row.issue; as target) {
+              <app-pixel-button
+                [ariaLabel]="
+                  'gazette.supplement.toIssueLabel'
+                    | transloco
+                      : { n: row.n, title: ('gazette.issues.' + target + '.headline' | transloco) }
+                "
+                (pressed)="open.emit(target)"
+              >
+                {{ 'gazette.supplement.toIssue' | transloco: { n: row.n } }}
+              </app-pixel-button>
+            }
+          </li>
+        }
+      </ol>
+    </section>
+  } @else {
+    <section class="story">
+      <h4 class="story__head">{{ 'gazette.ui.dates' | transloco }}</h4>
+      <ol class="dates" appReading>
+        @for (d of i.dates; track d) {
+          <li class="dates__row">
+            <span class="dates__date">{{ 'gazette.timeline.' + d + '.date' | transloco }}</span>
+            <span class="dates__text">{{ 'gazette.timeline.' + d + '.text' | transloco }}</span>
+          </li>
+        }
+      </ol>
+    </section>
+
+    @if (play(); as pl) {
+      <div class="play">
+        <p class="issue__label">{{ 'gazette.ui.play' | transloco }}</p>
+        <div appReading>
+          <p class="play__title">{{ k + '.play.title' | transloco }}</p>
+          <p class="play__body">{{ k + '.play.body' | transloco }}</p>
+        </div>
+        <app-pixel-button variant="primary" (pressed)="go(pl.url)">
+          @if (pl.event && !pl.locked) {
+            {{
+              'gazette.ui.playEvent'
+                | transloco: { name: ('events.' + pl.event + '.name' | transloco) }
+            }}
+          } @else if (pl.locked) {
+            {{ 'gazette.ui.playLocked' | transloco }}
+          } @else {
+            {{ 'gazette.ui.playRoute' | transloco }}
+          }
+        </app-pixel-button>
+      </div>
+    }
+
+    <app-issue-quiz class="block" [issue]="i" />
+  }
+
+  <p class="issue__sources" appReading>
+    <span class="issue__label">{{ 'gazette.ui.sources' | transloco }}</span>
+    {{ k + '.sources' | transloco }}
+  </p>
+</article>

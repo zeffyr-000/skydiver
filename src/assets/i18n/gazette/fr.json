@@ -1,0 +1,1353 @@
+{
+  "masthead": "La Gazette du Ciel",
+  "motto": "Le journal des fous volants · 1797–1936",
+  "ui": {
+    "issueNo": "N° {{n}}",
+    "supplementNo": "Supplément",
+    "supplementShort": "Suppl.",
+    "price": "Prix : 25 centimes",
+    "strip": "Les numéros",
+    "read": "Lu",
+    "inThisIssue": "Dans ce numéro",
+    "aside": "Le saviez-vous ?",
+    "geek": "Pour les mordus",
+    "unfold": "Déplier",
+    "fold": "Replier",
+    "myth": "Légende ou réalité ?",
+    "legend": "Légende",
+    "fact": "Réalité",
+    "right": "Bien vu !",
+    "wrong": "Raté !",
+    "quiz": "Le quiz du numéro",
+    "score": "Score : {{n}} sur {{total}}",
+    "rank": "Votre grade : {{rank}}",
+    "ranks": {
+      "r0": "Rampant",
+      "r1": "Élève pilote",
+      "r2": "Pilote de meeting",
+      "r3": "As du manche"
+    },
+    "dates": "Les dates du numéro",
+    "play": "Dans le jeu",
+    "playEvent": "Jouer « {{name}} »",
+    "playLocked": "Ouvrir le Grand Circuit",
+    "playRoute": "Y aller",
+    "teaser": "Au prochain numéro",
+    "next": "Numéro suivant",
+    "prev": "Numéro précédent",
+    "restart": "Relire depuis le n° 1",
+    "sources": "Sources",
+    "original": "Voir l’original",
+    "quote": "« {{text}} »",
+    "reconstruction": "Reconstitution"
+  },
+  "drift": {
+    "title": "La règle à calcul du sauteur",
+    "intro": "Réglez le vent et l’altitude d’ouverture : voici où quitter l’avion pour que le vent vous dépose sur la cible.",
+    "wind": "Vent : {{v}} m/s",
+    "alt": "Ouverture à {{v}} m",
+    "time": "Sous voile : {{s}} s",
+    "drift": "Dérive : {{m}} m",
+    "advice": "Sortez {{m}} m avant la cible, du côté d’où vient le vent.",
+    "calm": "Air calme : sautez à la verticale de la cible.",
+    "fair": "Vent modéré : un bon largage suffit à rattraper la dérive.",
+    "strong": "Gare à l’eau : avec une telle dérive, le moindre écart vous envoie dans la rivière.",
+    "target": "Cible",
+    "exit": "Sortie",
+    "windLabel": "Vitesse du vent",
+    "altLabel": "Altitude d’ouverture",
+    "note": "Ordre de grandeur : une voilure ronde de 8,5 m descend d’environ 6 m/s. La chute libre, brève, est négligée."
+  },
+  "figures": {
+    "title": "Les figures en vol",
+    "intro": "Choisissez une figure : le biplan la dessine, vu de profil."
+  },
+  "supplement": {
+    "glossary": "Le petit lexique",
+    "timeline": "La grande chronologie",
+    "toIssue": "N° {{n}}",
+    "toIssueLabel": "Lire le n° {{n}} : {{title}}"
+  },
+  "plates": {
+    "souther-field": {
+      "caption": "Souther Field, à Americus (Géorgie), 1918 : la ligne des Jenny d’entraînement. C’est là que Lindbergh achètera le sien, cinq ans plus tard.",
+      "credit": "Air Service, U.S. Army — domaine public"
+    },
+    "buc-1920": {
+      "caption": "Meeting de Buc, 9 octobre 1920 : le maharajah de Kapurthala et l’aviatrice Adrienne Bolland.",
+      "credit": "Agence de presse Meurisse — domaine public"
+    },
+    "cody-transfer": {
+      "caption": "Floride, 1921 : un pilote du cirque volant de Mabel Cody tient sa trajectoire pendant que « Bugs » McGowan passe de la voiture à l’avion.",
+      "credit": "State Library and Archives of Florida — domaine public"
+    },
+    "ingle-change": {
+      "caption": "1926 : Gladys Ingle s’apprête à passer du Jenny de Bon MacDougall à l’avion d’Art Goebel.",
+      "credit": "Auteur inconnu — domaine public"
+    },
+    "locklear-ladder": {
+      "caption": "Atlantic City, 1919 : Locklear, agrippé à un avion, attend le second appareil qui traîne une échelle de corde.",
+      "credit": "Western Newspaper Union — domaine public"
+    },
+    "boyer-breakaway": {
+      "caption": "1922 : Lillian Boyer exécute le « breakaway », suspendue sous l’avion.",
+      "credit": "Library of Congress — domaine public"
+    },
+    "balloon-poster": {
+      "caption": "Safford (Arizona), 1900 : affiche d’une « grande ascension en ballon et saut en parachute » par Miss Hazel Keyes. Entrée libre pour tous.",
+      "credit": "Auteur inconnu — domaine public"
+    },
+    "reichelt": {
+      "caption": "Franz Reichelt dans son vêtement-parachute, le jour de sa tentative.",
+      "credit": "Agence de presse Meurisse — domaine public"
+    },
+    "broadwick": {
+      "caption": "Tiny Broadwick prête à être larguée, en 1913.",
+      "credit": "Auteur inconnu — domaine public"
+    },
+    "irvin-patent": {
+      "caption": "Le brevet de parachute de Leslie Irvin, déposé en 1918 : l’avion, le sac et le harnais.",
+      "credit": "Office américain des brevets — domaine public"
+    },
+    "hendon-1930": {
+      "caption": "Meeting de Hendon, 27 juin 1930 : un parachutiste se tient debout sur l’aile, prêt à sortir.",
+      "credit": "Agence Rol — domaine public"
+    },
+    "hilsz": {
+      "caption": "Maryse Hilsz en 1935, devenue aviatrice de records.",
+      "credit": "Agence de presse Meurisse — domaine public"
+    },
+    "pegoud-chateaufort": {
+      "caption": "Châteaufort, 1913 : le Blériot équipé du parachute Bonnet, pour l’essai de Pégoud.",
+      "credit": "Agence de presse Meurisse — domaine public"
+    },
+    "vedrines-roof": {
+      "caption": "« L’avion de Védrines sur les Galeries Lafayette », Paris, 1919.",
+      "credit": "Agence Rol — domaine public"
+    },
+    "godefroy-arc": {
+      "caption": "7 août 1919 : le Nieuport de Charles Godefroy sous l’Arc de Triomphe.",
+      "credit": "Jacques Mortane — domaine public"
+    },
+    "fronval": {
+      "caption": "Alfred Fronval devant un avion, 1924.",
+      "credit": "Agence de presse Meurisse — domaine public"
+    },
+    "bolland": {
+      "caption": "Adrienne Bolland vers 1921.",
+      "credit": "Auteur inconnu — domaine public"
+    },
+    "coleman": {
+      "caption": "Bessie Coleman devant son avion, 1922.",
+      "credit": "Auteur inconnu — domaine public"
+    },
+    "doret": {
+      "caption": "Marcel Doret en mars 1926.",
+      "credit": "Agence de presse Meurisse — domaine public"
+    },
+    "pegoud-ticket": {
+      "caption": "Billet n° 0582 pour les « expériences de l’aviateur Pégoud », Gand, 3 novembre 1913 : cinq francs l’entrée « automobile ou voiture ».",
+      "credit": "Auteur inconnu — domaine public"
+    },
+    "inverted-jenny": {
+      "caption": "Le timbre de 24 cents de 1918, et son Jenny la tête en bas.",
+      "credit": "U.S. Post Office — domaine public"
+    }
+  },
+  "rates": {
+    "card": "Les 13 Black Cats · Tarifs",
+    "note": "Tarifs tels que les rapportent des récits ultérieurs : aucune grille datée de l’époque n’a été retrouvée, et les montants varient selon les sources.",
+    "footer": "Cette grille servit de modèle au premier syndicat des pilotes cascadeurs de cinéma, en 1931.",
+    "rows": {
+      "planeChange": {
+        "label": "Changement d’avion en vol, ordinaire",
+        "price": "100 $"
+      },
+      "inverted": {
+        "label": "Vol sur le dos",
+        "price": "100 $"
+      },
+      "jump": {
+        "label": "Saut en parachute, 1 000 pieds de chute libre",
+        "price": "150 $"
+      },
+      "wingLoop": {
+        "label": "Looping, acrobates debout sur les ailes",
+        "price": "450 $"
+      },
+      "upsideChange": {
+        "label": "Passage d’un avion sur le dos à un avion à l’endroit",
+        "price": "500 $"
+      },
+      "explode": {
+        "label": "Faire sauter l’avion en vol, le pilote sautant en parachute",
+        "price": "1 500 $"
+      }
+    }
+  },
+  "handbill": {
+    "note": "Document reconstitué d’après les prospectus de l’époque. Le Grand Circuit et ses étapes sont ceux de ce jeu.",
+    "top": "Venez tous ! Venez nombreux !",
+    "headline": "Le Grand Circuit aérien",
+    "sub": "est en ville !",
+    "stops": "Foire du comté · Bord de mer · Lac de montagne · Aérodrome · Grand Meeting",
+    "acts": {
+      "a1": "Sauts en parachute de précision !",
+      "a2": "Marche sur les ailes !",
+      "a3": "Changement d’avion en plein ciel !",
+      "a4": "La plongée de la mort depuis 1 500 mètres !"
+    },
+    "price": "Baptêmes de l’air : 5 francs",
+    "small": "Dès 14 heures, au pré du château d’eau · Entrée libre · Sous réserve du temps"
+  },
+  "timeline": {
+    "garnerin": {
+      "date": "22 oct. 1797",
+      "text": "André-Jacques Garnerin descend en parachute d’un ballon au-dessus du parc Monceau, à Paris."
+    },
+    "baldwin": {
+      "date": "27 janv. 1887",
+      "text": "Thomas Baldwin saute d’un ballon captif au-dessus du Golden Gate Park : la mode des sauts forains est lancée."
+    },
+    "broadwickFirst": {
+      "date": "28 déc. 1908",
+      "text": "Premier saut de Tiny Broadwick, depuis une montgolfière."
+    },
+    "codyWing": {
+      "date": "14 janv. 1911",
+      "text": "En Angleterre, S. F. Cody vole avec ses deux beaux-fils debout sur l’aile inférieure."
+    },
+    "law": {
+      "date": "Févr. 1912",
+      "text": "Rodman Law saute en parachute de la torche de la statue de la Liberté."
+    },
+    "reichelt": {
+      "date": "4 févr. 1912",
+      "text": "Franz Reichelt saute de la tour Eiffel avec son vêtement-parachute et se tue."
+    },
+    "berry": {
+      "date": "1er mars 1912",
+      "text": "Albert Berry saute d’un avion au-dessus du Missouri : l’un des tout premiers sauts depuis un aéroplane."
+    },
+    "broadwickPlane": {
+      "date": "21 juin 1913",
+      "text": "Tiny Broadwick saute de l’avion de Glenn L. Martin au-dessus de Los Angeles."
+    },
+    "pegoudJump": {
+      "date": "19 août 1913",
+      "text": "Pégoud saute en parachute d’un Blériot sacrifié, à Châteaufort."
+    },
+    "nesterov": {
+      "date": "9 sept. 1913",
+      "text": "Le Russe Piotr Nesterov boucle le premier looping, près de Kiev."
+    },
+    "pegoudLoop": {
+      "date": "21 sept. 1913",
+      "text": "Pégoud boucle la boucle à Buc, trois semaines après son premier vol sur le dos."
+    },
+    "broadwickFreefall": {
+      "date": "1914",
+      "text": "Tiny Broadwick coupe sa sangle et ouvre à la main : première chute libre volontaire."
+    },
+    "beacheyDeath": {
+      "date": "14 mars 1915",
+      "text": "Lincoln Beachey, « l’homme à qui appartient le ciel », se tue dans la baie de San Francisco."
+    },
+    "stinson": {
+      "date": "1915",
+      "text": "Katherine Stinson, première femme à boucler un looping."
+    },
+    "airmail": {
+      "date": "15 mai 1918",
+      "text": "Premier service régulier de courrier aérien américain, sur Jenny."
+    },
+    "locklearFirst": {
+      "date": "Nov. 1918",
+      "text": "Ormer Locklear marche sur les ailes en public à Barron Field (Texas)."
+    },
+    "vedrines": {
+      "date": "19 janv. 1919",
+      "text": "Védrines se pose sur le toit des Galeries Lafayette."
+    },
+    "irvin": {
+      "date": "28 avr. 1919",
+      "text": "Leslie Irvin saute à McCook Field et ouvre lui-même son parachute dorsal."
+    },
+    "godefroy": {
+      "date": "7 août 1919",
+      "text": "Charles Godefroy passe en avion sous l’Arc de Triomphe."
+    },
+    "potomac": {
+      "date": "3 mars 1920",
+      "text": "Mal jugé, le vent pousse deux parachutistes dans l’Eastern Branch du Potomac ; Charles Willis se noie."
+    },
+    "fronval962": {
+      "date": "26 mai 1920",
+      "text": "Fronval enchaîne 962 loopings à Villacoublay."
+    },
+    "locklearDeath": {
+      "date": "2 août 1920",
+      "text": "Locklear se tue en tournant une scène de nuit pour The Skywayman."
+    },
+    "buc": {
+      "date": "8 oct. 1920",
+      "text": "Ouverture du meeting de Buc par le président Millerand."
+    },
+    "bolland": {
+      "date": "1er avr. 1921",
+      "text": "Adrienne Bolland franchit les Andes sur un Caudron G.3."
+    },
+    "colemanLicence": {
+      "date": "15 juin 1921",
+      "text": "Bessie Coleman obtient son brevet de pilote en France."
+    },
+    "gates": {
+      "date": "1921",
+      "text": "Ivan Gates et Clyde Pangborn fondent le Gates Flying Circus."
+    },
+    "lindberghLincoln": {
+      "date": "Avr. 1922",
+      "text": "Lindbergh apprend à piloter à Lincoln et devient marcheur d’ailes."
+    },
+    "colemanShow": {
+      "date": "3 sept. 1922",
+      "text": "Premier meeting de Bessie Coleman, à Curtiss Field (Long Island)."
+    },
+    "harris": {
+      "date": "20 oct. 1922",
+      "text": "Harold Harris sauve sa vie en parachute : naissance du Caterpillar Club."
+    },
+    "lindberghJenny": {
+      "date": "Mai 1923",
+      "text": "Lindbergh achète son Jenny 500 dollars à Americus et vole seul pour la première fois."
+    },
+    "collin": {
+      "date": "13 nov. 1923",
+      "text": "Denyse Collin essaie le parachute Ors à Issy-les-Moulineaux."
+    },
+    "gordon": {
+      "date": "Mars 1924",
+      "text": "À Houston, Rosalie Gordon reste accrochée au train de l’avion de Pangborn."
+    },
+    "hilsz": {
+      "date": "1924",
+      "text": "Maryse Hilsz s’inscrit à un concours de parachutisme sans jamais avoir volé."
+    },
+    "blackCats": {
+      "date": "1924–1925",
+      "text": "Les 13 Black Cats se forment à Los Angeles."
+    },
+    "vincennes": {
+      "date": "20–22 juin 1925",
+      "text": "2e Fête aérienne de Vincennes."
+    },
+    "crane": {
+      "date": "19 juil. 1925",
+      "text": "Joe Crane retarde son ouverture de 2 250 pieds."
+    },
+    "tennis": {
+      "date": "1925",
+      "text": "Gladys Roy et Ivan Unger jouent au tennis sur l’aile d’un Jenny."
+    },
+    "colemanDeath": {
+      "date": "30 avr. 1926",
+      "text": "Bessie Coleman se tue à Jacksonville, la veille d’un meeting."
+    },
+    "airCommerceAct": {
+      "date": "20 mai 1926",
+      "text": "Le président Coolidge signe l’Air Commerce Act."
+    },
+    "licenceOne": {
+      "date": "6 avr. 1927",
+      "text": "La licence de pilote n° 1 est remise à William MacCracken."
+    },
+    "lindberghParis": {
+      "date": "20–21 mai 1927",
+      "text": "Lindbergh relie New York à Paris sans escale."
+    },
+    "royDeath": {
+      "date": "15 août 1927",
+      "text": "Gladys Roy est tuée au sol par une hélice."
+    },
+    "teterboro": {
+      "date": "Août 1927",
+      "text": "Apogée du Gates Flying Circus : onze avions à Teterboro."
+    },
+    "dubendorf": {
+      "date": "21 août 1927",
+      "text": "Concours international de voltige de Dübendorf : Doret troisième."
+    },
+    "wings": {
+      "date": "1927",
+      "text": "Sortie des Ailes (Wings), futur premier Oscar du meilleur film."
+    },
+    "fronval1111": {
+      "date": "25 févr. 1928",
+      "text": "Fronval porte le record à 1 111 loopings."
+    },
+    "bron": {
+      "date": "1928",
+      "text": "Meeting de Bron, « le plus grand du monde »."
+    },
+    "boyerLast": {
+      "date": "8 sept. 1928",
+      "text": "Dernier numéro de Lillian Boyer, à Bethany (Missouri)."
+    },
+    "gatesEnd": {
+      "date": "Printemps 1929",
+      "text": "Le Gates Flying Circus s’éteint en Floride."
+    },
+    "bastie": {
+      "date": "28 juil. 1929",
+      "text": "Maryse Bastié reste en l’air 26 h 47 min : record du monde féminin de durée."
+    },
+    "hellsAngels": {
+      "date": "1930",
+      "text": "Sortie de Hell’s Angels, de Howard Hughes."
+    },
+    "union": {
+      "date": "1931",
+      "text": "Premier syndicat des pilotes cascadeurs de cinéma, sur le modèle du tarif des Black Cats."
+    },
+    "ban": {
+      "date": "1936",
+      "text": "Marche sur les ailes interdite sous 1 500 pieds aux États-Unis."
+    }
+  },
+  "glossary": {
+    "groups": {
+      "trade": "Le métier",
+      "chute": "Le parachute",
+      "voltige": "La voltige",
+      "machine": "La machine"
+    },
+    "terms": {
+      "barnstormer": {
+        "term": "Barnstormer",
+        "def": "Aviateur forain américain des années 1920, qui sillonnait les campagnes, se posait dans les prés et vendait baptêmes et acrobaties."
+      },
+      "flyingCircus": {
+        "term": "Cirque volant",
+        "def": "Troupe itinérante d’avions et d’acrobates : pilotes, marcheurs d’ailes, parachutistes et mécaniciens."
+      },
+      "joyride": {
+        "term": "Baptême de l’air",
+        "def": "Le premier vol d’un passager. Aux États-Unis, le « joyride » se vendait d’un à cinq dollars."
+      },
+      "handbill": {
+        "term": "Prospectus",
+        "def": "Feuillet publicitaire lâché d’avion au-dessus d’une ville pour annoncer le spectacle."
+      },
+      "wingWalking": {
+        "term": "Marche sur les ailes",
+        "def": "Numéro où un acrobate se déplace, danse ou joue sur les ailes d’un avion en vol."
+      },
+      "planeChange": {
+        "term": "Changement d’avion",
+        "def": "Passage d’un avion à un autre en plein vol, souvent par une échelle de corde."
+      },
+      "meeting": {
+        "term": "Meeting",
+        "def": "En France, grande fête aérienne avec courses, voltige, records et sauts en parachute."
+      },
+      "ace": {
+        "term": "As",
+        "def": "Pilote de chasse aux nombreuses victoires ; le mot, né en France pendant la Grande Guerre, désigne ensuite tout virtuose du manche."
+      },
+      "hitTheSilk": {
+        "term": "Hit the silk",
+        "def": "« Prendre la soie » : sauter en parachute, en argot américain, du temps des voilures en soie."
+      },
+      "ripcord": {
+        "term": "Poignée d’ouverture",
+        "def": "La « ripcord » : un câble que le sauteur tire pour libérer le parachute de son sac."
+      },
+      "staticLine": {
+        "term": "Sangle d’ouverture",
+        "def": "Sangle reliant le parachute à l’avion, qui l’ouvre automatiquement quand le sauteur s’éloigne."
+      },
+      "pilotChute": {
+        "term": "Extracteur",
+        "def": "Petit parachute qui jaillit du sac et tire la voilure principale."
+      },
+      "canopy": {
+        "term": "Voilure",
+        "def": "La coupole de tissu du parachute. Celles des années 1920, rondes, ne se dirigent pas."
+      },
+      "doubleDrop": {
+        "term": "Double descente",
+        "def": "Numéro où l’on ouvre puis largue un premier parachute avant d’ouvrir le second."
+      },
+      "delayedOpening": {
+        "term": "Ouverture retardée",
+        "def": "Chute libre volontaire avant l’ouverture, pour le frisson du public — ou pour prouver qu’on n’y perd pas connaissance."
+      },
+      "spotLanding": {
+        "term": "Précision d’atterrissage",
+        "def": "Concours où le parachutiste doit se poser au plus près d’une cible."
+      },
+      "spot": {
+        "term": "Point de largage",
+        "def": "L’endroit où l’on quitte l’avion, choisi en amont du vent pour que la dérive ramène sur la cible."
+      },
+      "caterpillar": {
+        "term": "Caterpillar Club",
+        "def": "Le club des aviateurs sauvés par un parachute, fondé en 1922 ; son insigne est une chenille, comme le ver à soie."
+      },
+      "loop": {
+        "term": "Looping",
+        "def": "Boucle complète dans le plan vertical : on tire sur le manche jusqu’à repasser par le point de départ. Premiers en 1913, par Nesterov puis Pégoud."
+      },
+      "inverted": {
+        "term": "Vol sur le dos",
+        "def": "Vol tête en bas, réussi pour la première fois par Pégoud le 1er septembre 1913."
+      },
+      "roll": {
+        "term": "Tonneau",
+        "def": "Rotation complète de l’avion autour de son axe longitudinal."
+      },
+      "snapRoll": {
+        "term": "Tonneau déclenché",
+        "def": "Tonneau très rapide, provoqué par un décrochage dissymétrique."
+      },
+      "spin": {
+        "term": "Vrille",
+        "def": "Descente en tournoyant, ailes décrochées. Longtemps mortelle, avant qu’on apprenne à en sortir."
+      },
+      "fallingLeaf": {
+        "term": "Feuille morte",
+        "def": "Descente en glissades alternées d’un bord sur l’autre, comme une feuille qui tombe."
+      },
+      "chandelle": {
+        "term": "Chandelle",
+        "def": "Montée raide en virage, pour gagner de la hauteur tout en faisant demi-tour."
+      },
+      "stallTurn": {
+        "term": "Renversement",
+        "def": "Montée à la verticale, pivot au sommet sur la gouverne de direction, descente à la verticale par le même chemin."
+      },
+      "immelmann": {
+        "term": "Immelmann",
+        "def": "Demi-boucle vers le haut suivie d’un demi-tonneau : on repart en sens inverse, plus haut. Du nom de l’as allemand Max Immelmann."
+      },
+      "splitS": {
+        "term": "Retournement",
+        "def": "L’Immelmann à l’envers : demi-tonneau, puis demi-boucle vers le bas ; on repart en sens inverse, plus bas."
+      },
+      "pullOut": {
+        "term": "Ressource",
+        "def": "Le redressement en fin de piqué, quand le pilote tire sur le manche."
+      },
+      "jenny": {
+        "term": "Jenny",
+        "def": "Surnom du Curtiss JN-4, biplan d’école américain devenu l’avion des forains."
+      },
+      "canuck": {
+        "term": "Canuck",
+        "def": "Version canadienne du Jenny, construite à environ 1 200 exemplaires."
+      },
+      "ox5": {
+        "term": "OX-5",
+        "def": "Moteur V8 Curtiss de 90 chevaux du Jenny ; un moteur de surplus se vendait 75 dollars."
+      },
+      "castorOil": {
+        "term": "Huile de ricin",
+        "def": "Lubrifiant des moteurs rotatifs, recraché par l’échappement sur le pilote… et puissant laxatif."
+      },
+      "dope": {
+        "term": "Enduit",
+        "def": "Vernis tendeur passé sur la toile des ailes pour la rendre rigide et étanche. Les Américains disaient « dope »."
+      },
+      "contact": {
+        "term": "« Contact ! »",
+        "def": "Le cri échangé entre le mécanicien qui lance l’hélice à la main et le pilote qui met le contact."
+      },
+      "stick": {
+        "term": "Manche à balai",
+        "def": "Le levier de commande du pilote, qui ressemble à un manche de balai."
+      },
+      "rudderBar": {
+        "term": "Palonnier",
+        "def": "La barre que le pilote actionne avec les pieds pour commander la gouverne de direction."
+      },
+      "groundLoop": {
+        "term": "Cheval de bois",
+        "def": "Embardée incontrôlée au sol, l’avion pivotant brutalement sur lui-même."
+      },
+      "noseOver": {
+        "term": "Capoter",
+        "def": "Se retourner sur le nez à l’atterrissage, souvent dans un terrain mou."
+      },
+      "windsock": {
+        "term": "Manche à air",
+        "def": "Cône de toile qui indique la direction et la force du vent sur un terrain."
+      },
+      "zinc": {
+        "term": "Zinc, coucou",
+        "def": "Noms familiers de l’avion dans l’argot des aviateurs français."
+      }
+    }
+  },
+  "issues": {
+    "professors": {
+      "headline": "Les professeurs de l’air",
+      "standfirst": "Avant d’être un sport, le parachute fut un numéro de foire. Pendant trente ans, des « professeurs » ont grimpé sous des ballons à air chaud pour se jeter dans le vide devant des foules en pique-nique. Récit d’un métier où l’on gagnait mille dollars le saut… avant de se tuer au bout de deux ans.",
+      "teaser": "Un pilote français saute d’un avion pour essayer un parachute, regarde l’appareil vide tomber… et comprend qu’un avion peut voler sur le dos.",
+      "sources": "USPA (« Visitors from Cloudland ») ; Delaware County Historical Society (Muncie) ; William L. Clements Library ; Wikipédia (Tiny Broadwick, Franz Reichelt, Rodman Law) ; BFI / British Pathé ; Air Journal.",
+      "text": {
+        "garnerin": {
+          "head": "Un saut au-dessus du parc Monceau",
+          "body": "Le 22 octobre 1797, André-Jacques Garnerin monte dans le ciel de Paris sous un ballon, assis dans une nacelle accrochée à une grande ombrelle de toile. Au-dessus du parc Monceau, il coupe la corde. L’ombrelle s’ouvre, oscille terriblement, et le ramène au sol devant une foule médusée : le parachute est né, et il est déjà un spectacle.\n\nPendant un siècle, les sauts restent rares. Les parachutes de Garnerin, de sa femme, de sa nièce Élisa ou des frères Godard sont semi-rigides : un tissu tendu sur une armature légère, sous lequel l’aéronaute voyage dans un panier. On les admire comme on admire un funambule — de loin, et sans trop vouloir l’imiter."
+        },
+        "baldwin": {
+          "head": "Le funambule de San Francisco",
+          "body": "Tout change le 27 janvier 1887. Au-dessus du Golden Gate Park, un ancien funambule de cirque, Thomas Baldwin, saute d’un ballon captif à environ 300 mètres. Pas de panier, pas d’armature : un simple dôme de tissu, et un homme pendu à un anneau, tout entier visible depuis le sol. La foule voit enfin le corps tomber, puis la coupole se gonfler.\n\nLe 4 juillet suivant, Baldwin recommence dans sa ville natale de Quincy (Illinois), et le pays s’emballe. Il touche d’abord 1 000 dollars par saut — une fortune — et part en tournée de Londres à l’Australie. À la fin de l’année, il compte déjà une dizaine d’imitateurs. Le parachute est devenu la nouvelle attraction de l’Amérique."
+        },
+        "fair": {
+          "head": "Le clou de la foire",
+          "body": "De 1887 à la Grande Guerre, pas de foire de comté ni de fête du 4 Juillet sans « grande ascension et saut en parachute ». Les troupes se donnent des noms de cirque — les Leroy Sisters, les Flying Allens, les Belmont Sisters, les frères Baldwin — et leurs vedettes, hommes et femmes, se font appeler « professeur ».\n\nLe rituel ne change guère. On creuse un foyer, on suspend au-dessus l’enveloppe d’un ballon qui se gonfle d’air chaud et de fumée, tandis que des spectateurs volontaires la retiennent par des cordes. Au signal, on lâche tout : le ballon jaillit, l’aéronaute pendu dessous. À quelques centaines de mètres, il coupe sa corde, tombe, et sa voilure s’ouvre. Le ballon vide, lui, retombe dans un champ voisin où des aides courent le récupérer.\n\nPour garder le public, il faut surenchérir : sauts doubles, parachutes successifs, animaux parachutés, descente à bicyclette, homme-canon, et même un obus de feu d’artifice qui éclate en plein ciel, mis au point par le fabricant de ballons new-yorkais A. Leo Stevens."
+        },
+        "danger": {
+          "head": "Un métier à deux ans d’espérance de vie",
+          "body": "La gloire se paie cher. Une étincelle du foyer peut enflammer l’enveloppe ; un ballon trop gonflé peut éclater en altitude ; un ballon qui se dégonfle peut retomber sur le parachute. Et le vent, surtout, pousse les aéronautes vers les arbres, les toits, les fils du télégraphe, les clochers — ou dans l’eau, où des suspentes emmêlées en ont noyé plusieurs.\n\nLa mode attire n’importe qui. Dix ans après Baldwin, on recrute des débutants dans la rue, sans entraînement, payés 10 ou 20 dollars le saut. Entre 1888 et 1910, plus d’une centaine d’aéronautes-parachutistes se tuent, et bien davantage se blessent. En 1895, le Boston Post calcule qu’une carrière dure en moyenne deux ans."
+        },
+        "doll": {
+          "head": "La poupée de la filature",
+          "body": "En 1908, dans une filature de coton de Caroline du Nord, une ouvrière de 15 ans, haute comme trois pommes — 1,42 mètre, 39 kilos —, voit sauter Charles Broadwick et ses « World Famous Aeronauts ». Georgia Thompson laisse tout derrière elle, rejoint la troupe, prend son nom et fait son premier saut le 28 décembre 1908. Sur les affiches, elle devient « la poupée », sanglée dans un parachute « gilet de sauvetage » inventé par Broadwick. Bientôt, elle enchaîne les sauts doubles et triples.\n\nOn l’appelle Tiny. Elle fera plus de 1 100 sauts — et nous la retrouverons au prochain numéro, en train d’inventer la chute libre."
+        },
+        "reichelt": {
+          "head": "Le tailleur de la tour Eiffel",
+          "body": "Paris, 4 février 1912. Franz Reichelt, tailleur d’origine autrichienne, a cousu un manteau qui doit s’ouvrir en parachute et sauver les aviateurs. Il a obtenu l’autorisation de l’essayer depuis la tour Eiffel — avec un mannequin, croit-on. Devant les journalistes et les opérateurs d’actualités, il annonce qu’il sautera lui-même. Ses amis le supplient de renoncer.\n\nLe film de la scène existe toujours : on le voit hésiter longuement sur le parapet du premier étage, puis se lancer. Le manteau ne s’ouvre pas. Reichelt meurt sur le coup. D’autres essais suivront depuis la tour, parfois mortels, jusqu’à ce qu’on les y interdise.\n\nDe l’autre côté de l’Atlantique, le même mois, le cascadeur Rodman Law saute de la torche de la statue de la Liberté avec un sac à parachute de Leo Stevens — et s’en sort."
+        },
+        "berry": {
+          "head": "Le premier saut d’un aéroplane",
+          "body": "Le ballon est lent, l’avion est l’avenir. Le 1er mars 1912, au-dessus de la caserne de Jefferson Barracks, dans le Missouri, Albert Berry saute d’un biplan Benoist piloté par Tony Jannus. Son parachute est rangé dans un étui fixé sous l’avion ; il chute d’environ 150 mètres avant que la voilure ne se déploie.\n\nPartout, on cherche alors le parachute que l’on porterait sur soi. En Allemagne, l’aéronaute Käthe Paulus met au point un sac en 1910 ; en Russie, un acteur, Gleb Kotelnikov, invente un parachute dorsal après avoir vu un aviateur se tuer en meeting. L’ère des professeurs s’achève ; celle des aviateurs commence."
+        }
+      },
+      "quotes": {
+        "delmont": {
+          "text": "Le professeur resta suspendu au-dessus de l’eau, à la vue de centaines de spectateurs.",
+          "who": "Muncie Daily Herald, juillet 1894 — le parachute de George Delmont s’était pris dans les arbres au bord de la rivière. La branche céda : il tomba dans l’eau, indemne."
+        }
+      },
+      "asides": {
+        "goats": "Muncie (Indiana), août 1895 : l’aéronaute Ira Fisk accroche sous son ballon deux chèvres et une cage de pigeons, devant 2 000 spectateurs. Les pigeons s’envolent, mais le parachute des chèvres ne s’ouvre jamais. « Les chèvres et le ballon redescendirent ensemble », note sobrement le journal local. Quinze ans plus tard, au même endroit, Jimmie Bedwell montait avec un bâton de dynamite allumé, qu’il laissait exploser en plein ciel."
+      },
+      "geek": {
+        "balloon": {
+          "title": "Le ballon à fumée",
+          "body": "Pas de gaz, pas de nacelle : une enveloppe de toile gonflée au-dessus d’un foyer d’air chaud et de fumée, volontairement trop gonflée pour monter vite et rester au-dessus du terrain. Le scientifique Carl Myers les appelait des « projectiles ». Le parachutiste pend sous le ballon, son parachute déjà déplié au-dessus de lui, attaché par une corde qu’il tranche à l’altitude voulue. Pas de chute libre : on la croyait mortelle.",
+          "specs": {
+            "height": {
+              "label": "Ballon gonflé",
+              "value": "18 à 20 m de haut"
+            },
+            "release": {
+              "label": "Largage",
+              "value": "300 à 900 m"
+            },
+            "fee1887": {
+              "label": "Cachet de Baldwin (1887)",
+              "value": "1 000 $ le saut"
+            },
+            "fee1897": {
+              "label": "Cachet d’un débutant (vers 1897)",
+              "value": "10 à 20 $"
+            },
+            "career": {
+              "label": "Carrière moyenne (1895)",
+              "value": "2 ans"
+            }
+          }
+        }
+      },
+      "myths": {
+        "freefall": {
+          "claim": "À l’époque des ballons, on croyait qu’une longue chute libre tuait le parachutiste.",
+          "verdict": "C’est vrai, on le croyait vraiment : les aéronautes ouvraient le plus tôt possible. Il faudra attendre 1925 et Joe Crane pour démontrer le contraire (n° 6)."
+        }
+      },
+      "quiz": {
+        "q1": {
+          "q": "Combien Thomas Baldwin touchait-il par saut au début de sa carrière ?",
+          "a": "10 dollars",
+          "b": "1 000 dollars",
+          "c": "100 000 dollars",
+          "why": "Mille dollars le saut en 1887 — dix ans plus tard, les débutants en touchaient dix."
+        },
+        "q2": {
+          "q": "D’où Rodman Law a-t-il sauté en février 1912 ?",
+          "a": "De la tour Eiffel",
+          "b": "Du pont de Brooklyn",
+          "c": "De la statue de la Liberté",
+          "why": "De la torche de la statue de la Liberté. La tour Eiffel, c’était Franz Reichelt, le même mois."
+        },
+        "q3": {
+          "q": "Combien de temps durait en moyenne une carrière d’aéronaute-parachutiste, selon le Boston Post de 1895 ?",
+          "a": "Deux ans",
+          "b": "Dix ans",
+          "c": "Six semaines",
+          "why": "Deux ans : plus d’une centaine d’entre eux se tuèrent entre 1888 et 1910."
+        }
+      },
+      "play": {
+        "title": "L’ascension du professeur",
+        "body": "Le Grand Circuit a désormais son numéro de foire : suspendu sous un ballon à fumée qui dérive avec le vent, coupez la corde au bon moment pour vous poser sur la cible. Pas d’avion, pas d’élan : rien que le vent."
+      }
+    },
+    "upside-down": {
+      "headline": "Le ciel à l’envers",
+      "standfirst": "En 1913, un pilote d’essai français saute d’un avion pour tester un parachute. En regardant l’appareil vide tomber en cabriolant, il a une idée folle : voler sur le dos. Trois semaines plus tard, il boucle la boucle. La voltige est née — et la chute libre aussi, inventée par une jeune femme de 1,42 mètre.",
+      "teaser": "1919, l’année folle : un avion sur le toit d’un grand magasin, un autre sous l’Arc de Triomphe, des milliers d’avions bradés… et l’homme qui ouvrit le premier son parachute en pleine chute.",
+      "sources": "Encyclopædia Universalis ; Wikipédia (Adolphe Pégoud, Lincoln Beachey, Tiny Broadwick, Immelmann turn) ; Theatrum Belli ; Air Journal ; USPA ; Readex ; Merriam-Webster ; Alain Pelletier, Haute voltige (ETAI).",
+      "text": {
+        "jump": {
+          "head": "Le saut de Châteaufort",
+          "body": "Adolphe Pégoud est pilote d’essai chez Louis Blériot, à Buc. À 24 ans, il accepte un travail que personne ne veut : essayer en vrai le parachute qu’a inventé Frédéric Bonnet. On sacrifie pour l’occasion un vieux Blériot XI, que personne ne pilotera plus après.\n\nLe 19 août 1913, au-dessus de Châteaufort, dans les Yvelines, Pégoud enjambe son cockpit et saute. Le parachute s’ouvre : il devient le premier Européen à sauter d’un avion. Mais c’est en l’air, suspendu sous sa voilure, qu’il voit la chose la plus importante de sa vie."
+        },
+        "inverted": {
+          "head": "« Je l’ai vu boucler tout seul »",
+          "body": "L’avion abandonné ne tombe pas comme une pierre. Il plonge, se cabre, décrit des arabesques et même une sorte de boucle avant de s’écraser. Pégoud raconte aux journalistes qu’il l’a vu « boucler tout seul ». S’il le fait sans pilote, pourquoi pas avec ?\n\nIl fait renforcer son Blériot, s’attache solidement à son siège et s’entraîne au sol, la tête en bas. Le 1er septembre 1913, à Juvisy, il vole sur le dos. Le 21 septembre, à Buc, il enchaîne : un looping complet, qu’il croit être le premier du monde. Il ne l’est pas — le Russe Piotr Nesterov en a bouclé un douze jours plus tôt près de Kiev —, mais c’est Pégoud que l’Europe entière veut voir.\n\nOn le surnomme « le roi du ciel ». Il se produit dans toute l’Europe, le tsar l’invite à Moscou, et partout des pilotes se mettent à l’imiter. Ce qui n’était qu’acrobatie devient un savoir-faire : la voltige."
+        },
+        "beachey": {
+          "head": "L’homme à qui appartenait le ciel",
+          "body": "En Amérique, la vedette s’appelle Lincoln Beachey, « The Man Who Owns the Sky ». Entre novembre 1913 et novembre 1914, il se produit dans 126 villes devant 15 à 20 millions de spectateurs, selon les estimations ; un carnaval aérien à Chicago en attire un quart de million.\n\nSon numéro préféré : défier en course le plus célèbre pilote automobile du pays, Barney Oldfield, pour le « championnat de l’univers » — avion contre voiture, sur la piste d’un champ de courses. Beachey gagne presque toujours. Le 14 mars 1915, devant la foule de l’Exposition internationale de San Francisco, son monoplan perd ses ailes en piqué et s’abîme dans la baie. Il avait 28 ans.\n\nLa même année, Katherine Stinson devient la première femme à boucler un looping."
+        },
+        "tiny": {
+          "head": "Tiny invente la chute libre",
+          "body": "Revoici Tiny Broadwick. Le 21 juin 1913, au-dessus de Los Angeles, elle saute de l’avion de Glenn L. Martin : on la crédite souvent comme la première femme à sauter d’un aéroplane. En 1914, l’armée américaine lui demande des démonstrations. Son parachute est relié à l’avion par une sangle qui l’ouvre automatiquement dès qu’elle s’éloigne.\n\nAu quatrième saut, la sangle s’emmêle dans la queue de l’appareil. Tiny reste suspendue sous l’avion, sort son couteau, coupe la sangle — et tire elle-même ce qu’il en reste pour ouvrir sa voilure, en pleine chute. Au saut suivant, elle recommence exprès, la sangle libre dans la main. C’est sans doute la première chute libre volontaire depuis un avion, et la preuve qu’un aviateur peut ouvrir lui-même son parachute : l’idée de la poignée d’ouverture vient de naître."
+        },
+        "war": {
+          "head": "La voltige part en guerre",
+          "body": "Août 1914 : les pitres du ciel deviennent soldats. La voltige change de nature ; elle sert à échapper à un adversaire ou à se glisser dans ses « six heures », juste derrière lui. La vrille, longtemps mortelle, devient une figure qu’on apprend à maîtriser ; la feuille morte permet de perdre de la hauteur en trompant l’ennemi. Pégoud, devenu l’un des premiers as, est abattu le 31 août 1915 par un ancien élève allemand. Il avait 26 ans.\n\nUn paradoxe pour finir : pendant presque toute la guerre, les pilotes volent sans parachute. On s’en méfie, on le croit encombrant, et les états-majors craignent qu’un pilote n’abandonne trop vite un avion réparable. Seuls les observateurs des ballons captifs sautent couramment. Ce n’est qu’après l’armistice qu’une équipe de l’armée américaine, à McCook Field, se met sérieusement au travail."
+        }
+      },
+      "asides": {
+        "immelmann": "La figure qu’on appelle « Immelmann » — demi-boucle puis demi-tonneau — porte le nom de l’as allemand Max Immelmann. Mais son monoplan Fokker se pilotait par gauchissement des ailes, sans ailerons : il n’a probablement jamais exécuté la figure sous sa forme moderne. Le nom apparaît dans les dictionnaires en 1918."
+      },
+      "geek": {
+        "loop": {
+          "title": "Un looping, vu du cockpit",
+          "body": "On prend de la vitesse en piqué léger, puis on tire le manche, franchement et progressivement : le nez monte, le ciel remplit le pare-brise, puis l’horizon réapparaît… à l’envers, au-dessus de la tête. Au sommet, l’avion est lent et léger : on relâche un peu la pression pour arrondir la boucle, puis on tire de nouveau dans la descente, et l’on ressort à l’altitude d’entrée. Un looping raté est souvent un looping trop « ovale », faute de vitesse au départ. Les chasseurs de 1914-1918 l’utilisaient pour se retrouver derrière un poursuivant."
+        }
+      },
+      "myths": {
+        "firstLoop": {
+          "claim": "Adolphe Pégoud a bouclé le premier looping de l’histoire.",
+          "verdict": "Légende : le Russe Piotr Nesterov l’a précédé de douze jours, le 9 septembre 1913. Mais Pégoud est le premier à en faire un spectacle, et c’est lui que l’Europe acclame."
+        }
+      },
+      "quiz": {
+        "q1": {
+          "q": "Qui a bouclé le premier looping ?",
+          "a": "Piotr Nesterov",
+          "b": "Adolphe Pégoud",
+          "c": "Lincoln Beachey",
+          "why": "Nesterov, le 9 septembre 1913, douze jours avant Pégoud."
+        },
+        "q2": {
+          "q": "Comment Tiny Broadwick a-t-elle découvert la chute libre ?",
+          "a": "En tombant d’une montgolfière",
+          "b": "Sa sangle d’ouverture s’est prise dans la queue de l’avion",
+          "c": "En pariant avec Charles Broadwick",
+          "why": "Elle a coupé la sangle emmêlée et ouvert son parachute à la main, puis a recommencé exprès."
+        },
+        "q3": {
+          "q": "Contre qui Lincoln Beachey faisait-il la course ?",
+          "a": "Un train express",
+          "b": "Un cheval de course",
+          "c": "Le pilote automobile Barney Oldfield",
+          "why": "Avion contre voiture, pour le « championnat de l’univers » — et Beachey gagnait presque toujours."
+        }
+      },
+      "play": {
+        "title": "Les anneaux de la foire",
+        "body": "Les anneaux du Grand Circuit sont une invention de jeu, mais ils demandent ce que demandait la voltige : choisir sa trajectoire, l’anticiper et la tenir. En chute libre, plongez pour accélérer, cambrez-vous pour freiner."
+      }
+    },
+    "nineteen": {
+      "headline": "1919, l’année folle",
+      "standfirst": "La guerre est finie et le ciel déborde : des milliers d’avions sans emploi, des milliers de pilotes démobilisés, et une soif de vivre qui ne connaît plus de limites. En un an, on se pose sur un toit de Paris, on passe sous l’Arc de Triomphe, on marche sur les ailes… et un cascadeur ouvre son parachute en pleine chute.",
+      "teaser": "Le cirque arrive en ville ! Comment des pilotes vagabonds ont fait voler un million d’Américains — et le jeune Lindbergh en faisait partie.",
+      "sources": "National Geographic ; Smithsonian ; National Museum of the U.S. Air Force ; Encyclopædia Universalis ; Air Journal ; ministère des Armées ; Sortiraparis ; Wikipédia (Curtiss JN, Ormer Locklear, Wing walking, Leslie Irvin, Edward L. Hoffman).",
+      "text": {
+        "surplus": {
+          "head": "Des avions au prix d’une voiture",
+          "body": "À l’armistice, l’armée américaine possède des milliers de Curtiss JN-4 « Jenny », les biplans sur lesquels presque tous ses pilotes ont appris à voler. Payés de 5 000 à 6 700 dollars pièce, ils sont désormais bradés pour quelques centaines de dollars — souvent moins de 500. Un moteur de rechange se trouve pour 75 dollars.\n\nPour les jeunes pilotes rendus à la vie civile, c’est l’occasion rêvée. Aux États-Unis, il n’existe alors aucune règle : ni licence de pilote, ni contrôle des appareils, ni altitude minimale. Avec un Jenny, une caisse à outils et de l’aplomb, on peut gagner sa vie dans le ciel. Le Jenny transportait déjà le premier courrier aérien régulier depuis le 15 mai 1918 ; il va maintenant transporter le rêve de toute une génération."
+        },
+        "vedrines": {
+          "head": "Un avion sur le toit des Galeries",
+          "body": "À Paris, les Galeries Lafayette promettent 25 000 francs à l’aviateur qui se posera sur le toit du grand magasin, boulevard Haussmann. La terrasse mesure 28 mètres sur 12 : à peine plus qu’un court de tennis.\n\nLe 19 janvier 1919, Jules Védrines, héros de la guerre et vieux routier des courses aériennes, y pose son Caudron G.3. L’avion est abîmé, et Védrines verbalisé pour avoir survolé Paris, ce qui est interdit — l’amende écorne à peine la prime. Le magasin s’offre une publicité mondiale. Trois mois plus tard, le 21 avril 1919, Védrines se tue sur une panne de moteur à Saint-Rambert-d’Albon, dans la Drôme, en route pour Rome."
+        },
+        "godefroy": {
+          "head": "Sous l’Arc de Triomphe",
+          "body": "Le 14 juillet 1919, au défilé de la Victoire, les aviateurs doivent marcher au pas sur les Champs-Élysées, comme les fantassins : un affront pour ceux qui ont fait la guerre dans le ciel. L’idée germe de leur rendre justice en faisant passer un avion sous l’Arc de Triomphe. Le premier volontaire, l’as Jean Navarre, se tue à l’entraînement quelques jours plus tôt.\n\nCharles Godefroy reprend le défi. Pendant des semaines, il s’entraîne en secret en passant sous un pont dans le sud de la France. Le 7 août 1919, il décolle de Villacoublay sur un petit chasseur Nieuport, descend à une dizaine de mètres du sol et file sous la voûte — environ 14,6 mètres de large — à quelque 150 km/h. Un photographe saisit l’instant ; l’image fait le tour du monde."
+        },
+        "irvin": {
+          "head": "Tirer la poignée",
+          "body": "Pendant ce temps, à McCook Field, près de Dayton (Ohio), l’équipe du major Hoffman a testé dix-sept modèles de parachutes avec des mannequins. Le vainqueur, le Type A de Floyd Smith et Guy Ball, réunit trois idées : une voilure pliée dans un sac sur le dos, une poignée que l’on tire une fois loin de l’avion, et un petit extracteur qui tire la grande voilure hors du sac.\n\nReste à l’essayer pour de vrai. Le 28 avril 1919, un cascadeur de cinéma de 23 ans, Leslie Irvin, saute d’un DH-9 piloté par Smith, à environ 450 mètres et 160 km/h. Il tire la poignée, la voilure de 8,5 mètres s’ouvre… et il se pose si durement qu’il se casse la cheville, ce qui ravit les sceptiques. Qu’importe : moins de deux mois plus tard, Irvin fonde à Buffalo sa propre fabrique de parachutes."
+        },
+        "locklear": {
+          "head": "Le premier marcheur d’ailes",
+          "body": "Et puis il y a Ormer Locklear. En novembre 1918, à Barron Field (Texas), ce jeune lieutenant donne en public ses premières démonstrations de marche sur les ailes. Il n’est pas tout à fait le premier — en 1911, l’Anglais S. F. Cody avait volé avec ses deux beaux-fils debout sur l’aile inférieure —, mais il est le premier à en faire un métier.\n\nRendu à la vie civile, Locklear monte un cirque volant et invente le numéro le plus fou de l’époque : le changement d’avion en vol. Agrippé à un premier avion, il attend qu’un second, traînant une échelle de corde, vienne à sa hauteur, et passe de l’un à l’autre. Il passe aussi d’une voiture lancée à un avion. Hollywood ne tarde pas à l’appeler (nous le retrouverons au n° 8)."
+        }
+      },
+      "asides": {
+        "stamp": "En mai 1918, pour le premier courrier aérien, la poste américaine imprime un timbre de 24 cents orné d’un Jenny. Sur une feuille, l’avion est imprimé la tête en bas : l’« Inverted Jenny » deviendra l’un des timbres les plus recherchés au monde.",
+        "smith": "Floyd Smith, l’inventeur du Type A, sauta à son tour dix-sept jours après Irvin. C’est pourtant le nom d’Irvin que retiendra l’histoire — et les sources ne s’accordent même pas sur la date de son saut : certaines donnent le 19 avril, le musée de l’US Air Force retient le 28."
+      },
+      "geek": {
+        "jenny": {
+          "title": "Fiche technique : le Curtiss JN-4D « Jenny »",
+          "body": "Conçu en 1914 par Curtiss et l’ingénieur britannique B. Douglas Thomas, le Jenny est un biplan à double commande, en épicéa entoilé, à cockpits ouverts. L’armée en a acheté 6 070 ; le Canada en a construit environ 1 200 sous le nom de « Canuck ». On estime que 95 % des pilotes militaires américains et canadiens ont appris sur lui. Ses pilotes l’appelaient « un tas de pièces détachées volant en formation » — avec tendresse. Défaut célèbre : le moteur chauffe, au point d’arroser parfois le pare-brise d’eau bouillante.",
+          "specs": {
+            "span": {
+              "label": "Envergure",
+              "value": "13,3 m"
+            },
+            "engine": {
+              "label": "Moteur",
+              "value": "Curtiss OX-5, V8 de 90 ch"
+            },
+            "speed": {
+              "label": "Vitesse maximale",
+              "value": "≈ 120 km/h"
+            },
+            "landing": {
+              "label": "Vitesse d’atterrissage",
+              "value": "≈ 65 à 70 km/h"
+            },
+            "endurance": {
+              "label": "Autonomie",
+              "value": "≈ 2 h 15"
+            },
+            "price": {
+              "label": "Prix neuf / en surplus",
+              "value": "5 000 à 6 700 $ / 200 à 500 $"
+            }
+          }
+        }
+      },
+      "myths": {
+        "arc": {
+          "claim": "Charles Godefroy est passé sous l’Arc de Triomphe sur un coup de tête.",
+          "verdict": "Légende : l’exploit a été préparé pendant des semaines, en secret, en passant sous un pont dans le sud de la France. Le premier volontaire, Jean Navarre, s’était tué à l’entraînement."
+        }
+      },
+      "quiz": {
+        "q1": {
+          "q": "Quelle taille faisait la terrasse des Galeries Lafayette où se posa Védrines ?",
+          "a": "28 m sur 12",
+          "b": "60 m sur 40",
+          "c": "8 m sur 5",
+          "why": "28 mètres sur 12 — à peine plus qu’un court de tennis."
+        },
+        "q2": {
+          "q": "Que s’est cassé Leslie Irvin lors de son saut historique ?",
+          "a": "Le nez",
+          "b": "Son parachute",
+          "c": "La cheville",
+          "why": "La cheville, à l’atterrissage. Le parachute, lui, avait parfaitement fonctionné."
+        },
+        "q3": {
+          "q": "Combien coûtait un Jenny de surplus après la guerre ?",
+          "a": "Plus de 50 000 dollars",
+          "b": "Quelques centaines de dollars",
+          "c": "Il était donné",
+          "why": "Souvent moins de 500 dollars, contre 5 000 à 6 700 neuf."
+        }
+      },
+      "play": {
+        "title": "Ouvrir soi-même",
+        "body": "Depuis Irvin, c’est le parachutiste qui choisit le moment d’ouvrir. Dans l’épreuve « Ouverture basse », tirez le plus bas possible sans jamais franchir le plancher : le public adore, votre score aussi."
+      }
+    },
+    "circuses": {
+      "headline": "Le cirque arrive en ville !",
+      "standfirst": "Ils arrivaient sans prévenir, en rase-mottes au-dessus de la grand-rue, et repartaient le lendemain. Les « barnstormers » ont fait monter un million d’Américains dans leur premier avion, dormi sous leurs ailes et inventé le spectacle aérien. Parmi eux, un grand jeune homme timide qui allait traverser l’Atlantique.",
+      "teaser": "Elles marchaient sur les ailes, jouaient au tennis à 100 km/h et passaient d’une voiture à un avion : les reines de l’aile.",
+      "sources": "U.S. Centennial of Flight Commission ; Smithsonian ; National Geographic ; Museum of Flight (fonds Pangborn) ; HistoryLink ; PBS (American Experience) ; Minnesota Historical Society ; Georgia Historical Society ; Wikipédia (Barnstorming).",
+      "text": {
+        "ritual": {
+          "head": "Le rituel du village",
+          "body": "Le scénario ne varie guère. Un biplan surgit au-dessus d’une petite ville du Midwest, tourne autour du clocher, rase les toits. Il se pose dans un pré, chez un fermier qui loue son champ pour l’après-midi. Puis il redécolle, repasse au-dessus de la grand-rue et lâche une pluie de prospectus : baptêmes de l’air, acrobaties, sauts en parachute, cet après-midi même !\n\nLes commerces ferment. On vient en famille, en carriole ou en Ford T ; la visite d’un avion tient du jour férié. Certaines villes offrent aux aviateurs le gîte, le couvert et un bal le soir. Le lendemain, ils sont repartis vers la ville suivante. La saison court du printemps jusqu’après les moissons et les grandes foires de comté."
+        },
+        "life": {
+          "head": "La vie de bohème",
+          "body": "On vend des baptêmes de l’air — d’un à cinq dollars, souvent cinq dollars le quart d’heure — et l’on monte des numéros : vrilles, piqués, loopings, marche sur les ailes, sauts en parachute, changements d’avion en vol, et même tennis ou danse sur l’aile.\n\nL’envers du décor est moins glorieux. L’essence et les pièces sont introuvables ; certains jours, personne ne paie ; on répare le moteur dans le pré et l’on dort sous l’aile. Le pilote Charley Mayse navigue avec une carte routière Rand McNally. L’origine du mot « barnstorming » reste discutée : les granges (« barns ») près desquelles se posaient les avions, ou les troupes de théâtre et les candidats en campagne qui faisaient déjà « la tournée des granges »."
+        },
+        "gates": {
+          "head": "Le plus grand cirque volant du monde",
+          "body": "En 1921, Ivan Gates fonde avec le pilote Clyde Pangborn le plus célèbre de tous les cirques volants. Gates, le patron, ne vole presque pas ; Pangborn, surnommé « Upside-Down Pangborn » pour son goût du vol sur le dos, est chef pilote, codirecteur, et détient le record des changements d’avion en vol.\n\nLe Gates Flying Circus invente le baptême à un dollar et fait du chiffre : un jour, à Steubenville (Ohio), le pilote Bill Brooks emmène 980 passagers. Le magazine Time estimera leurs meetings à 2 000, dans 44 États, sans compter le Canada et le Mexique ; certains spectacles attirent 30 000 personnes. Au programme, entre autres folies : un cascadeur, suspendu tête en bas sous le train d’un Jenny, ramasse au sol un mouchoir… avec les dents.\n\nÀ son apogée, en août 1927 à Teterboro (New Jersey), le cirque aligne onze avions. Un historien affirmera qu’il a formé plus de pilotes célèbres que l’armée et la marine réunies."
+        },
+        "gordon": {
+          "head": "Suspendue sous l’avion",
+          "body": "Houston, mars 1924. Pendant un meeting à Ellington Field, la parachutiste Rosalie Gordon saute de l’avion piloté par Pangborn. Son parachute s’accroche au train d’atterrissage : elle reste pendue sous l’appareil, au-dessus de la foule pétrifiée.\n\nUn second avion décolle et tente de l’approcher, pendant qu’un acrobate descend le long du fuselage jusqu’au train. Elle est finalement hissée à bord et l’avion se pose. Les récits divergent sur l’identité de son sauveteur ; la presse en parle dans tout le pays, et le Gates Flying Circus devient célèbre."
+        },
+        "lindbergh": {
+          "head": "« Daredevil Lindbergh »",
+          "body": "En avril 1922, un grand garçon timide du Minnesota quitte l’université pour une école de pilotage de Lincoln (Nebraska). Pour payer ses leçons, Charles Lindbergh rejoint l’équipe du forain Erold Bahl : il grimpe sur l’aile pour saluer la foule, puis apprend du fabricant de parachutes Charles Hardin la « double descente ». À son premier essai, le second parachute tarde à s’ouvrir.\n\nEn mai 1923, à Americus (Géorgie), il achète un Jenny de surplus pour 500 dollars, avec un moteur OX-5 neuf, un réservoir supplémentaire et une couche fraîche d’enduit kaki. Il compte moins de vingt heures de vol et n’a jamais volé seul — il se garde bien de le dire au vendeur. Une semaine d’entraînement plus tard, il part faire la tournée des campagnes sous le nom de « Daredevil Lindbergh », à cinq dollars le tour. Quatre ans plus tard, il relie New York à Paris sans escale."
+        }
+      },
+      "quotes": {
+        "woods": {
+          "text": "Il n’y a rien de romantique là-dedans.",
+          "who": "La pilote Jessie Woods, du Flying Aces Air Circus, se souvenant des nuits passées sur l’aile inférieure de son avion — et d’une fois où elle resta trois jours sans dormir."
+        }
+      },
+      "asides": {
+        "willard": "On raconte que Charles Foster Willard, l’un des tout premiers aviateurs de foire, fut aussi le premier « abattu » de l’histoire : un fermier agacé par son vacarme aurait brisé son hélice d’un coup de fusil à écureuils.",
+        "mayse": "En 1922, un atterrissage manqué près de Safford (Arizona) cloue le forain Charley Mayse au sol pendant 28 jours. Il en profite pour rencontrer Lola Carter — et l’épouser. Plus tard, il mettra son Jenny au service de la police de Tucson pour traquer des ravisseurs."
+      },
+      "geek": {
+        "books": {
+          "title": "Les comptes du forain",
+          "body": "Un petit calcul de coin de table, avec les chiffres de l’époque. À cinq dollars le tour, Lindbergh a remboursé son Jenny en une centaine de passagers ; ses soixante premiers clients près de Maben (Mississippi) lui ont rapporté environ 300 dollars en deux semaines, de quoi payer l’essence et les réparations. Le modèle du Gates Flying Circus est l’inverse : un dollar seulement, mais du volume — d’où les 980 passagers de Bill Brooks en une journée, soit des vols de quelques minutes à la chaîne.",
+          "specs": {
+            "jenny": {
+              "label": "Jenny de surplus",
+              "value": "200 à 500 $"
+            },
+            "engine": {
+              "label": "Moteur OX-5 de rechange",
+              "value": "75 $"
+            },
+            "ride": {
+              "label": "Baptême de l’air",
+              "value": "1 à 5 $"
+            },
+            "record": {
+              "label": "Record d’une journée (Bill Brooks)",
+              "value": "980 passagers"
+            },
+            "lindbergh": {
+              "label": "Lindbergh, près de Maben",
+              "value": "60 passagers en 2 semaines"
+            }
+          }
+        }
+      },
+      "myths": {
+        "million": {
+          "claim": "Le Gates Flying Circus aurait transporté un million de passagers sans accident grave.",
+          "verdict": "Réalité… selon les estimations reprises par les historiens. Le chiffre vient de l’époque et n’a jamais été audité, mais il est cohérent avec les 980 passagers de Bill Brooks en une seule journée."
+        },
+        "lindbergh": {
+          "claim": "Lindbergh était déjà un pilote chevronné quand il acheta son premier avion.",
+          "verdict": "Légende : il avait moins de vingt heures de vol et n’avait jamais volé seul. Il apprit vraiment à piloter… en tournée."
+        }
+      },
+      "quiz": {
+        "q1": {
+          "q": "Combien coûtait un baptême de l’air chez Gates ?",
+          "a": "Un dollar",
+          "b": "Vingt-cinq dollars",
+          "c": "Cent dollars",
+          "why": "Un dollar : le Gates Flying Circus a inventé le baptême à prix cassé."
+        },
+        "q2": {
+          "q": "Combien de passagers Bill Brooks emmena-t-il en une seule journée ?",
+          "a": "98",
+          "b": "980",
+          "c": "9 800",
+          "why": "980, à Steubenville (Ohio) : des vols de quelques minutes, à la chaîne."
+        },
+        "q3": {
+          "q": "Combien Lindbergh paya-t-il son Jenny en 1923 ?",
+          "a": "500 dollars",
+          "b": "5 000 dollars",
+          "c": "50 dollars",
+          "why": "500 dollars, moteur neuf et réservoir supplémentaire compris."
+        }
+      },
+      "play": {
+        "title": "Faites le spectacle",
+        "body": "Au Grand Meeting, l’épreuve « Démonstration » vous met sous les yeux d’une tribune comble : enchaînez les anneaux et posez-vous en plein dans le mille, comme les forains qui vivaient des applaudissements."
+      }
+    },
+    "queens": {
+      "headline": "Les reines de l’aile",
+      "standfirst": "Une serveuse de Chicago, une manucure venue du Texas, une trapéziste de cirque, la nièce de Buffalo Bill : dans les années 1920, les femmes tiennent l’affiche des cirques volants. Elles marchent sur les ailes, y jouent au tennis, passent d’une voiture à un avion — et certaines vont chercher en France le brevet que l’Amérique leur refuse.",
+      "teaser": "Le métier de parachutiste : pourquoi une voilure ronde ne se dirige pas, comment un vent mal jugé coûta la vie d’un homme, et le club dont personne ne rêve d’être membre.",
+      "sources": "The Henry Ford (fonds Lillian Boyer) ; Wikipédia (Lillian Boyer, Gladys Roy, Gladys Ingle, Mabel Cody, Bessie Coleman, Neta Snook) ; San Diego Air & Space Museum ; Snopes ; FAA (Phoebe Omlie) ; Smithsonian ; Air France ; Département du Loiret.",
+      "text": {
+        "boyer": {
+          "head": "Lillian Boyer, l’Impératrice de l’air",
+          "body": "En 1921, deux clients du restaurant de Chicago où elle sert proposent à Lillian Boyer un tour en avion. Dès son deuxième vol, elle sort sur l’aile. Le pilote Billy Brock l’entraîne pendant cinq mois, devient son manager, et les affiches l’annoncent bientôt comme « l’Impératrice de l’air » ou « la fille qui a du cran ».\n\nSon bilan donne le vertige : 352 spectacles dans 41 États et au Canada, 143 passages d’une voiture lancée à un avion — elle est la première femme à le réussir — et 37 sauts en parachute. Un saut raté, en 1925, lui brise le bassin, la hanche et des côtes ; elle remonte sur l’aile. Son dernier numéro a lieu le 8 septembre 1928 à Bethany (Missouri) : les règles fédérales sur le vol à basse altitude mettent fin à sa carrière, comme à celle de tant d’autres."
+        },
+        "roy": {
+          "head": "Gladys Roy, toujours plus haut",
+          "body": "Gladys Roy commence en 1921 comme parachutiste, puis passe sur l’aile. Elle y marche les yeux bandés, y danse le charleston et, en 1925, y dispute avec Ivan Unger une partie de tennis restée célèbre grâce à une photo. Engagée par une agence de vaudeville pour les foires de l’Ouest, elle touche de 200 à 500 dollars par spectacle vers 1924 — puis 100 seulement en 1926 : le public se blase, il faut toujours plus fort.\n\nElle revendique un record de saut en parachute à basse altitude, saute depuis près de 5 000 mètres, et s’apprête à tenter un vol New York-Rome quand, le 15 août 1927, posant pour des photos au sol, elle s’avance dans l’hélice d’un avion à l’arrêt dont le moteur tournait. Elle avait une trentaine d’années."
+        },
+        "troupe": {
+          "head": "La troupe des intrépides",
+          "body": "Gladys Ingle, la seule femme de la bande des 13 Black Cats, réussit plus de 300 changements d’avion et tire à l’arc sur des cibles depuis l’aile. En 1926, une caméra Pathé la filme passant d’un appareil à l’autre avec une roue de secours sur le dos, pour la monter sur un avion « en détresse » — un numéro répété, bien sûr, mais exécuté pour de vrai.\n\nMabel Cody, nièce de Buffalo Bill, dirige son propre cirque volant en Floride. Lors d’un passage voiture-avion sur une plage, un barreau de l’échelle de corde casse : elle chute d’une quinzaine de mètres et se brise plusieurs os. Ethel Dare, ancienne trapéziste du cirque Barnum, entraînée dit-on par Locklear, se fait appeler « la Sorcière volante » ; on la dit la première femme à avoir changé d’avion en vol, sans preuve formelle."
+        },
+        "omlie": {
+          "head": "Phoebe, des dents à la gloire",
+          "body": "Phoebe Fairgrave n’a pas vingt ans quand elle convainc la Fox de l’engager pour les cascades aériennes du feuilleton Les Périls de Pauline. Avec le pilote Vernon Omlie — qui deviendra son mari —, elle apprend à marcher sur les ailes, à y danser le charleston, à se suspendre par les dents sous l’avion et à sauter en parachute. Elle met au point son propre numéro de double descente et établit en 1921, selon la FAA, un record féminin de saut à 15 200 pieds (4 630 mètres).\n\nElle passera ensuite de l’aile au manche, pour devenir l’une des grandes pilotes de son temps."
+        },
+        "coleman": {
+          "head": "Bessie Coleman, « Queen Bess »",
+          "body": "Manucure à Chicago, Bessie Coleman rêve de voler. Aucune école américaine n’accepte alors ni les femmes ni les Noirs. Encouragée par Robert Abbott, patron du Chicago Defender, elle apprend le français, traverse l’Atlantique et décroche le 15 juin 1921 son brevet de la Fédération aéronautique internationale : elle est la première Afro-Américaine pilote. La plupart de ses biographes la font passer par l’école Caudron du Crotoy, en baie de Somme.\n\nLe 3 septembre 1922, à Curtiss Field (Long Island), elle se produit pour la première fois en public. « Queen Bess » enchaîne les meetings ; elle refuse de voler devant des publics ségrégués et quitte un tournage plutôt que d’y paraître en haillons. Le 30 avril 1926, à Jacksonville, elle prépare un spectacle, son mécanicien William Wills aux commandes. Non attachée — elle veut se pencher pour repérer le terrain du saut en parachute prévu le lendemain —, elle est éjectée quand l’avion part en piqué puis en vrille : une clé oubliée dans le moteur avait bloqué les commandes. Dix mille personnes assistent à ses funérailles à Chicago."
+        },
+        "bolland": {
+          "head": "Adrienne Bolland passe les Andes",
+          "body": "Adrienne Bolland est pilote d’essai chez Caudron, qui compte sur elle pour prouver que ses avions sont faciles à piloter. Envoyée en Argentine avec un petit Caudron G.3 de 80 chevaux, elle décolle de Mendoza le 1er avril 1921, sans carte ni boussole, pour rejoindre Santiago du Chili par-dessus la cordillère.\n\nElle vole un peu plus de quatre heures, par un froid de l’ordre de −26 °C, en passant au sud de l’Aconcagua. À 25 ans, elle est la première femme à franchir les Andes ; la Ligue patriotique argentine lui remet une médaille d’or. Un siècle plus tard, Air France a célébré l’exploit avec deux vols aux équipages entièrement féminins."
+        }
+      },
+      "quotes": {
+        "roy": {
+          "text": "Le public commence à se lasser même de mes numéros les plus difficiles ; il me faut donc en inventer de nouveaux.",
+          "who": "Gladys Roy au Los Angeles Times, mai 1926."
+        }
+      },
+      "asides": {
+        "snook": "Amelia Earhart prit sa première leçon de pilotage début 1921 avec une femme, Neta Snook, première élève admise à l’école Curtiss. Earhart la payait en bons du Trésor, à un dollar la minute ; Snook lui offrit ensuite quinze heures de vol gratuites. Elle racontera tout dans un livre au titre sans détour : « J’ai appris à voler à Amelia »."
+      },
+      "geek": {
+        "transfer": {
+          "title": "Passer d’une voiture à un avion",
+          "body": "Il faut une longue ligne droite — une plage de Floride, une piste de champ de courses —, une voiture lancée et un avion qui vole bas, juste au-dessus, à la même vitesse. Sous l’avion pend une échelle de corde. L’acrobate, debout dans la voiture, attrape un barreau et se laisse arracher du sol, puis grimpe jusqu’à l’aile pendant que le pilote reprend de la hauteur. Le danger est partout : un écart de vitesse, une rafale, un barreau qui casse… C’est ce qui arriva à Mabel Cody.",
+          "specs": {
+            "speed": {
+              "label": "Vitesse commune",
+              "value": "≈ 65 à 100 km/h"
+            },
+            "ladder": {
+              "label": "Accès",
+              "value": "Échelle de corde sous l’avion"
+            },
+            "boyer": {
+              "label": "Lillian Boyer",
+              "value": "143 passages réussis"
+            },
+            "cody": {
+              "label": "Chute de Mabel Cody",
+              "value": "≈ 15 m (50 pieds)"
+            }
+          }
+        }
+      },
+      "myths": {
+        "tennis": {
+          "claim": "Gladys Roy et Ivan Unger jouaient au tennis sur l’aile avec une vraie balle.",
+          "verdict": "Légende, très probablement : la partie était mimée. La moindre balle « dehors » aurait obligé à atterrir pour aller la chercher… La photo, elle, est bien réelle."
+        },
+        "french": {
+          "claim": "Bessie Coleman a dû apprendre le français pour devenir pilote.",
+          "verdict": "Réalité : refusée par les écoles américaines, elle a appris le français pour se former en France, où elle a obtenu son brevet en juin 1921."
+        }
+      },
+      "quiz": {
+        "q1": {
+          "q": "Quel métier exerçait Lillian Boyer avant de marcher sur les ailes ?",
+          "a": "Infirmière",
+          "b": "Manucure",
+          "c": "Serveuse",
+          "why": "Serveuse dans un restaurant de Chicago. Manucure, c’était Bessie Coleman."
+        },
+        "q2": {
+          "q": "Dans quel pays Bessie Coleman a-t-elle obtenu son brevet ?",
+          "a": "La France",
+          "b": "L’Allemagne",
+          "c": "Les États-Unis",
+          "why": "En France, le 15 juin 1921, après avoir appris le français."
+        },
+        "q3": {
+          "q": "Qu’a franchi Adrienne Bolland le 1er avril 1921 ?",
+          "a": "La Manche",
+          "b": "La cordillère des Andes",
+          "c": "L’Atlantique Sud",
+          "why": "Les Andes, de Mendoza à Santiago, sans carte ni boussole."
+        }
+      },
+      "play": {
+        "title": "Une cible qui bouge",
+        "body": "Passer d’une voiture à un avion, c’est viser une cible en mouvement. Dans l’épreuve « Le char », c’est la cible qui roule : anticipez sa course et posez-vous sur le char à cheval."
+      }
+    },
+    "trade": {
+      "headline": "Le métier de parachutiste",
+      "standfirst": "Une coupole de soie qui ne se dirige pas, un vent qu’il faut lire avant de sauter, des sorties acrobatiques, des numéros à deux parachutes et un club dont personne ne rêve d’être membre. Bienvenue dans le métier qui est aussi le vôtre dans ce jeu.",
+      "teaser": "Retour en France : les grands meetings, l’homme aux 1 111 loopings et le duel des deux rois de la voltige.",
+      "sources": "National Museum of the U.S. Air Force ; The Washington Post, 4 mars 1920 (cité par Ghosts of DC) ; USPA ; Paradata ; Wikipédia (Caterpillar Club, Maryse Hilsz, A. Leo Stevens Parachute Medal) ; Air Journal ; National Skydiving Museum ; Agence Rol (BnF).",
+      "text": {
+        "canopy": {
+          "head": "Une coupole qui ne se dirige pas",
+          "body": "Le parachute des années 1920 est d’une simplicité désarmante. Le Type A de l’armée américaine, mis au point en 1918-1919, fixe le modèle : une voilure ronde de 28 pieds (8,5 mètres), pliée dans un sac dorsal, un petit extracteur qui la tire hors du sac, et une poignée que l’on tire une fois loin de l’avion. En France, le parachute Ors de 1923 pèse 3,5 kilos et tient dans un sac de 12 à 14 litres.\n\nMais cette coupole ne se pilote pas. Elle freine la chute — à quelques mètres par seconde — et descend où le vent la pousse. Pour se poser sur une cible, il n’y a qu’un moyen : choisir le bon endroit où quitter l’avion, en amont du vent, et laisser la dérive faire le reste. Tout se joue avant le saut."
+        },
+        "potomac": {
+          "head": "La leçon du Potomac",
+          "body": "Washington, 3 mars 1920. Floyd Smith — l’inventeur du Type A — et Charles Willis, 24 ans, embarquent sur un Curtiss parti de Bolling Field pour une démonstration. Le plan : sauter de 1 200 pieds (365 mètres) à la verticale de la base aéronavale et se laisser porter par le vent jusqu’au terrain.\n\nLe vent est mal jugé. Au lieu de les pousser vers le terrain, il les entraîne au milieu du chenal de l’Eastern Branch. Les deux hommes amerrissent à près de 400 mètres l’un de l’autre ; la vedette de la marine repêche d’abord Smith, le plus proche. Willis se débat deux minutes, alourdi par sa tenue d’aviateur en cuir gorgée d’eau, et coule avant l’arrivée des secours. Son corps sera retrouvé trois heures plus tard."
+        },
+        "exit": {
+          "head": "Quitter l’avion",
+          "body": "Sortir d’un biplan en vol est déjà un numéro : enjamber le cockpit, affronter le souffle de l’hélice, ne rien accrocher. Les premiers sauteurs, comme Tiny Broadwick, utilisaient une sangle reliée à l’avion, qui arrachait le parachute de son sac dès qu’ils se laissaient tomber : l’ouverture automatique. Avec la poignée, le sauteur choisit son moment, et la consigne tient en trois temps : s’écarter de l’avion, compter jusqu’à trois, tirer l’anneau.\n\nLes forains ajoutent du spectacle : sortie sur l’aile, salut à la foule, plongeon. Les écoles militaires britanniques préfèrent le « pull-off » : l’élève se tient sur une petite plateforme au pied du mât extérieur de l’aile, tire sa poignée et laisse la voilure qui s’ouvre l’arracher à l’avion. Une méthode spectaculaire, encore montrée au meeting de Hendon en 1930."
+        },
+        "double": {
+          "head": "La double descente",
+          "body": "Un parachute ne suffit plus à faire frissonner la foule ? On en ouvre deux. Le sauteur ouvre une première voilure, s’en libère, retombe en chute, puis ouvre la seconde qui le ramène au sol. Charles Broadwick faisait déjà exécuter des sauts doubles et triples à Tiny en 1908, et en 1909 un certain George Sewell aurait utilisé jusqu’à six parachutes dans un même saut.\n\nDans les années 1920, c’est le clou des cirques volants. Lindbergh l’apprend en 1922 ; Phoebe Omlie invente son propre numéro ; en France, Maryse Hilsz en compte une vingtaine à son actif."
+        },
+        "caterpillar": {
+          "head": "Le club de la chenille",
+          "body": "Le 20 octobre 1922, au-dessus de Dayton, le lieutenant Harold R. Harris, chef des essais en vol de McCook Field, doit abandonner un chasseur Loening PW-2A désemparé. Il saute, tire sa poignée et s’en sort : c’est la première vie de pilote américain sauvée par un parachute dorsal à ouverture commandée.\n\nDeux reporters du Dayton Herald proposent de fonder un club des rescapés. Le nom évoque le ver à soie — la chenille, « caterpillar » — dont le fil tisse les voilures. Leslie Irvin offre une épingle en forme de chenille dorée à chaque personne sauvée par l’un de ses parachutes. La première femme membre, Irene McFarland, y entre en 1925 ; pendant la Seconde Guerre mondiale, le club comptera des dizaines de milliers de membres."
+        },
+        "collin": {
+          "head": "Une infirmière pour cobaye",
+          "body": "On essaie d’ordinaire les parachutes avec des mannequins. Le 13 novembre 1923, sur le champ de manœuvres d’Issy-les-Moulineaux, c’est une ancienne infirmière-major, décorée de la croix de guerre avec palme, qui se porte volontaire pour essayer le nouveau parachute Ors : Mlle Denyse Collin.\n\nAux commandes du Morane-Saulnier, Alfred Fronval, le roi du looping. Peu avant 15 heures, à environ 350 mètres et 180 km/h, Denyse Collin saute. Le parachute s’ouvre ; elle se pose sans mal."
+        },
+        "hilsz": {
+          "head": "Maryse Hilsz, l’argent des sauts",
+          "body": "Au sortir de la guerre, la jeune Maryse Hilsz traîne sur les aérodromes. Le parachute paie bien : en 1924, elle s’inscrit à un concours de saut sans avoir jamais pris l’avion. Elle se produit ensuite pour la Société pour le développement de l’aviation — plus de 112 sauts, dont une vingtaine de doubles descentes — et se tient debout sur les ailes en vol.\n\nAvec l’argent de ses sauts, elle se paie des leçons de pilotage et obtient son brevet le 21 avril 1930. Suivront Paris-Saïgon-Paris, Paris-Tokyo-Paris et, en 1936, un record féminin d’altitude à 14 309 mètres."
+        },
+        "crane": {
+          "head": "« Jumping Jack » Crane, le roi de la précision",
+          "body": "Joe Crane apprend à sauter dans l’armée entre 1921 et 1924, puis rejoint en 1925 le Burns Flying Circus, où on l’annonce comme « le parachutiste prodige ». Son numéro : retarder l’ouverture le plus longtemps possible. Il ignore alors que son prédécesseur s’est tué en l’exécutant. Le 19 juillet 1925, il chute 2 250 pieds (environ 690 mètres) avant d’ouvrir, et démontre qu’on garde toute sa conscience en chute libre.\n\nMais son vrai talent, c’est la précision. Sous des voilures rondes que l’on ne dirige pas, il remporte concours sur concours où il faut se poser au plus près d’une cible — exactement ce que vous faites dans ce jeu. Vers 1930, il milite pour le parachute de secours obligatoire et des limites de vent ; en 1933, il fonde l’association qui deviendra la fédération américaine de parachutisme."
+        }
+      },
+      "quotes": {
+        "post": {
+          "text": "Une mauvaise appréciation du vent a coûté hier la vie d’un homme.",
+          "who": "The Washington Post, 4 mars 1920, au lendemain du drame de l’Eastern Branch."
+        }
+      },
+      "asides": {
+        "pin": "La chenille d’or du Caterpillar Club a, dit-on, des yeux rouges. Elle ne s’achète pas : elle se mérite, une seule fois dans une vie si tout va bien.",
+        "tree": "Les sauts de Maryse Hilsz ne finissaient pas toujours sur la pelouse : une fois, elle resta accrochée par son parachute à un toit ; une autre, elle demeura deux heures pendue par ses bretelles au sommet d’un arbre avant qu’on vienne la décrocher."
+      },
+      "geek": {
+        "drift": {
+          "title": "Le calcul de la dérive",
+          "body": "La règle tient en une ligne : dérive = vitesse du vent × temps passé sous voile. Et le temps sous voile, c’est l’altitude d’ouverture divisée par la vitesse de descente. Avec une voilure ronde qui descend d’environ 6 m/s, ouvrir à 600 mètres donne 100 secondes sous voile ; par un vent de 5 m/s, on dérive de 500 mètres. Il faut donc sortir de l’avion 500 mètres avant la cible, du côté d’où vient le vent. Ouvrir plus bas réduit la dérive… et la marge d’erreur. Dans ce jeu, votre voilure descend d’environ 5,5 m/s : le même calcul vaut pour le feu vert.",
+          "specs": {
+            "canopy": {
+              "label": "Voilure Type A",
+              "value": "ronde, 8,5 m (28 pieds)"
+            },
+            "descent": {
+              "label": "Vitesse de descente",
+              "value": "≈ 6 m/s (ordre de grandeur)"
+            },
+            "ors": {
+              "label": "Parachute Ors (1923)",
+              "value": "3,5 kg, sac de 12 à 14 l"
+            },
+            "rule": {
+              "label": "Dérive",
+              "value": "vent × altitude ÷ descente"
+            }
+          }
+        }
+      },
+      "myths": {
+        "blackout": {
+          "claim": "Un homme perd connaissance s’il tombe trop longtemps en chute libre.",
+          "verdict": "Légende : c’était la croyance de l’époque. Joe Crane l’a démentie le 19 juillet 1925 en chutant 2 250 pieds avant d’ouvrir, parfaitement conscient."
+        }
+      },
+      "quiz": {
+        "q1": {
+          "q": "Pourquoi Charles Willis s’est-il noyé en 1920 ?",
+          "a": "Son parachute ne s’est pas ouvert",
+          "b": "Le vent était mal jugé et sa tenue de cuir l’a entraîné au fond",
+          "c": "Le pilote s’était trompé de rivière",
+          "why": "Le vent les a poussés dans le chenal, et sa tenue de cuir gorgée d’eau l’a coulé."
+        },
+        "q2": {
+          "q": "D’où vient le nom du Caterpillar Club ?",
+          "a": "Du ver à soie, dont le fil tisse les voilures",
+          "b": "Des chenilles des chars d’assaut",
+          "c": "Du surnom d’Irvin",
+          "why": "La chenille du ver à soie : les voilures étaient en soie."
+        },
+        "q3": {
+          "q": "Sur quelle hauteur Joe Crane a-t-il retardé son ouverture en 1925 ?",
+          "a": "225 pieds",
+          "b": "22 500 pieds",
+          "c": "2 250 pieds",
+          "why": "2 250 pieds, soit environ 690 mètres de chute libre."
+        }
+      },
+      "play": {
+        "title": "Lire le vent",
+        "body": "L’épreuve « Brise de mer » est la leçon du Potomac en version jeu : un vent soutenu souffle vers le large. Attendez le bon moment pour sauter, en amont de la cible, et laissez le vent vous y porter."
+      }
+    },
+    "meets": {
+      "headline": "Meetings et haute école",
+      "standfirst": "En France, l’aviation des Années folles se donne en spectacle dans les meetings : des foules immenses, des présidents, des records, et des pilotes qui transforment l’acrobatie en art. Voici l’homme aux 1 111 loopings, l’ouvrier devenu « roi de l’air » et le virtuose du tonneau lent.",
+      "teaser": "Dernier numéro : Hollywood paie cher ses cascadeurs, Washington siffle la fin de la récréation, et les fous volants entrent dans la légende.",
+      "sources": "Air Journal ; Bibliothèque de la Défense ; Ville de Bron ; Remembering My Soldiers ; Theatrum Belli ; techno-science.net ; Wikipédia (Morane-Saulnier MS.130, Caudron G.3, Ernst Udet, Udet U 12 Flamingo) ; This Day in Aviation.",
+      "text": {
+        "buc": {
+          "head": "Buc, octobre 1920",
+          "body": "Le 8 octobre 1920, l’Aéro-Club de France ouvre à Buc, près de Versailles, un meeting de trois jours, au profit de l’association des journalistes sportifs et de la caisse de secours de l’aéronautique. Le président de la République, Alexandre Millerand, inaugure les épreuves.\n\nAu programme : décollages et atterrissages de précision, figures acrobatiques, concours de photographie aérienne, course de vitesse, montée et descente chronométrées, tentative de record d’altitude. Sur le terrain, les vedettes du moment : Fonck, l’as aux 75 victoires, Sadi-Lecointe, Bossoutrot, Fronval… et, dans les allées, l’aviatrice Adrienne Bolland aux côtés du maharajah de Kapurthala."
+        },
+        "crowds": {
+          "head": "Les foules de Vincennes et de Bron",
+          "body": "En juin 1925, la 2e Fête aérienne de Vincennes, organisée par la Société pour le développement de l’aviation avec le quotidien Le Journal, attire les Parisiens trois jours durant. Les sauts en parachute en sont la grande attraction, et les parachutistes — Maryse Hilsz parmi eux — y sont bien payés pour risquer leur vie.\n\nEn 1928, près de Lyon, le meeting de Bron se proclame « le plus grand meeting du monde » : de 50 000 à 150 000 spectateurs selon les journaux. On y voit la voltige de Fronval et de Détroyat, une course de vitesse autour de l’aérodrome remportée par Costes et, en marge du spectacle, des avions qui offrent le baptême de l’air au public."
+        },
+        "fronval": {
+          "head": "L’homme aux 1 111 loopings",
+          "body": "Chef pilote de Morane-Saulnier à partir de 1921, Alfred Fronval a fait du looping une épreuve d’endurance. Le 28 octobre 1919, à Cuatro Vientos, près de Madrid, il en enchaîne plus de 600 en 2 h 42 — le record américain était de 455. Le 26 mai 1920, à Villacoublay, sous le regard de Robert Morane, il en boucle 962 en 3 h 52 min 10 s.\n\nLe 25 février 1928, il porte le record à 1 111. On le retrouve aux commandes lors d’essais de parachutes et dans tous les grands meetings. Quatre mois plus tard, le 28 juin 1928, il meurt dans un accident… au sol, à Villacoublay."
+        },
+        "duel": {
+          "head": "Doret contre Détroyat",
+          "body": "Marcel Doret était ouvrier chez Renault quand le constructeur Émile Dewoitine le remarque dans un meeting. Devenu pilote d’essai, il fait de son Dewoitine D.27 aux ailes striées de rouge une légende. Le 21 août 1927, à Dübendorf, près de Zurich, il termine troisième d’un concours international de voltige derrière l’Allemand Gerhard Fieseler. Plus tard, à Tempelhof, devant plus de 100 000 spectateurs, il sera sacré « roi de l’air ».\n\nEn face, Michel Détroyat, né en 1905, pilote d’essai de Morane-Saulnier à partir de 1927. Virtuose de la « haute école aérienne », on lui attribue la mise au point du tonneau lent ; il éblouit Bron en 1928 et remporte la Coupe Michelin en 1929. Leurs duels remplissent les tribunes jusqu’au « match Doret-Détroyat » de Vincennes, en 1934. La voltige est devenue un sport, avec ses juges et ses champions."
+        },
+        "women": {
+          "head": "Les aviatrices à l’assaut des records",
+          "body": "Interdites de métier de pilote de ligne, les aviatrices se tournent vers les meetings, les raids et les records — et deviennent des vedettes. Maryse Bastié, qui tenait un magasin de chaussures à Cognac, obtient son brevet en 1925 ; le 28 juillet 1929, au Bourget, elle tient l’air 26 h 47 min sur un Caudron C.109 et bat le record du monde féminin de durée.\n\nLa parachutiste Maryse Hilsz, elle, a payé ses leçons avec l’argent de ses sauts ; les années 1930 seront les siennes. Avec Hélène Boucher et Adrienne Bolland, elles offrent aux jeunes filles un modèle d’indépendance qui fait la une des journaux."
+        }
+      },
+      "asides": {
+        "udet": "Côté allemand, l’ancien as Ernst Udet faisait vendre son petit biplan d’école, le U 12 Flamingo (1925), avec un numéro inimitable : il fondait sur l’aérodrome et ramassait un mouchoir posé dans l’herbe… du bout de l’aile."
+      },
+      "geek": {
+        "caudron": {
+          "title": "Fiche technique : le Caudron G.3",
+          "body": "Le cousin français du Jenny : un petit biplan à nacelle courte et à queue en treillis, conçu par les frères Caudron avant la guerre, avion d’observation puis avion-école de milliers d’élèves. C’est sur un G.3 que Védrines se pose sur les Galeries Lafayette et qu’Adrienne Bolland franchit les Andes. Les chiffres varient selon les versions et les sources.",
+          "specs": {
+            "span": {
+              "label": "Envergure",
+              "value": "≈ 13,4 m"
+            },
+            "engine": {
+              "label": "Moteur",
+              "value": "rotatif de 80 ch (Le Rhône 9C)"
+            },
+            "speed": {
+              "label": "Vitesse maximale",
+              "value": "≈ 106 à 114 km/h"
+            },
+            "weight": {
+              "label": "Masse à vide",
+              "value": "≈ 420 à 445 kg"
+            },
+            "endurance": {
+              "label": "Autonomie",
+              "value": "≈ 3 à 4 h"
+            }
+          }
+        }
+      },
+      "myths": {
+        "fronval": {
+          "claim": "Alfred Fronval, le roi du looping, est mort en plein looping.",
+          "verdict": "Légende : il est mort le 28 juin 1928 dans un accident au sol, à Villacoublay — quatre mois après avoir porté son record à 1 111 loopings."
+        }
+      },
+      "quiz": {
+        "q1": {
+          "q": "Combien de loopings Fronval enchaîna-t-il le 26 mai 1920 ?",
+          "a": "96",
+          "b": "962",
+          "c": "9 620",
+          "why": "962, en 3 h 52 min 10 s. Il montera à 1 111 en 1928."
+        },
+        "q2": {
+          "q": "Où travaillait Marcel Doret avant de devenir pilote d’essai ?",
+          "a": "Chez Renault",
+          "b": "Aux chemins de fer",
+          "c": "Aux Galeries Lafayette",
+          "why": "Ouvrier chez Renault, il fut remarqué par Émile Dewoitine dans un meeting."
+        },
+        "q3": {
+          "q": "Qu’Ernst Udet ramassait-il du bout de l’aile ?",
+          "a": "Un chapeau",
+          "b": "Une rose",
+          "c": "Un mouchoir",
+          "why": "Un mouchoir posé dans l’herbe de l’aérodrome."
+        }
+      },
+      "play": {
+        "title": "La finale du meeting",
+        "body": "Le Grand Prix clôt le Grand Circuit comme les grands meetings clôturaient la saison : du vent, des anneaux et une cible mobile, devant la tribune. La haute école, version parachute."
+      }
+    },
+    "curtain": {
+      "headline": "Hollywood, puis le rideau",
+      "standfirst": "Le cinéma muet paie cher les cascadeurs du ciel, et certains le paient de leur vie. Puis Washington siffle la fin de la récréation, la crise de 1929 ferme les cirques, et les fous volants entrent dans la légende. Dernier numéro — mais pas la fin de l’histoire.",
+      "teaser": "Le supplément : le petit lexique du fou volant et la grande chronologie, de 1797 à 1936.",
+      "sources": "Wikipédia (Ormer Locklear, 13 Black Cats, Wings, Hell’s Angels, Wing walking) ; San Diego Air & Space Museum ; TCM ; AFI Catalog ; FAA (« FAA Origins », « First Pilot’s License ») ; U.S. Centennial of Flight Commission ; National Skydiving Museum.",
+      "text": {
+        "skywayman": {
+          "head": "La dernière scène de Locklear",
+          "body": "Hollywood a engagé Ormer Locklear, le premier des marcheurs d’ailes. Pour le film The Skywayman, on lui demande un piqué en spirale de nuit au-dessus des puits de pétrole de Los Angeles, avec des fusées au phosphore sur les ailes pour simuler un incendie. Les projecteurs qui l’éclairent doivent s’éteindre pour lui signaler le moment de redresser.\n\nLe 2 août 1920, ils restent allumés. Ébloui, Locklear percute le sol avec son coéquipier Milton « Skeets » Elliott. Il avait 28 ans. La scène fut conservée dans le film."
+        },
+        "cats": {
+          "head": "Les 13 Black Cats, tout pour un prix",
+          "body": "À Los Angeles, vers 1924-1925, une bande de cascadeurs s’installe à l’aérodrome Burdett et promet de faire « ANYTHING for a price » — n’importe quoi, pour un prix. Ils s’appellent les 13 Black Cats : pull noir, chat et chiffre 13 sur la poitrine. Leurs clients : les actualités filmées et le cinéma.\n\nAu répertoire : changements d’avion, y compris d’un avion sur le dos vers un avion à l’endroit ; parties de cartes et de tennis sur l’aile ; objets arrachés au sol depuis les patins de l’aile basse ; fusillade simulée dont le « perdant » tombe de l’aile ; faux accident où la victime chute d’une centaine de mètres avant qu’un parachute caché ne s’ouvre. Et, première dans le métier, une grille de tarifs. Concurrencés par des pilotes au rabais, ils se séparent en 1929."
+        },
+        "movies": {
+          "head": "Des Ailes aux Anges de l’enfer",
+          "body": "En 1927, Les Ailes (Wings), de William Wellman, filme ses combats aériens avec des caméras arrimées aux avions et le concours de l’aviation militaire américaine ; les pilotes Frank Clarke, Frank Tomick et Dick Grace y font merveille. Le film remporte le premier Oscar du meilleur film.\n\nEn 1930, Hell’s Angels, de Howard Hughes, mobilise des dizaines de pilotes : trois pilotes et un mécanicien y laissent la vie, selon la plupart des sources. Hughes, qui tient à tourner lui-même un plan que les autres jugent trop dangereux, s’écrase et s’en sort blessé. En 1931, l’aviatrice Pancho Barnes fonde le premier syndicat des pilotes cascadeurs de cinéma… sur le modèle du tarif des Black Cats."
+        },
+        "rules": {
+          "head": "Washington siffle la fin",
+          "body": "Les accidents se multiplient, les pilotes locaux se plaignent d’une concurrence sans règles, les journaux s’indignent. Le 20 mai 1926, le président Coolidge signe l’Air Commerce Act. Les premiers règlements, publiés le 31 décembre, imposent l’immatriculation des avions et une licence aux pilotes ; les retardataires ont jusqu’au 1er mai 1927.\n\nLa licence de pilote n° 1 est remise le 6 avril 1927 à William MacCracken, premier responsable fédéral de l’aéronautique. Quelques semaines plus tard, un ancien forain décolle pour Paris avec la licence n° 69 : Charles Lindbergh. Son vol des 20 et 21 mai 1927 change le regard de l’Amérique sur l’aviation — qui devient une affaire sérieuse."
+        },
+        "end": {
+          "head": "Le rideau tombe",
+          "body": "Les nouvelles règles imposent des altitudes minimales pour la voltige et des avions en état de vol : impossible à tenir avec des Jenny fatigués, d’autant que l’armée cesse de vendre ses surplus. Lillian Boyer fait son dernier numéro en septembre 1928. Au printemps 1929, le Gates Flying Circus s’éteint discrètement en Floride ; la même année, les Black Cats se séparent. Le krach d’octobre achève les autres.\n\nEn 1936, la marche sur les ailes est interdite sous 1 500 pieds (460 mètres) — trop haut pour que la foule voie quoi que ce soit. Deux ans plus tard, les marcheurs d’ailes devront porter un parachute. L’âge d’or est fini."
+        },
+        "legacy": {
+          "head": "Ce qu’il en reste",
+          "body": "Presque tout. L’association fondée par Joe Crane en 1933 est devenue la fédération américaine de parachutisme ; ses concours de précision existent toujours. Le Caterpillar Club a compté des dizaines de milliers de membres pendant la Seconde Guerre mondiale. On débute encore souvent le parachutisme avec une sangle d’ouverture, comme Tiny Broadwick. Les meetings aériens attirent toujours les foules, et l’on y voit encore, parfois, une silhouette debout sur l’aile d’un biplan.\n\nEt il reste un parachutiste qui attend le feu vert au-dessus d’une foire de comté. C’est vous. Bon saut."
+        }
+      },
+      "quotes": {
+        "courier": {
+          "text": "Il est temps (…) de mettre un peu d’ordre dans le chaos du laisser-faire aérien.",
+          "who": "Buffalo Courier, 1924."
+        }
+      },
+      "asides": {
+        "perry": "Pour Les Ailes, l’opérateur Harry Perry fixait ses caméras sur les avions eux-mêmes : en 1927, le public découvrait pour la première fois le combat aérien vu du cockpit."
+      },
+      "myths": {
+        "letters": {
+          "claim": "Chez les 13 Black Cats, chaque membre devait porter un nom de treize lettres.",
+          "verdict": "Réalité, à sa façon : c’était la règle de la bande — et ceux dont le compte n’y était pas recevaient un surnom pour l’atteindre."
+        },
+        "orville": {
+          "claim": "Orville Wright a reçu la licence de pilote américaine n° 1.",
+          "verdict": "Légende : on la lui a proposée, il l’a déclinée — il ne volait plus et ne voyait pas pourquoi il aurait besoin d’une licence fédérale. Elle est allée à William MacCracken."
+        }
+      },
+      "quiz": {
+        "q1": {
+          "q": "Quelle récompense le film Les Ailes (1927) a-t-il remportée ?",
+          "a": "Le premier Oscar du meilleur film",
+          "b": "La Palme d’or",
+          "c": "Aucune",
+          "why": "Le tout premier Oscar du meilleur film, décerné en 1929."
+        },
+        "q2": {
+          "q": "Qui a reçu la licence de pilote américaine n° 1 ?",
+          "a": "Orville Wright",
+          "b": "Charles Lindbergh",
+          "c": "William MacCracken",
+          "why": "MacCracken, le 6 avril 1927. Orville Wright l’avait déclinée ; Lindbergh avait la n° 69."
+        },
+        "q3": {
+          "q": "Sous quelle hauteur la marche sur les ailes fut-elle interdite en 1936 ?",
+          "a": "150 pieds",
+          "b": "1 500 pieds",
+          "c": "15 000 pieds",
+          "why": "1 500 pieds, environ 460 mètres : trop haut pour le spectacle."
+        }
+      },
+      "play": {
+        "title": "Votre une du jour",
+        "body": "Chaque jour, un nouveau saut, le même pour tous les joueurs : le Saut du jour. Faites-vous un nom — les fous volants ne vivaient pas d’autre chose."
+      }
+    },
+    "supplement": {
+      "headline": "Le petit lexique et la grande chronologie",
+      "standfirst": "Les mots du métier, de l’argot des forains au vocabulaire de la voltige, et toutes les dates de cette gazette, du premier saut au-dessus de Paris à l’interdiction de 1936. Chaque date renvoie au numéro qui la raconte.",
+      "sources": "Voir les sources de chaque numéro."
+    }
+  }
+}

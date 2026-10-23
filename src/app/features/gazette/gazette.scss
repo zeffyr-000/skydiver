@@ -1,0 +1,154 @@
+.gazette {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+// Reading progress: a thin brass rule across the top of the screen.
+.gazette__progress {
+  position: fixed;
+  z-index: var(--z-overlay);
+  top: 0;
+  left: 0;
+  height: var(--sp-1);
+  background: var(--brass);
+  box-shadow: 0 2px 0 0 var(--shadow);
+}
+
+.gazette__content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-6);
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: var(--sp-8);
+}
+
+.gazette__top {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-6);
+  flex-wrap: wrap;
+}
+
+.gazette__back {
+  font-family: var(--font-head);
+  font-size: var(--fs-head);
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--ink-light);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--brass);
+  }
+}
+
+.gazette__strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-1);
+  margin-left: auto;
+}
+
+// An issue already read gets a small ink "stamp" in its corner.
+.gazette__no--read {
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: calc(var(--border-w) + 2px);
+    right: calc(var(--border-w) + 2px);
+    width: var(--sp-2);
+    height: var(--sp-2);
+    background: var(--grass-dark);
+    pointer-events: none;
+  }
+}
+
+.gazette__sheet {
+  animation: sheet-drop 280ms steps(4, end) backwards;
+}
+
+@keyframes sheet-drop {
+  from {
+    transform: translateY(-32px);
+    visibility: hidden;
+  }
+}
+
+// The masthead: name between double rules, then the issue line.
+.masthead {
+  margin: var(--sp-4) var(--sp-2) var(--sp-8);
+  text-align: center;
+}
+
+.masthead__name {
+  font-size: var(--fs-h1);
+  color: var(--ink);
+  padding: var(--sp-3) 0;
+  box-shadow:
+    inset 0 var(--border-w) 0 0 var(--ink),
+    inset 0 calc(2 * var(--border-w)) 0 0 var(--parchment),
+    inset 0 calc(3 * var(--border-w)) 0 0 var(--ink),
+    inset 0 calc(-1 * var(--border-w)) 0 0 var(--ink),
+    inset 0 calc(-2 * var(--border-w)) 0 0 var(--parchment),
+    inset 0 calc(-3 * var(--border-w)) 0 0 var(--ink);
+}
+
+.masthead__motto {
+  margin: var(--sp-2) 0 0;
+  color: var(--ink);
+}
+
+.masthead__line {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--sp-1) var(--sp-4);
+  margin: 0;
+  padding: var(--sp-2) 0;
+  font-family: var(--font-head);
+  font-size: var(--fs-head);
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--ink);
+  box-shadow: inset 0 -2px 0 0 var(--ink);
+}
+
+.gazette__turn {
+  margin-top: var(--sp-8);
+  padding-top: var(--sp-6);
+  box-shadow: inset 0 var(--border-w) 0 0 var(--ink);
+}
+
+.gazette__teaser {
+  margin-bottom: var(--sp-4);
+  color: var(--ink);
+}
+
+.gazette__teaser-label {
+  margin: 0 0 var(--sp-2);
+  font-family: var(--font-head);
+  font-size: var(--fs-h3);
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--biplane-red-dark);
+}
+
+.gazette__teaser-text {
+  margin: 0;
+}
+
+.gazette__buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--sp-4);
+
+  > :last-child {
+    margin-left: auto;
+  }
+}

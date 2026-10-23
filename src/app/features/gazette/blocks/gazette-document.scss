@@ -1,0 +1,150 @@
+@use 'pixel-ui' as px;
+
+:host {
+  display: block;
+  color: var(--ink);
+}
+
+@mixin label($color: var(--biplane-red-dark)) {
+  font-family: var(--font-head);
+  font-size: var(--fs-head);
+  font-weight: 700;
+  text-transform: uppercase;
+  color: $color;
+}
+
+.note {
+  margin: var(--sp-4) 0 0;
+  color: var(--biplane-red-dark);
+}
+
+// --- Rate card: a printer's double rule around cream card stock ---
+
+.card {
+  max-width: 640px;
+  margin: calc(3 * var(--border-w)) auto 0;
+  padding: var(--sp-4) var(--sp-6);
+  background: var(--canvas-cream);
+  box-shadow:
+    0 0 0 var(--border-w) var(--ink),
+    0 0 0 calc(2 * var(--border-w)) var(--canvas-cream),
+    0 0 0 calc(3 * var(--border-w)) var(--ink);
+}
+
+.card__head {
+  @include label(var(--ink));
+  font-size: var(--fs-h3);
+  text-align: center;
+  margin: 0 0 var(--sp-4);
+}
+
+.card__table {
+  width: 100%;
+  border-collapse: collapse;
+
+  td {
+    padding: var(--sp-2) 0;
+    vertical-align: bottom;
+  }
+
+  tr + tr td {
+    box-shadow: inset 0 2px 0 0 var(--parchment-dark);
+  }
+
+  .card__price {
+    @include label(var(--biplane-red));
+    font-size: var(--fs-h3);
+    text-align: right;
+    white-space: nowrap;
+    padding-left: var(--sp-4);
+  }
+}
+
+.card__foot {
+  margin: var(--sp-4) 0 0;
+  text-align: center;
+}
+
+// --- Handbill: cheap cream paper, loud type, one brass price ribbon ---
+
+.badge {
+  @include label(var(--ink-light));
+  display: table;
+  margin: 0 auto var(--sp-3);
+  padding: 0 var(--sp-2);
+  background: var(--biplane-red);
+}
+
+.bill {
+  max-width: 600px;
+  margin: var(--border-w) auto 0;
+  padding: var(--sp-6);
+  text-align: center;
+  background: var(--canvas-cream);
+  box-shadow:
+    0 0 0 var(--border-w) var(--ink),
+    var(--sp-3) var(--sp-3) 0 var(--border-w) var(--shadow);
+
+  p {
+    margin: 0 0 var(--sp-3);
+  }
+}
+
+.bill__top {
+  @include label;
+}
+
+.bill__headline {
+  @include label(var(--biplane-red));
+  font-size: var(--fs-h2);
+  line-height: 1.1;
+}
+
+.bill__sub {
+  @include label(var(--ink));
+  font-size: var(--fs-h3);
+}
+
+.bill__stops {
+  padding: var(--sp-2) 0;
+  box-shadow:
+    inset 0 2px 0 0 var(--ink),
+    inset 0 -2px 0 0 var(--ink);
+}
+
+.bill__acts {
+  list-style: none;
+  margin: var(--sp-4) 0;
+  padding: 0;
+
+  li {
+    @include label(var(--ink));
+
+    &::before {
+      content: '';
+      display: inline-block;
+      width: var(--sp-2);
+      height: var(--sp-2);
+      margin-right: var(--sp-2);
+      background: var(--biplane-red);
+      vertical-align: middle;
+    }
+  }
+
+  li + li {
+    margin-top: var(--sp-2);
+  }
+}
+
+.bill__price {
+  @include label(var(--ink));
+  display: inline-block;
+  font-size: var(--fs-h3);
+  padding: var(--sp-2) var(--sp-4);
+  background: var(--brass);
+  @include px.pixel-bevel();
+}
+
+.bill__small {
+  @include label(var(--ink));
+}

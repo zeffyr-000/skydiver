@@ -2,14 +2,20 @@ import { describe, expect, it } from 'vitest';
 import { BASE_CONFIG, configForDifficulty } from './config';
 import {
   accuracyPoints,
+  balloonAltitude,
+  BALLOON_LIFT,
+  canCutAway,
   createJump,
+  CUTAWAY_FLOOR,
   forwardOf,
   integrate,
   judgeLanding,
   planePosition,
   pullPoints,
   scoreJump,
+  shipAltitude,
   spotLightAt,
+  stuntPoints,
 } from './physics';
 import type { GameConfig, GameState, InputState, Ring } from './types';
 import { Phase } from './types';
@@ -430,6 +436,129 @@ describe('scoring', () => {
     expect(b.spot).toBe(150);
     expect(b.base).toBe(1000 + 525 + 300 + 400 + 150);
     expect(b.total).toBe(Math.round(b.base * cfg.scoreMultiplier));
+  });
+});
+
+describe('balloon ascension', () => {
+  const balloon = (overrides: Partial<GameConfig> = {}) =>
+    calm({ jumpShip: 'balloon', windBase: 4, exitAltitude: 900, spotLeadTime: 14, ...overrides });
+
+  it('keeps the rng draw order: the balloon only re-aims the run downwind', () => {
+    const plane = createJump(calm({ windBase: 4 }), () => 0.3);
+    const ball = createJump(balloon(), () => 0.3);
+    expect(ball.windBaseX).toBeCloseTo(plane.windBaseX);
+    expect(ball.groundSeed).toBe(plane.groundSeed);
+    // Its run points along the wind.
+    const f = forwardOf(ball.planeHeading);
+    const w = Math.hypot(ball.windBaseX, ball.windBaseY);
+    expect(f.x).toBeCloseTo(ball.windBaseX / w);
+    expect(f.y).toBeCloseTo(ball.windBaseY / w);
+  });
+
+  it('drifts at the wind speed and eases up to the exit altitude', () => {
+    const cfg = balloon();
+    const s0 = createJump(cfg, () => 0.3);
+    expect(s0.altitude).toBeLessThan(cfg.exitAltitude - 100);
+    const s = run(s0, NEUTRAL, cfg, 60 * 10);
+    const p = planePosition(s0, cfg, 10);
+    expect(s.posX).toBeCloseTo(p.x, 3);
+    const moved = Math.hypot(s.posX - s0.posX, s.posY - s0.posY);
+    expect(moved).toBeCloseTo(Math.hypot(s0.windBaseX, s0.windBaseY) * 10, 0);
+    expect(s.altitude).toBeCloseTo(balloonAltitude(cfg, 10), 3);
+    expect(s.altitude).toBeGreaterThan(cfg.exitAltitude - 30);
+  });
+
+  it('leaves without any throw: the jumper starts at rest in the air mass', () => {
+    const cfg = balloon();
+    const s = integrate(
+      run(
+        createJump(cfg, () => 0.3),
+        NEUTRAL,
+        cfg,
+        60,
+      ),
+      ACTION,
+      DT,
+      cfg,
+    );
+    expect(s.phase).toBe(Phase.Freefall);
+    expect(Math.hypot(s.velX - s.windX, s.velY - s.windY)).toBeLessThan(0.5);
+  });
+
+  it('the empty balloon climbs away once let go', () => {
+    const cfg = balloon();
+    const out = integrate(
+      run(
+        createJump(cfg, () => 0.3),
+        NEUTRAL,
+        cfg,
+        120,
+      ),
+      ACTION,
+      DT,
+      cfg,
+    );
+    const later = run(out, NEUTRAL, cfg, 60 * 2);
+    expect(shipAltitude(later, cfg) - shipAltitude(out, cfg)).toBeCloseTo(BALLOON_LIFT * 2, 0);
+  });
+});
+
+describe('double drop', () => {
+  const two = calm({ canopies: 2 });
+
+  it('the action key cuts away the first canopy, high enough, and the diver falls again', () => {
+    const s = underCanopy(two, 700);
+    expect(canCutAway(s, two)).toBe(true);
+    const cut = integrate(s, ACTION, DT, two);
+    expect(cut.phase).toBe(Phase.Freefall);
+    expect(cut.cutawayAt).toBe(s.freefallTime);
+    expect(cut.released).toMatchObject({ x: s.posX, y: s.posY, altitude: s.altitude });
+    // No third canopy to cut: under the second one the key flares.
+    const second = until(
+      cut,
+      (st) => ({ ...NEUTRAL, action: st.altitude < 400 }),
+      two,
+      (st) => st.phase === Phase.Canopy,
+    );
+    expect(canCutAway(second, two)).toBe(false);
+  });
+
+  it('a single canopy (or one too low) only ever flares', () => {
+    expect(canCutAway(underCanopy(calm(), 700), calm())).toBe(false);
+    const low = until(underCanopy(two, 300), NEUTRAL, two, (st) => st.altitude < CUTAWAY_FLOOR - 1);
+    const flared = integrate(low, ACTION, DT, two);
+    expect(flared.phase).toBe(Phase.Canopy);
+    expect(flared.flareTime).toBeGreaterThan(0);
+  });
+
+  it('pays a bonus for the second opening, more for a longer re-fall', () => {
+    const s = underCanopy(two, 900);
+    const cut = integrate(s, ACTION, DT, two);
+    const pullAt = (alt: number) => (st: GameState) => ({
+      ...NEUTRAL,
+      action:
+        (st.phase === Phase.Freefall && st.altitude <= alt) ||
+        (st.phase === Phase.Canopy && st.altitude < 4 && st.flareTime === 0),
+    });
+    const quick = until(cut, pullAt(820), two, (st) => !!st.result).result!;
+    const long = until(cut, pullAt(500), two, (st) => !!st.result).result!;
+    expect(quick.crashed).toBe(false);
+    expect(quick.refallTime).toBeGreaterThan(0);
+    expect(long.refallTime!).toBeGreaterThan(quick.refallTime!);
+    expect(long.breakdown!.stunt).toBeGreaterThan(quick.breakdown!.stunt);
+    expect(quick.breakdown!.stunt).toBe(stuntPoints(quick.refallTime));
+  });
+
+  it('cutting away and never pulling again is fatal', () => {
+    const cut = integrate(underCanopy(two, 600), ACTION, DT, two);
+    const end = until(cut, NEUTRAL, two, (st) => !!st.result);
+    expect(end.result!.crashed).toBe(true);
+  });
+
+  it('no bonus without a cut-away', () => {
+    expect(stuntPoints(null)).toBe(0);
+    expect(stuntPoints(0)).toBe(400);
+    expect(stuntPoints(100)).toBe(400 + 320);
   });
 });
 

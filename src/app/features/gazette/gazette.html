@@ -1,0 +1,80 @@
+@let i = issue();
+@let n = index() + 1;
+<section class="gazette">
+  <app-world-backdrop mode="calm" />
+  <div class="gazette__progress" [style.width.%]="progress() * 100" aria-hidden="true"></div>
+
+  <div class="gazette__content">
+    <header class="gazette__top">
+      <a class="gazette__back" href="/" (click)="onBack($event)"
+        >&#9664; {{ 'common.back' | transloco }}</a
+      >
+      <nav class="gazette__strip" [attr.aria-label]="'gazette.ui.strip' | transloco">
+        @for (iss of issues; track iss.id; let k = $index) {
+          @let read = store.read().includes(iss.id);
+          <app-pixel-button
+            [class.gazette__no--read]="read"
+            [variant]="k === index() ? 'brass' : 'default'"
+            [ariaPressed]="k === index()"
+            [ariaLabel]="
+              (k === last
+                ? ('gazette.ui.supplementNo' | transloco)
+                : ('gazette.ui.issueNo' | transloco: { n: k + 1 })) +
+              ' — ' +
+              ('gazette.issues.' + iss.id + '.headline' | transloco) +
+              (read ? ' — ' + ('gazette.ui.read' | transloco) : '')
+            "
+            (pressed)="go(k)"
+          >
+            {{ k === last ? ('gazette.ui.supplementShort' | transloco) : k + 1 }}
+          </app-pixel-button>
+        }
+      </nav>
+    </header>
+
+    <app-pixel-panel class="gazette__sheet">
+      <div class="masthead">
+        <h2 class="masthead__name">{{ 'gazette.masthead' | transloco }}</h2>
+        <p class="masthead__motto">{{ 'gazette.motto' | transloco }}</p>
+        <p class="masthead__line">
+          <span>{{
+            n - 1 === last
+              ? ('gazette.ui.supplementNo' | transloco)
+              : ('gazette.ui.issueNo' | transloco: { n: n })
+          }}</span>
+          <span>{{ i.years }}</span>
+          <span>{{ 'gazette.ui.price' | transloco }}</span>
+        </p>
+      </div>
+
+      <app-gazette-issue [issue]="i" (open)="open($event)" />
+
+      <footer class="gazette__turn">
+        @if (index() < last) {
+          <div class="gazette__teaser">
+            <p class="gazette__teaser-label">{{ 'gazette.ui.teaser' | transloco }}</p>
+            <p class="gazette__teaser-text">
+              {{ 'gazette.issues.' + i.id + '.teaser' | transloco }}
+            </p>
+          </div>
+        }
+        <div class="gazette__buttons">
+          @if (index() > 0) {
+            <app-pixel-button (pressed)="go(index() - 1)"
+              >&#9664; {{ 'gazette.ui.prev' | transloco }}</app-pixel-button
+            >
+          }
+          @if (index() < last) {
+            <app-pixel-button variant="brass" (pressed)="go(index() + 1)"
+              >{{ 'gazette.ui.next' | transloco }} &#9654;</app-pixel-button
+            >
+          } @else {
+            <app-pixel-button variant="brass" (pressed)="go(0)">{{
+              'gazette.ui.restart' | transloco
+            }}</app-pixel-button>
+          }
+        </div>
+      </footer>
+    </app-pixel-panel>
+  </div>
+</section>

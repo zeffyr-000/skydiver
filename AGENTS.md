@@ -50,6 +50,10 @@ src/app/
 │   │                                            #     baked-sprites (generated), events,
 │   │                                            #     autopilot, sound-cues, bindings, gamepad
 │   ├── circuit/                                 #   the Grand Tour (event select)
+│   ├── gazette/                                 #   the Sky Gazette: 1920s paper, read
+│   │                                            #     issue by issue (data + issue + blocks;
+│   │                                            #     text in the lazy `gazette` i18n scope,
+│   │                                            #     plates baked by tools/gazette-plates.mjs)
 │   ├── settings/
 │   └── records/
 ├── ui/                                        # Pixel-art UI kit + index.ts barrel
@@ -58,6 +62,7 @@ src/app/
                                                # Audio synth), controls/ (key labels, gamepad nav)
 
 src/assets/i18n/en.json                        # Translations (imported, not fetched)
+src/assets/i18n/gazette/*.json                 # The Gazette's text (lazy Transloco scope)
 src/styles/                                    # Global SCSS: tokens, mixins, reset, type
 ```
 
@@ -172,6 +177,9 @@ In-game sprites are voxel pre-renders: change a model in `tools/bake-voxels.mjs`
 `node tools/bake-voxels.mjs`, and commit the PNGs together with the regenerated
 `engine/baked-sprites.ts` (never edited by hand) — see
 [docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md#voxel-baked-sprites).
+
+New scenery in `generateTerrain()` (`engine/ground.ts`) draws from the period-dressing stream
+(`deco`), never from the main `rng`: an extra draw there would reshuffle every fixed-seed drop zone.
 
 Game content (the Grand Tour's events, the daily jump, arcade runs) lives in `engine/events.ts`
 as pure data. Changing an event's conditions means re-checking its medal thresholds:

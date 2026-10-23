@@ -1,0 +1,117 @@
+@use 'pixel-ui' as px;
+
+:host {
+  display: block;
+}
+
+@mixin label($color: var(--biplane-red-dark)) {
+  font-family: var(--font-head);
+  font-size: var(--fs-head);
+  font-weight: 700;
+  text-transform: uppercase;
+  color: $color;
+}
+
+.drift {
+  padding: var(--sp-4) var(--sp-6);
+  color: var(--ink);
+  background: var(--parchment-dark);
+  @include px.pixel-inset();
+
+  p {
+    margin: 0 0 var(--sp-3);
+  }
+}
+
+.drift__title {
+  @include label;
+  font-size: var(--fs-h3);
+}
+
+.drift__controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-4);
+}
+
+.drift__control {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+
+  > span {
+    @include label(var(--ink));
+  }
+}
+
+// A strip of meadow: target on the right, the exit marker sliding upwind.
+.drift__map {
+  position: relative;
+  height: 88px;
+  margin-bottom: var(--sp-4);
+  background:
+    linear-gradient(var(--sky-day), var(--sky-day)) top / 100% 56px no-repeat,
+    var(--grass);
+  box-shadow: 0 0 0 2px var(--ink);
+  overflow: hidden;
+}
+
+.drift__wind {
+  position: absolute;
+  top: var(--sp-2);
+  left: var(--sp-3);
+  @include label(var(--canvas-cream));
+}
+
+.drift__span {
+  position: absolute;
+  right: 6%;
+  bottom: 30px;
+  height: 4px;
+  background: repeating-linear-gradient(90deg, var(--ink) 0 8px, transparent 8px 16px);
+}
+
+.drift__exit,
+.drift__target {
+  position: absolute;
+  bottom: var(--sp-1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: translateX(50%);
+  @include label(var(--canvas-cream));
+}
+
+.drift__target {
+  right: 6%;
+}
+
+.drift__pin,
+.drift__bull {
+  width: 16px;
+  height: 16px;
+  margin-bottom: var(--sp-1);
+  background: var(--brass);
+  box-shadow: 0 0 0 2px var(--ink);
+}
+
+.drift__bull {
+  background: var(--biplane-red);
+  box-shadow:
+    inset 0 0 0 4px var(--canvas-cream),
+    0 0 0 2px var(--ink);
+}
+
+.drift__readout {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  @include label(var(--ink));
+  font-size: var(--fs-h3);
+}
+
+.drift__note {
+  color: var(--biplane-red-dark);
+}

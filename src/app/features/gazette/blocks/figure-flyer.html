@@ -1,0 +1,39 @@
+@let f = figure();
+<div class="flyer">
+  <p class="flyer__title">{{ 'gazette.figures.title' | transloco }}</p>
+  <p class="flyer__intro">{{ 'gazette.figures.intro' | transloco }}</p>
+  <div class="flyer__picks" role="group" [attr.aria-label]="'gazette.figures.title' | transloco">
+    @for (fig of figures; track fig.term) {
+      <app-pixel-button
+        [variant]="fig === f ? 'brass' : 'default'"
+        [ariaPressed]="fig === f"
+        (pressed)="figure.set(fig)"
+      >
+        {{ 'gazette.glossary.terms.' + fig.term + '.term' | transloco }}
+      </app-pixel-button>
+    }
+  </div>
+
+  <svg class="flyer__sky" viewBox="0 0 320 160" aria-hidden="true">
+    <rect class="flyer__ground" x="0" y="148" width="320" height="12" />
+    @for (fig of [f]; track fig.term) {
+      <path class="flyer__path" [attr.d]="fig.path" />
+      <g [attr.transform]="reduced() ? start() : null">
+        @if (!reduced()) {
+          <animateMotion [attr.path]="fig.path" dur="6s" repeatCount="indefinite" rotate="auto" />
+        }
+        <!-- A side-on biplane, nose to the right: two wings, fuselage, fin, propeller. -->
+        <g transform="scale(1.5)">
+          <rect class="flyer__wing" x="-4" y="-6" width="9" height="2" />
+          <rect class="flyer__wing" x="-4" y="3" width="9" height="2" />
+          <rect class="flyer__body" x="-8" y="-1.5" width="15" height="3" />
+          <rect class="flyer__body" x="-9" y="-5" width="2" height="4" />
+          <rect class="flyer__prop" x="7" y="-4" width="1" height="8" />
+        </g>
+      </g>
+    }
+  </svg>
+
+  <p class="flyer__name">{{ 'gazette.glossary.terms.' + f.term + '.term' | transloco }}</p>
+  <p class="flyer__def">{{ 'gazette.glossary.terms.' + f.term + '.def' | transloco }}</p>
+</div>
